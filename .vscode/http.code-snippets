@@ -1,0 +1,129 @@
+{
+  "Get JWT Token": {
+    "prefix": "jwt-token",
+    "body": [
+      "### Obtenir un token JWT",
+      "# @name getToken",
+      "POST {{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token",
+      "Content-Type: application/x-www-form-urlencoded",
+      "",
+      "client_id={{clientId}}",
+      "&client_secret={{clientSecret}}",
+      "&username={{username}}",
+      "&password={{password}}",
+      "&grant_type=password",
+      "",
+      "### Extraire le token",
+      "@token = {{getToken.response.body.access_token}}"
+    ],
+    "description": "Obtenir un token JWT depuis Keycloak"
+  },
+  "API GET Request": {
+    "prefix": "api-get",
+    "body": [
+      "### ${1:Description}",
+      "GET {{baseUrl}}/api/v1/${2:endpoint}",
+      "Authorization: Bearer {{token}}"
+    ],
+    "description": "Requête GET avec authentification"
+  },
+  "API POST Request": {
+    "prefix": "api-post",
+    "body": [
+      "### ${1:Description}",
+      "# @name ${2:requestName}",
+      "POST {{baseUrl}}/api/v1/${3:endpoint}",
+      "Authorization: Bearer {{token}}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${4:key}\": \"${5:value}\"",
+      "}"
+    ],
+    "description": "Requête POST avec authentification et body JSON"
+  },
+  "API PATCH Request": {
+    "prefix": "api-patch",
+    "body": [
+      "### ${1:Description}",
+      "PATCH {{baseUrl}}/api/v1/${2:endpoint}",
+      "Authorization: Bearer {{token}}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${3:key}\": \"${4:value}\"",
+      "}"
+    ],
+    "description": "Requête PATCH avec authentification et body JSON"
+  },
+  "API DELETE Request": {
+    "prefix": "api-delete",
+    "body": [
+      "### ${1:Description}",
+      "DELETE {{baseUrl}}/api/v1/${2:endpoint}",
+      "Authorization: Bearer {{token}}"
+    ],
+    "description": "Requête DELETE avec authentification"
+  },
+  "Dapr Invoke GET": {
+    "prefix": "dapr-get",
+    "body": [
+      "### ${1:Description}",
+      "GET {{daprUrl}}/v1.0/invoke/${2:service-name}/method/${3:endpoint}"
+    ],
+    "description": "Invocation Dapr GET"
+  },
+  "Dapr Invoke POST": {
+    "prefix": "dapr-post",
+    "body": [
+      "### ${1:Description}",
+      "POST {{daprUrl}}/v1.0/invoke/${2:service-name}/method/${3:endpoint}",
+      "Content-Type: application/json",
+      "",
+      "{",
+      "  \"${4:key}\": \"${5:value}\"",
+      "}"
+    ],
+    "description": "Invocation Dapr POST avec body JSON"
+  },
+  "Dapr State Save": {
+    "prefix": "dapr-state-save",
+    "body": [
+      "### Sauvegarder un état",
+      "POST {{daprUrl}}/v1.0/state/statestore",
+      "Content-Type: application/json",
+      "",
+      "[",
+      "  {",
+      "    \"key\": \"${1:key}\",",
+      "    \"value\": {",
+      "      \"${2:property}\": \"${3:value}\"",
+      "    }",
+      "  }",
+      "]"
+    ],
+    "description": "Sauvegarder un état dans Dapr State Store"
+  },
+  "Dapr State Get": {
+    "prefix": "dapr-state-get",
+    "body": [
+      "### Récupérer un état",
+      "GET {{daprUrl}}/v1.0/state/statestore/${1:key}"
+    ],
+    "description": "Récupérer un état depuis Dapr State Store"
+  },
+  "HTTP Variables": {
+    "prefix": "http-vars",
+    "body": [
+      "@baseUrl = ${1:http://localhost:8000}",
+      "@daprUrl = ${2:http://localhost:3500}",
+      "@keycloakUrl = ${3:http://localhost:8080}",
+      "@realm = ${4:microservices}",
+      "@clientId = ${5:microservices-api}",
+      "@clientSecret = ${6:CHANGE_ME_IN_PRODUCTION}",
+      "@username = ${7:fof}",
+      "@password = ${8:password}"
+    ],
+    "description": "Variables pour REST Client"
+  }
+}

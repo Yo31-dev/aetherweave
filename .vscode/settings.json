@@ -1,0 +1,30 @@
+{
+  // REST Client Configuration
+  "rest-client.environmentVariables": {
+    "$shared": {
+      "version": "v1"
+    }
+  },
+  "rest-client.defaultHeaders": {
+    "User-Agent": "AetherWeave-REST-Client"
+  },
+  "rest-client.timeoutinmilliseconds": 30000,
+  "rest-client.followredirect": true,
+  "rest-client.showResponseInDifferentTab": true,
+  "rest-client.previewOption": "exchange",
+  "rest-client.previewResponsePanelTakeFocus": false,
+  "rest-client.decodeEscapedUnicodeCharacters": true,
+  
+  // Formattage JSON
+  "editor.formatOnSave": true,
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features"
+  },
+  "[http]": {
+    "editor.quickSuggestions": {
+      "other": true,
+      "comments": false,
+      "strings": true
+    }
+  }
+}

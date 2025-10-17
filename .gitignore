@@ -7,7 +7,7 @@ infrastructure/data/
 .env.*.local
 
 # IDE
-.vscode/
+# .vscode/
 .idea/
 *.swp
 *.swo
