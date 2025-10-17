@@ -1,23 +1,23 @@
-# Installation de REST Client
+# REST Client Installation
 
-## Méthode 1 : Via l'interface VS Code
+## Method 1: Via VS Code interface
 
-1. Ouvrez VS Code
-2. Cliquez sur l'icône **Extensions** dans la barre latérale (ou appuyez sur `Ctrl+Shift+X` / `Cmd+Shift+X`)
-3. Recherchez **"REST Client"** (par Huachao Mao)
-4. Cliquez sur **Install**
+1. Open VS Code
+2. Click the **Extensions** icon in the sidebar (or press `Ctrl+Shift+X` / `Cmd+Shift+X`)
+3. Search for **"REST Client"** (by Huachao Mao)
+4. Click **Install**
 
 ![REST Client Extension](https://raw.githubusercontent.com/Huachao/vscode-restclient/master/images/usage.gif)
 
-## Méthode 2 : Via la ligne de commande
+## Method 2: Via command line
 
 ```bash
 code --install-extension humao.rest-client
 ```
 
-## Méthode 3 : Depuis le Marketplace
+## Method 3: From the Marketplace
 
-Visitez : [REST Client sur VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
+Visit: [REST Client on VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=humao.rest-client)
 
 ## Vérification de l'installation
 
@@ -33,7 +33,7 @@ humao.rest-client
 ## Utilisation après installation
 
 1. Ouvrez le fichier `api-tests.http`
-2. Vous verrez des liens **"Send Request"** au-dessus de chaque requête HTTP
+2. Vous verrez des liens **"Envoyer la requête"** au-dessus de chaque requête HTTP
 3. Cliquez sur ces liens pour exécuter les requêtes
 
 ## Raccourcis clavier
@@ -54,7 +54,7 @@ humao.rest-client
 
 ## Alternative : Utiliser cURL
 
-Si vous préférez ne pas installer l'extension, vous pouvez utiliser les commandes du fichier `CHEATSHEET.md` avec cURL.
+Si vous préférez ne pas installer l'extension, vous pouvez utiliser les commandes du fichier `Aide-mémoire.md` avec cURL.
 
 ```bash
 # Exemple

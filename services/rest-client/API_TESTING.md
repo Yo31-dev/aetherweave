@@ -1,22 +1,23 @@
-# Tests API - User Service
 
-Ce dossier contient les fichiers de tests API pour le User Service utilisant l'extension REST Client de VS Code.
+# API Tests - User Service
 
-## 📋 Prérequis
+This folder contains API test files for the User Service using the REST Client extension for VS Code.
 
-### Installation de l'extension REST Client
+## 📋 Prerequisites
 
-1. Ouvrez VS Code
-2. Allez dans les Extensions (`Ctrl+Shift+X` ou `Cmd+Shift+X`)
-3. Recherchez **REST Client** (par Huachao Mao)
-4. Cliquez sur **Install**
+### Installing the REST Client extension
 
-Ou installez via la ligne de commande :
+1. Open VS Code
+2. Go to Extensions (`Ctrl+Shift+X` or `Cmd+Shift+X`)
+3. Search for **REST Client** (by Huachao Mao)
+4. Click **Install**
+
+Or install via command line:
 ```bash
 code --install-extension humao.rest-client
 ```
 
-## 📁 Fichiers
+## 📁 Files
 
 - **`api-tests.http`** : Fichier principal contenant tous les tests API
 - **`.vscode/rest-client.env.json`** : Variables d'environnement pour différents environnements (dev, staging, prod)
@@ -43,8 +44,8 @@ Ouvrez le fichier `api-tests.http` dans VS Code.
 
 ### 3. Exécuter les requêtes
 
-#### Méthode 1 : Cliquer sur "Send Request"
-Au-dessus de chaque requête HTTP, vous verrez un lien **"Send Request"**. Cliquez dessus pour exécuter la requête.
+#### Méthode 1 : Cliquer sur "Envoyer la requête"
+Au-dessus de chaque requête HTTP, vous verrez un lien **"Envoyer la requête"**. Cliquez dessus pour exécuter la requête.
 
 #### Méthode 2 : Raccourci clavier
 - Placez votre curseur sur la requête

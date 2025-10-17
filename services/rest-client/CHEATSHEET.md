@@ -1,9 +1,10 @@
+
 # API Cheatsheet - User Service
 
-## 🔐 Authentification
+## 🔐 Authentication
 
 ```bash
-# Obtenir un token JWT
+# Get a JWT token
 TOKEN=$(curl -s -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
   -d "client_id=microservices-api" \
@@ -12,7 +13,7 @@ TOKEN=$(curl -s -X POST http://localhost:8080/realms/microservices/protocol/open
   -d "password=password" \
   -d "grant_type=password" | jq -r .access_token)
 
-# Vérifier le token
+# Verify the token
 echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
 ```
 
@@ -173,7 +174,7 @@ docker-compose down -v
 ## 📝 REST Client (VS Code)
 
 1. Ouvrir `api-tests.http`
-2. Cliquer sur "Send Request" au-dessus de chaque requête
+2. Cliquer sur "Envoyer la requête" au-dessus de chaque requête
 3. Ou utiliser `Ctrl+Alt+R` (Windows/Linux) / `Cmd+Alt+R` (Mac)
 
 ## 🔑 Utilisateurs de test (Keycloak)

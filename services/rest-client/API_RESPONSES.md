@@ -1,6 +1,7 @@
-# Exemples de Réponses API
 
-Ce fichier contient des exemples de réponses pour chaque endpoint de l'API.
+# API Response Examples
+
+This file contains example responses for each API endpoint.
 
 ## Authentification
 

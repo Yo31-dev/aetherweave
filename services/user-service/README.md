@@ -1,33 +1,33 @@
 # User Service
 
-Service de gestion des utilisateurs pour AetherWeave.
+User management service for AetherWeave.
 
-## Développement local
+## Local development
 
 ```bash
-# Installer les dépendances
+# Install dependencies
 pnpm install
 
-# Lancer en mode dev
+# Start in dev mode
 pnpm run start:dev
 
 # Build
 pnpm run build
 
-# Lancer en prod
+# Start in production
 pnpm run start:prod
 ```
 
 ## Docker
 
 ```bash
-# Build l'image
+# Build the image
 docker build -t user-service .
 
-# Lancer avec docker-compose
+# Start with docker-compose
 docker-compose up -d
 
-# Voir les logs
+# View logs
 docker-compose logs -f user-service
 ```
 
@@ -36,8 +36,8 @@ docker-compose logs -f user-service
 ### Health Check (public)
 - GET `/health` - Health check
 
-### Users (nécessite JWT)
-- GET `/users` - Liste tous les utilisateurs
+### Users (requires JWT)
+- GET `/users` - List all users
 - GET `/users/:id` - Récupère un utilisateur
 - POST `/users` - Crée un utilisateur
 - DELETE `/users/:id` - Supprime un utilisateur
@@ -60,7 +60,7 @@ Le projet inclut une configuration complète pour tester l'API avec l'extension 
 
 **Utilisation rapide** :
 1. Ouvrez `api-tests.http` dans VS Code
-2. Cliquez sur "Send Request" au-dessus d'une requête
+2. Cliquez sur "Envoyer la requête" au-dessus d'une requête
 3. Consultez `API_TESTING.md` pour plus de détails
 
 ### Tests en ligne de commande

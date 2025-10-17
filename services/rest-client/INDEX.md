@@ -1,23 +1,23 @@
-# 📚 Documentation API - Index
+# 📚 API Documentation - Index
 
-Bienvenue dans la documentation complète de l'API User Service d'AetherWeave !
+Welcome to the complete documentation for the AetherWeave User Service API!
 
-## 🚀 Démarrage rapide
+## 🚀 Quick Start
 
-1. **[Installation REST Client](INSTALL_REST_CLIENT.md)** - Installer l'extension VS Code
-2. **[Cheatsheet](CHEATSHEET.md)** - Commandes rapides et essentielles
-3. **[Fichier de tests](api-tests.http)** - Ouvrir et cliquer sur "Send Request"
+1. **[REST Client Installation](INSTALL_REST_CLIENT.md)** - Install the VS Code extension
+2. **[Cheatsheet](CHEATSHEET.md)** - Quick and essential commands
+3. **[Test file](api-tests.http)** - Open and click "Send Request"
 
-## 📖 Documentation complète
+## 📖 Full Documentation
 
-### Guides pratiques
+### Practical Guides
 
-| Fichier | Description | Pour qui ? |
+| File | Description | For whom? |
 |---------|-------------|-----------|
-| **[README.md](README.md)** | Vue d'ensemble du service | Tout le monde |
-| **[CHEATSHEET.md](CHEATSHEET.md)** | Commandes rapides et URLs | Développeurs quotidiens |
-| **[API_TESTING.md](API_TESTING.md)** | Guide complet des tests API | Nouveaux développeurs |
-| **[API_RESPONSES.md](API_RESPONSES.md)** | Exemples de réponses | Intégration API |
+| **[README.md](README.md)** | Service overview | Everyone |
+| **[Cheatsheet](CHEATSHEET.md)** | Quick commands and URLs | Daily developers |
+| **[API_TESTING.md](API_TESTING.md)** | Complete API test guide | New developers |
+| **[API_RESPONSES.md](API_RESPONSES.md)** | Response examples | API integration |
 | **[INSTALL_REST_CLIENT.md](INSTALL_REST_CLIENT.md)** | Installation de l'extension | Configuration initiale |
 
 ### Fichiers de test
@@ -32,7 +32,7 @@ Bienvenue dans la documentation complète de l'API User Service d'AetherWeave !
 ## 🎯 Cas d'usage
 
 ### Je veux tester rapidement l'API
-→ Ouvrez **[api-tests.http](api-tests.http)** et cliquez sur "Send Request"
+→ Ouvrez **[api-tests.http](api-tests.http)** et cliquez sur "Envoyer la requête"
 
 ### Je cherche une commande cURL
 → Consultez **[CHEATSHEET.md](CHEATSHEET.md)**

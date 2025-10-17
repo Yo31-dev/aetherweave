@@ -1,6 +1,34 @@
 # AetherWeave 
 
 tissage d'architecture micro-services
+# Environnement de Développement - Stack Micro-services
+
+## 📋 Prérequis
+## 🏗️ Architecture
+
+```
+### Services Infrastructure
+
+## 🔍 URLs Utiles
+## 🧪 Tests
+
+### Tester Envoy Gateway
+## 📊 Observabilité
+
+### Grafana Dashboards
+## 🛠️ Commandes Utiles
+
+## 🐛 Troubleshooting
+## 📝 Étapes suivantes
+
+1. ✅ Configuration initiale de Keycloak
+2. ⏳ Générer ton premier service backend
+3. ⏳ Tester la communication inter-services via Dapr
+4. ⏳ Ajouter un frontend web component
+5. ⏳ Configurer le CI/CD
+# AetherWeave 
+
+tissage d'architecture micro-services
 
 # Environnement de Développement - Stack Micro-services
 
@@ -270,7 +298,7 @@ curl http://localhost:9901/clusters
 curl http://localhost:9901/config_dump
 ```
 
-## 📝 Next Steps
+## 📝 Étapes suivantes
 
 1. ✅ Configuration initiale de Keycloak
 2. ⏳ Générer ton premier service backend
