@@ -1,0 +1,36 @@
+apiVersion: dapr.io/v1alpha1
+kind: Configuration
+metadata:
+  name: dapr-config
+spec:
+  # Tracing distribué avec Jaeger
+  tracing:
+    samplingRate: "1"
+    zipkin:
+      endpointAddress: "http://jaeger:9411/api/v2/spans"
+  
+  # Métriques Prometheus
+  metrics:
+    enabled: true
+  
+  # mTLS entre services (désactivé en dev local, activé en prod)
+  mtls:
+    enabled: false
+    workloadCertTTL: "24h"
+    allowedClockSkew: "15m"
+  
+  # Access Control (optionnel)
+  accessControl:
+    defaultAction: allow
+    trustDomain: "public"
+  
+  # Secrets (configuration pour accéder aux secrets)
+  secrets:
+    scopes:
+      - storeName: local-secret-store
+        defaultAccess: allow
+  
+  # API logging
+  features:
+    - name: Resiliency
+      enabled: true

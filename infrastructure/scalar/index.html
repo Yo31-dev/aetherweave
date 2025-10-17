@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AetherWeave API Documentation</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .header p {
+            margin: 0.5rem 0 0;
+            opacity: 0.9;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .service-card {
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            background: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: transform 0.2s, box-shadow 0.2s;
+            cursor: pointer;
+        }
+        .service-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .service-card h3 {
+            margin: 0 0 0.5rem;
+            color: #2d3748;
+        }
+        .service-card p {
+            margin: 0 0 1rem;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+        .service-card .status {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+        .status.active {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .status.coming-soon {
+            background: #fed7d7;
+            color: #742a2a;
+        }
+        .api-viewer {
+            margin-top: 2rem;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+    </style>
+    <!-- Scalar CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest/dist/style.css" />
+</head>
+<body>
+    <div class="header">
+        <h1>🌌 AetherWeave API</h1>
+        <p>Documentation complète de vos microservices</p>
+    </div>
+
+    <div class="container">
+        <h2>Services Disponibles</h2>
+        <div class="services-grid">
+            <!-- Les cartes de services seront générées automatiquement -->
+            <div class="service-card" onclick="loadSpec('/specs/example-service.json')">
+                <h3>Example Service</h3>
+                <p>Service d'exemple pour tester l'architecture</p>
+                <span class="status coming-soon">Coming Soon</span>
+            </div>
+        </div>
+
+        <div class="api-viewer" id="api-reference"></div>
+    </div>
+
+    <!-- Scalar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@latest"></script>
+    
+    <script>
+        // Configuration Scalar par défaut
+        const scalarConfig = {
+            spec: {
+                url: '/specs/example-service.json'
+            },
+            theme: 'default',
+            layout: 'modern',
+            authentication: {
+                preferredSecurityScheme: 'bearerAuth',
+                apiKey: {
+                    token: ''
+                }
+            },
+            servers: [
+                {
+                    url: 'http://api.aetherweave.local',
+                    description: 'Development'
+                }
+            ]
+        };
+
+        // Fonction pour charger une spec OpenAPI
+        function loadSpec(specUrl) {
+            scalarConfig.spec.url = specUrl;
+            
+            // Réinitialiser le viewer
+            const viewer = document.getElementById('api-reference');
+            viewer.innerHTML = '';
+            
+            // Charger la nouvelle spec
+            Scalar.ApiReference(viewer, scalarConfig);
+        }
+
+        // Auto-découverte des services
+        async function loadServicesList() {
+            try {
+                const response = await fetch('/specs/services.json');
+                const services = await response.json();
+                
+                const grid = document.querySelector('.services-grid');
+                grid.innerHTML = '';
+                
+                services.forEach(service => {
+                    const card = document.createElement('div');
+                    card.className = 'service-card';
+                    card.onclick = () => loadSpec(service.spec);
+                    
+                    card.innerHTML = `
+                        <h3>${service.name}</h3>
+                        <p>${service.description}</p>
+                        <span class="status ${service.status === 'active' ? 'active' : 'coming-soon'}">
+                            ${service.status === 'active' ? 'Active' : 'Coming Soon'}
+                        </span>
+                    `;
+                    
+                    grid.appendChild(card);
+                });
+            } catch (e) {
+                console.log('Using default services list');
+            }
+        }
+
+        // Charger au démarrage
+        // loadServicesList();
+        // loadSpec('/specs/example-service.json');
+    </script>
+</body>
+</html>

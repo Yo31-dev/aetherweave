@@ -1,0 +1,53 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'docker-dev'
+    environment: 'development'
+
+# Alertmanager configuration (optionnel)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: []
+
+scrape_configs:
+  # Prometheus lui-même
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Dapr Placement Service
+  - job_name: 'dapr-placement'
+    static_configs:
+      - targets: ['dapr-placement:9090']
+
+  # Services avec Dapr sidecars
+  # Chaque service expose ses métriques sur le port Dapr metrics (9090 par défaut)
+  # À décommenter et adapter selon tes services
+  # - job_name: 'example-service-dapr'
+  #   static_configs:
+  #     - targets: ['example-service:9090']
+  #   metrics_path: '/metrics'
+
+  # RabbitMQ (si plugin prometheus activé)
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15692']
+    metrics_path: '/metrics'
+
+  # Redis (avec redis_exporter si nécessaire)
+  # - job_name: 'redis'
+  #   static_configs:
+  #     - targets: ['redis-exporter:9121']
+
+  # PostgreSQL (avec postgres_exporter si nécessaire)
+  # - job_name: 'postgres'
+  #   static_configs:
+  #     - targets: ['postgres-exporter:9187']
+
+  # Envoy Gateway
+  - job_name: 'envoy'
+    static_configs:
+      - targets: ['envoy:9901']
+    metrics_path: '/stats/prometheus'

@@ -1,0 +1,9 @@
+[
+  {
+    "name": "Example Service",
+    "description": "Service d'exemple pour démonstration",
+    "spec": "/specs/example-service.json",
+    "status": "coming-soon",
+    "version": "1.0.0"
+  }
+]

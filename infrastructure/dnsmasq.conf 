@@ -1,0 +1,31 @@
+# Configuration dnsmasq pour AetherWeave
+
+# Ne pas lire /etc/hosts
+no-hosts
+
+# Port d'écoute DNS
+port=53
+
+# Interface d'écoute (toutes les interfaces locales)
+listen-address=127.0.0.1
+
+# Ne pas forward les domaines .local vers upstream
+local=/local/
+
+# Wildcard pour tous les sous-domaines aetherweave.local
+address=/aetherweave.local/127.0.0.1
+
+# DNS upstream pour le reste (Google DNS)
+# Remplace par ton DNS préféré si besoin
+server=8.8.8.8
+server=8.8.4.4
+
+# Cache DNS
+cache-size=1000
+
+# Logs (décommenter pour debug)
+# log-queries
+# log-facility=/var/log/dnsmasq.log
+
+# Pas de résolution DHCP
+no-dhcp-interface=
