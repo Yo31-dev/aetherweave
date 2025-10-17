@@ -94,13 +94,13 @@ docker-compose logs -f
 
 1. Accéder à http://localhost:8080
 2. Login: `admin` / `admin`
-3. Créer un nouveau realm: `microservices`
+3. Créer un nouveau realm: `aetherweave`
 
 ### Create the Client
 
-1. Dans le realm `microservices`, aller dans **Clients**
+1. Dans le realm `aetherweave`, aller dans **Clients**
 2. Créer un nouveau client:
-   - Client ID: `microservices-api`
+   - Client ID: `aetherweave-api`
    - Client Protocol: `openid-connect`
    - Access Type: `confidential`
    - Valid Redirect URIs: `http://localhost:*`
@@ -118,9 +118,9 @@ fof@fof.com / password
 ### Get a JWT token (test)
 
 ```bash
-curl -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
+curl -X POST http://localhost:8080/realms/aetherweave/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=microservices-api" \
+  -d "client_id=aetherweave-api" \
   -d "client_secret=YOUR_CLIENT_SECRET" \
   -d "username=YOUR_USER" \
   -d "password=YOUR_PASSWORD" \
@@ -137,9 +137,9 @@ my-service:
   build: ./services/my-service
   container_name: my-service
   environment:
-    DATABASE_URL: postgresql://devuser:devpassword@postgres:5432/microservices
+    DATABASE_URL: postgresql://devuser:devpassword@postgres:5432/aetherweave
   networks:
-    - microservices-net
+    - aetherweave-net
 
 my-service-dapr:
   image: daprio/daprd:1.12.0
@@ -317,9 +317,9 @@ curl http://localhost:9901/config_dump
 
 
 ```bash
-TOKEN=$(curl -s -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
+TOKEN=$(curl -s -X POST http://localhost:8080/realms/aetherweave/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=microservices-api" \
+  -d "client_id=aetherweave-api" \
   -d "client_secret=udp7QXqWfFqwDagEooIeDPDQm48bmHLj" \
   -d "username=fof" \
   -d "password=password" \

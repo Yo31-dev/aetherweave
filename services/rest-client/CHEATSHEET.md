@@ -5,9 +5,9 @@
 
 ```bash
 # Get a JWT token
-TOKEN=$(curl -s -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
+TOKEN=$(curl -s -X POST http://localhost:8080/realms/aetherweave/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=microservices-api" \
+  -d "client_id=aetherweave-api" \
   -d "client_secret=CHANGE_ME_IN_PRODUCTION" \
   -d "username=fof" \
   -d "password=password" \

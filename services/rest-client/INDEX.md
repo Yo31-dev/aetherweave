@@ -69,7 +69,7 @@ Keycloak            : http://localhost:8080
 # [translate:Utilisateur de test]
 Username: fof
 Password: password
-Client ID: microservices-api
+Client ID: aetherweave-api
 ```
 
 

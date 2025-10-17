@@ -18,7 +18,7 @@ services:
     environment:
       POSTGRES_USER: devuser
       POSTGRES_PASSWORD: devpassword
-      POSTGRES_DB: microservices
+      POSTGRES_DB: aetherweave
     ports:
       - "5432:5432"
     volumes:
@@ -215,7 +215,7 @@ services:
   #   build: ./services/example-service
   #   container_name: example-service
   #   environment:
-  #     DATABASE_URL: postgresql://devuser:devpassword@postgres:5432/microservices
+  #     DATABASE_URL: postgresql://devuser:devpassword@postgres:5432/aetherweave
   #   depends_on:
   #     postgres:
   #       condition: service_healthy

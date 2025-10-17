@@ -11,7 +11,7 @@ import { HealthController } from './health/health.controller';
       port: parseInt(process.env.DB_PORT || '5432'),
       username: process.env.DB_USER || 'devuser',
       password: process.env.DB_PASSWORD || 'devpassword',
-      database: process.env.DB_NAME || 'microservices',
+      database: process.env.DB_NAME || 'aetherweave',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // ATTENTION: false en production
     }),

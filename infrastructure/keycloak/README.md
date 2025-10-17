@@ -5,7 +5,7 @@
 ```
 keycloak/
 ├── realms/
-│   └── microservices-realm.json    # Realm config to import
+│   └── aetherweave-realm.json    # Realm config to import
 ├── import-realm.sh                  # Import script
 ├── export-realm.sh                  # Export/backup script
 └── README.md
@@ -46,13 +46,13 @@ chmod +x export-realm.sh
 ./export-realm.sh
 ```
 
-This will create a file `microservices-realm-backup-YYYYMMDD-HHMMSS.json`
+This will create a file `aetherweave-realm-backup-YYYYMMDD-HHMMSS.json`
 
 ## Default configuration
 
 ### Realm
 
-- **Name**: `microservices`
+- **Name**: `aetherweave`
 - **SSL**: Disabled (dev only)
 - **Token lifetime**: 5 minutes
 - **SSO session**: 30 minutes
@@ -60,7 +60,7 @@ This will create a file `microservices-realm-backup-YYYYMMDD-HHMMSS.json`
 
 ### Client
 
-- **Client ID**: `microservices-api`
+- **Client ID**: `aetherweave-api`
 - **Client Secret**: `CHANGE_ME_IN_PRODUCTION` (to change)
 - **Protocol**: OpenID Connect
 - **Access Types**: Confidential
@@ -71,7 +71,7 @@ This will create a file `microservices-realm-backup-YYYYMMDD-HHMMSS.json`
 
 ### Configured Mappers
 
-- **audience-mapper**: Adds `microservices-api` into the token audience
+- **audience-mapper**: Adds `aetherweave-api` into the token audience
 - **username-mapper**: Maps username to `preferred_username`
 - **email-mapper**: Maps email
 
@@ -95,7 +95,7 @@ This will create a file `microservices-realm-backup-YYYYMMDD-HHMMSS.json`
 
 ### For production
 
-1. **Change the client secret** in `microservices-realm.json`
+1. **Change the client secret** in `aetherweave-realm.json`
 2. **Change users’ passwords**
 3. **Enable SSL** (`sslRequired: "external"`)
 4. **Reduce token lifetimes**
@@ -115,7 +115,7 @@ uuidgen | tr -d '-'
 
 Then update in:
 
-- `keycloak/realms/microservices-realm.json`
+- `keycloak/realms/aetherweave-realm.json`
 - `dapr/secrets/secrets.json`
 
 
@@ -125,9 +125,9 @@ Then update in:
 
 ```bash
  # User fof
-TOKEN=$(curl -s -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
+TOKEN=$(curl -s -X POST http://localhost:8080/realms/aetherweave/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=microservices-api" \
+  -d "client_id=aetherweave-api" \
   -d "client_secret=CHANGE_ME_IN_PRODUCTION" \
   -d "username=fof" \
   -d "password=password" \
@@ -170,7 +170,7 @@ curl http://localhost:8000/api/v1/health \
 
 ### Add a user
 
-Edit `microservices-realm.json` in the `users` section:
+Edit `aetherweave-realm.json` in the `users` section:
 
 ```json
 {

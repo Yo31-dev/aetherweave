@@ -7,8 +7,8 @@
 @baseUrl = http://localhost:8000
 @daprUrl = http://localhost:3500
 @keycloakUrl = http://localhost:8080
-@realm = microservices
-@clientId = microservices-api
+@realm = aetherweave
+@clientId = aetherweave-api
 @clientSecret = CHANGE_ME_IN_PRODUCTION
 
 # Utilisateurs de test

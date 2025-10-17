@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-User Service is a NestJS-based microservice within the AetherWeave distributed system. It manages user CRUD operations and integrates with a broader microservices architecture using Dapr, Envoy Gateway, and Keycloak for authentication.
+User Service is a NestJS-based microservice within the AetherWeave distributed system. It manages user CRUD operations and integrates with a broader aetherweave architecture using Dapr, Envoy Gateway, and Keycloak for authentication.
 
 ## Common Commands
 
@@ -84,7 +84,7 @@ docker-compose down
 - Rate limiting
 - Routing to services via Dapr
 
-**Keycloak**: Provides JWT authentication with realm `microservices` and client `microservices-api`
+**Keycloak**: Provides JWT authentication with realm `aetherweave` and client `aetherweave-api`
 
 ### Database Connection
 TypeORM is configured in `src/app.module.ts` with automatic entity synchronization (`synchronize: true`) - **this should be disabled in production**. Connection details are pulled from environment variables with sensible defaults for local development.
@@ -124,9 +124,9 @@ curl -X POST http://localhost:3500/v1.0/invoke/user-service/method/users \
 ### Via Envoy Gateway (requires JWT)
 ```bash
 # Get JWT token
-TOKEN=$(curl -s -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
+TOKEN=$(curl -s -X POST http://localhost:8080/realms/aetherweave/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=microservices-api" \
+  -d "client_id=aetherweave-api" \
   -d "client_secret=CHANGE_ME_IN_PRODUCTION" \
   -d "username=fof" \
   -d "password=password" \
@@ -145,7 +145,7 @@ Required for database connectivity (defaults are configured for local developmen
 - `DB_PORT` - PostgreSQL port (default: 5432)
 - `DB_USER` - Database user (default: devuser)
 - `DB_PASSWORD` - Database password (default: devpassword)
-- `DB_NAME` - Database name (default: microservices)
+- `DB_NAME` - Database name (default: aetherweave)
 
 ## Important Architectural Considerations
 

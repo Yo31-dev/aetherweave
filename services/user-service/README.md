@@ -73,9 +73,9 @@ curl http://localhost:3000/health
 #### Via Envoy (API Gateway) + JWT
 ```bash
 # 1. Obtenir un token
-TOKEN=$(curl -s -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
+TOKEN=$(curl -s -X POST http://localhost:8080/realms/aetherweave/protocol/openid-connect/token \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=microservices-api" \
+  -d "client_id=aetherweave-api" \
   -d "client_secret=CHANGE_ME_IN_PRODUCTION" \
   -d "username=fof" \
   -d "password=password" \
@@ -107,4 +107,4 @@ curl http://localhost:3500/v1.0/invoke/user-service/method/users
 - `DB_PORT` - Port PostgreSQL (default: 5432)
 - `DB_USER` - User PostgreSQL (default: devuser)
 - `DB_PASSWORD` - Password PostgreSQL (default: devpassword)
-- `DB_NAME` - Nom de la base (default: microservices)
+- `DB_NAME` - Nom de la base (default: aetherweave)

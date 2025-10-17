@@ -68,12 +68,12 @@ static_resources:
               "@type": type.googleapis.com/envoy.extensions.filters.http.jwt_authn.v3.JwtAuthentication
               providers:
                 keycloak_provider:
-                  issuer: http://localhost:8080/realms/microservices
+                  issuer: http://localhost:8080/realms/aetherweave
                   audiences:
-                  - microservices-api
+                  - aetherweave-api
                   remote_jwks:
                     http_uri:
-                      uri: http://keycloak:8080/realms/microservices/protocol/openid-connect/certs
+                      uri: http://keycloak:8080/realms/aetherweave/protocol/openid-connect/certs
                       cluster: keycloak_cluster
                       timeout: 5s
                     cache_duration:

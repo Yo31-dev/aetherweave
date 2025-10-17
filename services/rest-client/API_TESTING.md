@@ -55,7 +55,7 @@ Above each HTTP request you'll see a **"Send Request"** link. Click it to execut
 
 1. **Obtain a JWT token** (Section 1)
    ```http
-   POST http://localhost:8080/realms/microservices/protocol/openid-connect/token
+   POST http://localhost:8080/realms/aetherweave/protocol/openid-connect/token
    ```
    The token will be automatically stored in the `@token` variable
 
@@ -97,8 +97,8 @@ The following variables are defined in `api-tests.http`:
 | `@baseUrl` | API Gateway URL (Envoy) | `http://localhost:8000` |
 | `@daprUrl` | Direct Dapr URL | `http://localhost:3500` |
 | `@keycloakUrl` | Keycloak URL | `http://localhost:8080` |
-| `@realm` | Keycloak realm | `microservices` |
-| `@clientId` | OAuth client ID | `microservices-api` |
+| `@realm` | Keycloak realm | `aetherweave` |
+| `@clientId` | OAuth client ID | `aetherweave-api` |
 | `@clientSecret` | OAuth client secret | `CHANGE_ME_IN_PRODUCTION` |
 | `@username` | Test user | `fof` |
 | `@password` | Password | `password` |
