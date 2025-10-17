@@ -1,0 +1,49 @@
+networks:
+  microservices-net:
+    external: true
+    name: microservices-net
+
+services:
+  user-service:
+    build: .
+    container_name: user-service
+    environment:
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: devuser
+      DB_PASSWORD: devpassword
+      DB_NAME: microservices
+    depends_on:
+      - postgres
+    networks:
+      - microservices-net
+    restart: unless-stopped
+
+  user-service-dapr:
+    image: daprio/daprd:1.12.0
+    container_name: user-service-dapr
+    command: [
+      "./daprd",
+      "-app-id", "user-service",
+      "-app-port", "3000",
+      "-dapr-http-port", "3500",
+      "-dapr-grpc-port", "50001",
+      "-placement-host-address", "dapr-placement:50006",
+      "-components-path", "/components",
+      "-config", "/config/config.yaml"
+    ]
+    volumes:
+      - ../../infrastructure/dapr/components:/components
+      - ../../infrastructure/dapr/config:/config
+    depends_on:
+      - user-service
+    network_mode: "service:user-service"
+    restart: unless-stopped
+
+  # Reference vers postgres (doit tourner dans infrastructure)
+  postgres:
+    image: postgres:16-alpine
+    container_name: postgres
+    external_links:
+      - postgres
