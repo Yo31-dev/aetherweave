@@ -34,6 +34,8 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+# Garder le fichier rest-client.env.json pour le moment (pas de secrets réels)
+!.vscode/rest-client.env.json
 
 # dotenv environment variable files
 .env

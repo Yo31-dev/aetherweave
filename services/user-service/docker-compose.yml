@@ -1,7 +1,7 @@
 networks:
-  microservices-net:
+  aetherweave-net:
     external: true
-    name: microservices-net
+    name: aetherweave-net
 
 services:
   user-service:
@@ -14,10 +14,14 @@ services:
       DB_USER: devuser
       DB_PASSWORD: devpassword
       DB_NAME: microservices
-    depends_on:
-      - postgres
+    ports:
+      - "3000:3000"   # App
+      - "3500:3500"   # Dapr HTTP
+      - "50001:50001" # Dapr gRPC
+    # depends_on:
+    #   - postgres
     networks:
-      - microservices-net
+      - aetherweave-net
     restart: unless-stopped
 
   user-service-dapr:
@@ -36,14 +40,11 @@ services:
     volumes:
       - ../../infrastructure/dapr/components:/components
       - ../../infrastructure/dapr/config:/config
+      - ../../infrastructure/dapr/secrets:/secrets
     depends_on:
       - user-service
     network_mode: "service:user-service"
     restart: unless-stopped
 
   # Reference vers postgres (doit tourner dans infrastructure)
-  postgres:
-    image: postgres:16-alpine
-    container_name: postgres
-    external_links:
-      - postgres
+  

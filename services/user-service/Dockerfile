@@ -3,19 +3,24 @@ FROM node:20-alpine AS builder
 
 WORKDIR /app
 
+# Installer pnpm globalement
+RUN npm install -g pnpm
+
 COPY package*.json ./
-RUN npm ci
+RUN pnpm install
 
 COPY . .
-RUN npm run build
+RUN pnpm run build
 
 # Production stage
 FROM node:20-alpine
 
 WORKDIR /app
 
+RUN npm install -g pnpm
+
 COPY package*.json ./
-RUN npm ci --only=production
+RUN pnpm install --prod
 
 COPY --from=builder /app/dist ./dist
 

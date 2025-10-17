@@ -1,0 +1,171 @@
+### ===========================================
+### AetherWeave - User Service API Tests
+### REST Client pour VS Code
+### ===========================================
+
+### Variables
+@baseUrl = http://localhost:8000
+@daprUrl = http://localhost:3500
+@keycloakUrl = http://localhost:8080
+@realm = microservices
+@clientId = microservices-api
+@clientSecret = CHANGE_ME_IN_PRODUCTION
+
+# Utilisateurs de test
+@username = fof
+@password = password
+
+### ===========================================
+### 1. AUTHENTIFICATION KEYCLOAK
+### ===========================================
+
+### Obtenir un token JWT (utilisateur fof)
+# @name getToken
+POST {{keycloakUrl}}/realms/{{realm}}/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id={{clientId}}
+&client_secret={{clientSecret}}
+&username={{username}}
+&password={{password}}
+&grant_type=password
+
+### Extraire le token pour les requêtes suivantes
+@token = {{getToken.response.body.access_token}}
+
+### Décoder le payload du JWT (pour vérification)
+# Note: Copier le token et le décoder sur jwt.io
+# Token: {{token}}
+
+### ===========================================
+### 2. TESTS VIA ENVOY (API GATEWAY) - Avec JWT
+### ===========================================
+
+### Health Check du User Service (via Envoy + Auth)
+GET {{baseUrl}}/api/v1/health
+Authorization: Bearer {{token}}
+
+### Lister tous les utilisateurs
+GET {{baseUrl}}/api/v1/users
+Authorization: Bearer {{token}}
+
+### Obtenir un utilisateur par ID
+# @name getUser
+GET {{baseUrl}}/api/v1/users/b141fde9-1127-4561-9fd2-cd17992bc9cf
+Authorization: Bearer {{token}}
+
+### Créer un nouvel utilisateur
+# @name createUser
+POST {{baseUrl}}/api/v1/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "jane.smith@example.com",
+  "password": "securePassword123",
+  "firstName": "Jane",
+  "lastName": "Smith"
+}
+
+### Mettre à jour un utilisateur
+@userId = {{createUser.response.body.id}}
+PATCH {{baseUrl}}/api/v1/users/{{userId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "Janet",
+  "isActive": true
+}
+
+### Supprimer un utilisateur
+DELETE {{baseUrl}}/api/v1/users/{{userId}}
+Authorization: Bearer {{token}}
+
+### ===========================================
+### 3. TESTS DIRECTS VIA DAPR - Sans authentification (DEV only)
+### ===========================================
+
+### Health Check (direct Dapr)
+GET {{daprUrl}}/v1.0/invoke/user-service/method/health
+
+### Lister tous les utilisateurs (direct Dapr)
+GET {{daprUrl}}/v1.0/invoke/user-service/method/users
+
+### Obtenir un utilisateur par ID (direct Dapr)
+GET {{daprUrl}}/v1.0/invoke/user-service/method/users/b141fde9-1127-4561-9fd2-cd17992bc9cf
+
+### Créer un utilisateur (direct Dapr)
+POST {{daprUrl}}/v1.0/invoke/user-service/method/users
+Content-Type: application/json
+
+{
+  "email": "test.user@example.com",
+  "password": "testPassword123",
+  "firstName": "Test",
+  "lastName": "User"
+}
+
+### ===========================================
+### 4. TESTS D'ERREURS
+### ===========================================
+
+### Requête sans token (doit retourner 401)
+GET {{baseUrl}}/api/v1/users
+
+### Requête avec token invalide (doit retourner 401)
+GET {{baseUrl}}/api/v1/users
+Authorization: Bearer invalid.token.here
+
+### Utilisateur inexistant (doit retourner 404)
+GET {{baseUrl}}/api/v1/users/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+### Email déjà existant (doit retourner 409)
+POST {{baseUrl}}/api/v1/users
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "email": "john.doe@example.com",
+  "password": "password123",
+  "firstName": "John",
+  "lastName": "Duplicate"
+}
+
+### ===========================================
+### 5. HEALTH CHECKS INFRASTRUCTURE
+### ===========================================
+
+### Health Check Envoy (public)
+GET {{baseUrl}}/health
+
+### Health Check Dapr
+GET {{daprUrl}}/v1.0/healthz
+
+### Metadata Dapr
+GET {{daprUrl}}/v1.0/metadata
+
+### ===========================================
+### 6. DAPR STATE MANAGEMENT (si besoin)
+### ===========================================
+
+### Sauvegarder un état
+POST {{daprUrl}}/v1.0/state/statestore
+Content-Type: application/json
+
+[
+  {
+    "key": "user-preferences-{{username}}",
+    "value": {
+      "theme": "dark",
+      "language": "fr"
+    }
+  }
+]
+
+### Récupérer un état
+GET {{daprUrl}}/v1.0/state/statestore/user-preferences-{{username}}
+
+### Supprimer un état
+DELETE {{daprUrl}}/v1.0/state/statestore/user-preferences-{{username}}

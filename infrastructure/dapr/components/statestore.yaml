@@ -20,4 +20,4 @@ spec:
   - name: maxRetries
     value: "3"
   - name: maxRetryBackoff
-    value: "2s"
+    value: "2000"
