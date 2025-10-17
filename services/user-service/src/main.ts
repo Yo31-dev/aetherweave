@@ -41,9 +41,6 @@ async function bootstrap() {
     process.exit(0);
   }
 
-  // Expose OpenAPI JSON endpoint (no Swagger UI to save memory)
-  app.use();
-
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
