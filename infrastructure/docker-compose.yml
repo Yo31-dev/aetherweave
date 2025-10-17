@@ -11,7 +11,7 @@ services:
   # INFRASTRUCTURE
   # ===================
   
-  # PostgreSQL - Base de données principale
+  # PostgreSQL - Primary database
   postgres:
     image: postgres:16-alpine
     container_name: postgres
@@ -31,7 +31,7 @@ services:
       timeout: 5s
       retries: 5
 
-  # Redis - Cache et State Management Dapr
+  # Redis - Cache and Dapr state management
   redis:
     image: redis:7-alpine
     container_name: redis
@@ -69,7 +69,7 @@ services:
       retries: 5
 
   # ===================
-  # SÉCURITÉ / AUTH
+  # SECURITY / AUTH
   # ===================
   
   # Keycloak PostgreSQL
@@ -142,10 +142,10 @@ services:
       - keycloak
 
   # ===================
-  # OBSERVABILITÉ
+  # OBSERVABILITY
   # ===================
   
-  # Jaeger - Tracing distribué
+  # Jaeger - Distributed tracing
   jaeger:
     image: jaegertracing/all-in-one:1.52
     container_name: jaeger
@@ -158,7 +158,7 @@ services:
     networks:
       - aetherweave-net
 
-  # Prometheus - Métriques
+  # Prometheus - Metrics
   prometheus:
     image: prom/prometheus:v2.48.0
     container_name: prometheus
@@ -196,7 +196,7 @@ services:
   # DAPR PLACEMENT
   # ===================
   
-  # Dapr Placement Service (requis pour actors et workflow)
+  # Dapr Placement Service (required for actors and workflow)
   dapr-placement:
     image: daprio/dapr:1.12.0
     container_name: dapr-placement
@@ -207,10 +207,10 @@ services:
       - aetherweave-net
 
   # ===================
-  # EXEMPLE SERVICE
+  # EXAMPLE SERVICE
   # ===================
   
-  # Service Backend Exemple
+  # Example backend service
   # example-service:
   #   build: ./services/example-service
   #   container_name: example-service
@@ -224,7 +224,7 @@ services:
   #   networks:
   #     - aetherweave-net
 
-  # Dapr Sidecar pour Example Service
+  # Dapr Sidecar for Example Service
   # example-service-dapr:
   #   image: daprio/daprd:1.12.0
   #   container_name: example-service-dapr
@@ -249,10 +249,10 @@ services:
   #   network_mode: "service:example-service"
 
   # ===================
-  # FRONTEND / PORTAIL
+  # FRONTEND / PORTAL
   # ===================
   
-  # Nginx pour servir le frontend
+  # Nginx to serve the frontend
   # frontend:
   #   image: nginx:alpine
   #   container_name: frontend

@@ -38,34 +38,34 @@ docker-compose logs -f user-service
 
 ### Users (requires JWT)
 - GET `/users` - List all users
-- GET `/users/:id` - Récupère un utilisateur
-- POST `/users` - Crée un utilisateur
-- DELETE `/users/:id` - Supprime un utilisateur
+- GET `/users/:id` - Retrieve a user
+- POST `/users` - Create a user
+- DELETE `/users/:id` - Delete a user
 
 ## OpenAPI Documentation
 
-Disponible sur `http://localhost:3000/api`
+Available at `http://localhost:3000/api`
 
 ## Tests
 
-### Tests API avec REST Client (VS Code)
+### API Tests with REST Client (VS Code)
 
-Le projet inclut une configuration complète pour tester l'API avec l'extension REST Client de VS Code.
+The project includes a complete setup to test the API with the REST Client VS Code extension.
 
-📁 **Fichiers de test** :
-- `api-tests.http` - Toutes les requêtes API
-- `API_TESTING.md` - Documentation complète
-- `API_RESPONSES.md` - Exemples de réponses
-- `.vscode/rest-client.env.json` - Variables d'environnement
+📁 **Test files** :
+- `api-tests.http` - All API requests
+- `API_TESTING.md` - Full documentation
+- `API_RESPONSES.md` - Response examples
+- `.vscode/rest-client.env.json` - Environment variables
 
 **Utilisation rapide** :
 1. Ouvrez `api-tests.http` dans VS Code
 2. Cliquez sur "Envoyer la requête" au-dessus d'une requête
 3. Consultez `API_TESTING.md` pour plus de détails
 
-### Tests en ligne de commande
+### Command-line tests
 
-#### Sans JWT (health check)
+#### Without JWT (health check)
 ```bash
 curl http://localhost:3000/health
 ```
@@ -86,7 +86,7 @@ curl http://localhost:8000/api/v1/health -H "Authorization: Bearer $TOKEN"
 curl http://localhost:8000/api/v1/users -H "Authorization: Bearer $TOKEN"
 ```
 
-#### Via Dapr sidecar (développement)
+#### Via Dapr sidecar (development)
 ```bash
 # Health check via Dapr
 curl http://localhost:3500/v1.0/invoke/user-service/method/health

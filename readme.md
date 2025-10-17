@@ -1,19 +1,19 @@
 # AetherWeave 
 
-tissage d'architecture micro-services
-# Environnement de Développement - Stack Micro-services
+microservices architecture weaving
+# Development Environment - Microservices Stack
 
-## 📋 Prérequis
+## 📋 Prerequisites
 ## 🏗️ Architecture
 
 ```
 ### Services Infrastructure
 
-## 🔍 URLs Utiles
+## 🔍 Useful URLs
 ## 🧪 Tests
 
-### Tester Envoy Gateway
-## 📊 Observabilité
+### Test Envoy Gateway
+## 📊 Observability
 
 ### Grafana Dashboards
 ## 🛠️ Commandes Utiles
@@ -66,37 +66,37 @@ tissage d'architecture micro-services
 - **Prometheus**: Collecte de métriques
 - **Grafana**: Dashboards et visualisation
 
-## 🚀 Démarrage Rapide
+## 🚀 Quick Start
 
-### 1. Cloner et configurer
+### 1. Clone and set up
 
 ```bash
 # Structure des dossiers (automatique avec setup script)
 ./setup-dev-env.sh
 ```
 
-### 2. Démarrer l'environnement
+### 2. Start the environment
 
 ```bash
 docker-compose up -d
 ```
 
-### 3. Vérifier l'état
+### 3. Check status
 
 ```bash
 docker-compose ps
 docker-compose logs -f
 ```
 
-## 🔑 Configuration Keycloak (Première fois)
+## 🔑 Keycloak Configuration (First time)
 
-### Créer le Realm
+### Create the Realm
 
 1. Accéder à http://localhost:8080
 2. Login: `admin` / `admin`
 3. Créer un nouveau realm: `microservices`
 
-### Créer le Client
+### Create the Client
 
 1. Dans le realm `microservices`, aller dans **Clients**
 2. Créer un nouveau client:
@@ -108,14 +108,14 @@ docker-compose logs -f
 3. Dans l'onglet **Credentials**, copier le **Secret**
 4. Mettre à jour `dapr/secrets/secrets.json` avec ce secret
 
-### Créer un utilisateur de test
+### Create a test user
 
 1. Dans **Users**, créer un nouvel utilisateur
 2. Définir un mot de passe dans l'onglet **Credentials**
 
 fof@fof.com / password
 
-### Obtenir un token JWT (test)
+### Get a JWT token (test)
 
 ```bash
 curl -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
@@ -127,9 +127,9 @@ curl -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/
   -d "grant_type=password"
 ```
 
-## 📦 Ajouter un Service
+## 📦 Add a Service
 
-### Structure d'un service avec Dapr
+### Service structure with Dapr
 
 ```yaml
 # Dans docker-compose.yml
@@ -163,7 +163,7 @@ my-service-dapr:
   network_mode: "service:my-service"
 ```
 
-### Appeler un service depuis un autre
+### Call a service from another
 
 ```typescript
 // Via Dapr service invocation
@@ -174,7 +174,7 @@ const response = await fetch('http://localhost:3500/v1.0/invoke/target-service/m
 });
 ```
 
-### Publier un message
+### Publish a message
 
 ```typescript
 // Via Dapr pub/sub
@@ -239,7 +239,7 @@ curl http://localhost:3500/v1.0/invoke/my-service/method/health
 2. Sélectionner un service dans le dropdown
 3. Rechercher des traces
 
-## 🛠️ Commandes Utiles
+## 🛠️ Useful Commands
 
 ```bash
 # Démarrer l'environnement
@@ -298,13 +298,13 @@ curl http://localhost:9901/clusters
 curl http://localhost:9901/config_dump
 ```
 
-## 📝 Étapes suivantes
+## 📝 Next Steps
 
-1. ✅ Configuration initiale de Keycloak
-2. ⏳ Générer ton premier service backend
-3. ⏳ Tester la communication inter-services via Dapr
-4. ⏳ Ajouter un frontend web component
-5. ⏳ Configurer le CI/CD
+1. ✅ Initial Keycloak configuration
+2. ⏳ Generate your first backend service
+3. ⏳ Test inter-service communication via Dapr
+4. ⏳ Add a web frontend component
+5. ⏳ Configure CI/CD
 
 ## 🔗 Documentation
 

@@ -24,15 +24,15 @@ echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
 curl http://localhost:8000/api/v1/health \
   -H "Authorization: Bearer $TOKEN"
 
-# Lister les utilisateurs
+# List users
 curl http://localhost:8000/api/v1/users \
   -H "Authorization: Bearer $TOKEN"
 
-# Obtenir un utilisateur
+# Get a user
 curl http://localhost:8000/api/v1/users/{id} \
   -H "Authorization: Bearer $TOKEN"
 
-# Créer un utilisateur
+# Create a user
 curl -X POST http://localhost:8000/api/v1/users \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
@@ -43,7 +43,7 @@ curl -X POST http://localhost:8000/api/v1/users \
     "lastName": "User"
   }'
 
-# Modifier un utilisateur
+# Update a user
 curl -X PATCH http://localhost:8000/api/v1/users/{id} \
   -H "Authorization: Bearer $TOKEN" \
   -H "Content-Type: application/json" \
@@ -52,24 +52,24 @@ curl -X PATCH http://localhost:8000/api/v1/users/{id} \
     "isActive": true
   }'
 
-# Supprimer un utilisateur
+# Delete a user
 curl -X DELETE http://localhost:8000/api/v1/users/{id} \
   -H "Authorization: Bearer $TOKEN"
 ```
 
-## 🔧 Via Dapr Direct - Développement
+## 🔧 Via Dapr Direct - Development
 
 ```bash
 # Health Check
 curl http://localhost:3500/v1.0/invoke/user-service/method/health
 
-# Lister les utilisateurs
+# List users
 curl http://localhost:3500/v1.0/invoke/user-service/method/users
 
-# Obtenir un utilisateur
+# Get a user
 curl http://localhost:3500/v1.0/invoke/user-service/method/users/{id}
 
-# Créer un utilisateur
+# Create a user
 curl -X POST http://localhost:3500/v1.0/invoke/user-service/method/users \
   -H "Content-Type: application/json" \
   -d '{
@@ -79,21 +79,21 @@ curl -X POST http://localhost:3500/v1.0/invoke/user-service/method/users \
     "lastName": "User"
   }'
 
-# Modifier un utilisateur
+# Update a user
 curl -X PATCH http://localhost:3500/v1.0/invoke/user-service/method/users/{id} \
   -H "Content-Type: application/json" \
   -d '{
     "firstName": "Updated"
   }'
 
-# Supprimer un utilisateur
+# Delete a user
 curl -X DELETE http://localhost:3500/v1.0/invoke/user-service/method/users/{id}
 ```
 
 ## 📊 Dapr State Management
 
 ```bash
-# Sauvegarder un état
+# Save state
 curl -X POST http://localhost:3500/v1.0/state/statestore \
   -H "Content-Type: application/json" \
   -d '[
@@ -106,10 +106,10 @@ curl -X POST http://localhost:3500/v1.0/state/statestore \
     }
   ]'
 
-# Récupérer un état
+# Retrieve state
 curl http://localhost:3500/v1.0/state/statestore/user-prefs
 
-# Supprimer un état
+# Delete state
 curl -X DELETE http://localhost:3500/v1.0/state/statestore/user-prefs
 ```
 
@@ -130,70 +130,70 @@ docker logs user-service -f
 docker logs user-service-dapr -f
 docker logs envoy -f
 
-# Status des conteneurs
+# Container status
 docker ps | grep -E "user-service|envoy|dapr"
 
-# Ports ouverts
+# Open ports
 netstat -tuln | grep -E "3000|3500|8000"
 ```
 
-## 🚀 Démarrage rapide
+## 🚀 Quick start
 
 ```bash
-# Démarrer l'infrastructure
+# Start the infrastructure
 cd infrastructure
 docker-compose up -d
 
-# Démarrer le user-service
+# Start the user-service
 cd ../services/user-service
 docker-compose up -d
 
-# Vérifier que tout fonctionne
+# Verify everything is running
 docker ps
 docker logs user-service-dapr --tail 20
 
-# Test rapide
+# Quick test
 curl http://localhost:3500/v1.0/invoke/user-service/method/health
 ```
 
 ## 🛑 Arrêt
 
 ```bash
-# Arrêter le user-service
+# Stop the user-service
 cd services/user-service
 docker-compose down
 
-# Arrêter l'infrastructure
+# Stop the infrastructure
 cd ../../infrastructure
 docker-compose down
 
-# Tout arrêter et supprimer les volumes
+# Stop everything and remove volumes
 docker-compose down -v
 ```
 
 ## 📝 REST Client (VS Code)
 
-1. Ouvrir `api-tests.http`
-2. Cliquer sur "Envoyer la requête" au-dessus de chaque requête
-3. Ou utiliser `Ctrl+Alt+R` (Windows/Linux) / `Cmd+Alt+R` (Mac)
+1. Open `api-tests.http`
+2. Click "Send Request" above each request
+3. Or use `Ctrl+Alt+R` (Windows/Linux) / `Cmd+Alt+R` (Mac)
 
-## 🔑 Utilisateurs de test (Keycloak)
+## 🔑 Test users (Keycloak)
 
 | Username | Password | Description |
 |----------|----------|-------------|
-| `fof` | `password` | Utilisateur de test principal |
-| `admin` | `admin` | Administrateur Keycloak |
+| `fof` | `password` | Main test user |
+| `admin` | `admin` | Keycloak administrator |
 
 ## 📌 URLs importantes
 
 | Service | URL | Description |
 |---------|-----|-------------|
-| API Gateway (Envoy) | http://localhost:8000 | Point d'entrée principal |
-| Dapr HTTP | http://localhost:3500 | API Dapr directe |
-| User Service | http://localhost:3000 | Service direct (dev) |
-| Keycloak | http://localhost:8080 | Authentification SSO |
+| API Gateway (Envoy) | http://localhost:8000 | Main entry point |
+| Dapr HTTP | http://localhost:3500 | Direct Dapr API |
+| User Service | http://localhost:3000 | Direct service (dev) |
+| Keycloak | http://localhost:8080 | SSO authentication |
 | Grafana | http://localhost:3100 | Dashboards (admin/admin) |
-| Prometheus | http://localhost:9090 | Métriques |
-| Jaeger | http://localhost:16686 | Tracing distribué |
+| Prometheus | http://localhost:9090 | Metrics |
+| Jaeger | http://localhost:16686 | Distributed tracing |
 | RabbitMQ | http://localhost:15672 | Message broker (admin/admin) |
-| Envoy Admin | http://localhost:9901 | Interface admin Envoy |
+| Envoy Admin | http://localhost:9901 | Envoy admin interface |

@@ -1,25 +1,26 @@
-# Configuration Keycloak Automatisée
+# Automated Keycloak Configuration
 
-## 📁 Structure
+## Structure
 
 ```
 keycloak/
 ├── realms/
-│   └── microservices-realm.json    # Config du realm à importer
-├── import-realm.sh                  # Script d'import
-├── export-realm.sh                  # Script d'export/backup
+│   └── microservices-realm.json    # Realm config to import
+├── import-realm.sh                  # Import script
+├── export-realm.sh                  # Export/backup script
 └── README.md
 ```
 
-## 🚀 Utilisation
 
-### Import automatique au démarrage
+## Usage
 
-La configuration est automatiquement importée au premier démarrage de Keycloak grâce au volume monté dans docker-compose.
+### Automatic import at startup
 
-### Import manuel
+The configuration is automatically imported at the first startup of Keycloak thanks to the volume mounted in docker-compose.
 
-Si tu veux réimporter ou mettre à jour la config :
+### Manual import
+
+If you want to re-import or update the config:
 
 ```bash
 cd infrastructure/keycloak
@@ -27,16 +28,17 @@ chmod +x import-realm.sh
 ./import-realm.sh
 ```
 
-Le script va :
-1. Attendre que Keycloak soit prêt
-2. S'authentifier comme admin
-3. Vérifier si le realm existe déjà
-4. Importer/recréer le realm
-5. Afficher le client secret généré
+The script will:
 
-### Export de ta config actuelle
+1. Wait for Keycloak to be ready
+2. Authenticate as admin
+3. Check if the realm already exists
+4. Import/recreate the realm
+5. Display the generated client secret
 
-Pour sauvegarder ta config Keycloak actuelle :
+### Export your current config
+
+To backup your current Keycloak config:
 
 ```bash
 cd infrastructure/keycloak
@@ -44,155 +46,178 @@ chmod +x export-realm.sh
 ./export-realm.sh
 ```
 
-Cela créera un fichier `microservices-realm-backup-YYYYMMDD-HHMMSS.json`
+This will create a file `microservices-realm-backup-YYYYMMDD-HHMMSS.json`
 
-## 🔧 Configuration par défaut
+## Default configuration
 
 ### Realm
-- **Nom**: `microservices`
-- **SSL**: Désactivé (dev uniquement)
+
+- **Name**: `microservices`
+- **SSL**: Disabled (dev only)
 - **Token lifetime**: 5 minutes
 - **SSO session**: 30 minutes
 
+
 ### Client
+
 - **Client ID**: `microservices-api`
-- **Client Secret**: `CHANGE_ME_IN_PRODUCTION` (à modifier)
+- **Client Secret**: `CHANGE_ME_IN_PRODUCTION` (to change)
 - **Protocol**: OpenID Connect
 - **Access Types**: Confidential
 - **Flows**: Standard Flow + Direct Access Grants
 - **Redirect URIs**: `http://localhost:*`
 - **Web Origins**: `*`
 
-### Mappers configurés
-- **audience-mapper**: Ajoute `microservices-api` dans l'audience du token
-- **username-mapper**: Mappe le username dans `preferred_username`
-- **email-mapper**: Mappe l'email
 
-### Utilisateurs par défaut
+### Configured Mappers
+
+- **audience-mapper**: Adds `microservices-api` into the token audience
+- **username-mapper**: Maps username to `preferred_username`
+- **email-mapper**: Maps email
+
+
+### Default Users
+
 1. **admin / admin**
-   - Email: admin@example.com
-   - Rôles: admin, user
-   
+   - Email: [admin@example.com](mailto:admin@example.com)
+   - Roles: admin, user
 2. **fof / password**
-   - Email: fof@example.com
-   - Rôles: user
+   - Email: [fof@example.com](mailto:fof@example.com)
+   - Roles: user
 
-### Rôles
-- **user**: Rôle utilisateur standard
-- **admin**: Rôle administrateur
+### Roles
 
-## 🔐 Sécurité
+- **user**: Standard user role
+- **admin**: Administrator role
 
-### ⚠️ Pour la production
 
-1. **Changer le client secret** dans `microservices-realm.json`
-2. **Changer les mots de passe** des utilisateurs
-3. **Activer SSL** (`sslRequired: "external"`)
-4. **Réduire les token lifetimes**
-5. **Restreindre les redirect URIs**
-6. **Configurer CORS** correctement
+## Security
 
-### Générer un nouveau client secret
+### For production
+
+1. **Change the client secret** in `microservices-realm.json`
+2. **Change users’ passwords**
+3. **Enable SSL** (`sslRequired: "external"`)
+4. **Reduce token lifetimes**
+5. **Restrict redirect URIs**
+6. **Properly configure CORS**
+
+### Generate a new client secret
 
 ```bash
-# Avec OpenSSL
+# Using OpenSSL
 openssl rand -base64 32
 
-# Ou avec uuidgen
+
+# Or using uuidgen
 uuidgen | tr -d '-'
 ```
 
-Puis mettre à jour dans :
+Then update in:
+
 - `keycloak/realms/microservices-realm.json`
 - `dapr/secrets/secrets.json`
 
-## 🧪 Test de la configuration
 
-### Obtenir un token
+## Configuration testing
+
+### Get a token
 
 ```bash
-# Utilisateur fof
+ # User fof
 TOKEN=$(curl -s -X POST http://localhost:8080/realms/microservices/protocol/openid-connect/token \
-  -H "Content-Type: application/x-www-form-urlencoded" \
-  -d "client_id=microservices-api" \
-  -d "client_secret=CHANGE_ME_IN_PRODUCTION" \
-  -d "username=fof" \
-  -d "password=password" \
-  -d "grant_type=password" | jq -r .access_token)
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  -d "client_id=microservices-api" \
+  -d "client_secret=CHANGE_ME_IN_PRODUCTION" \
+  -d "username=fof" \
+  -d "password=password" \
+  -d "grant_type=password" | jq -r .access_token)
+
 
 echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
+
 
 curl http://localhost:8000/api/v1/health \
-  -H "Authorization: Bearer $TOKEN"
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-### Décoder le token
+
+### Decode the token
 
 ```bash
-# Afficher le payload
+ # Show the payload
 echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .
 
-# Vérifier l'audience
+
+ # Check the audience
 echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .aud
 
-# Vérifier les rôles
+
+ # Check the roles
 echo $TOKEN | cut -d'.' -f2 | base64 -d 2>/dev/null | jq .realm_access.roles
 ```
 
-### Tester avec Envoy
+
+### Test with Envoy
 
 ```bash
 curl http://localhost:8000/api/v1/health \
-  -H "Authorization: Bearer $TOKEN"
+  -H "Authorization: Bearer $TOKEN"
 ```
 
-## 📝 Personnalisation
 
-### Ajouter un utilisateur
+## Customization
 
-Éditer `microservices-realm.json`, dans la section `users` :
+### Add a user
+
+Edit `microservices-realm.json` in the `users` section:
 
 ```json
 {
-  "username": "newuser",
-  "enabled": true,
-  "emailVerified": true,
-  "email": "newuser@example.com",
-  "credentials": [
-    {
-      "type": "password",
-      "value": "password",
-      "temporary": false
-    }
-  ],
-  "realmRoles": ["user"]
+  "username": "newuser",
+  "enabled": true,
+  "emailVerified": true,
+  "email": "newuser@example.com",
+  "credentials": [
+    {
+      "type": "password",
+      "value": "password",
+      "temporary": false
+    }
+  ],
+  "realmRoles": ["user"]
 }
 ```
 
-### Ajouter un rôle
 
-Dans la section `roles.realm` :
+### Add a role
+
+In the `roles.realm` section:
 
 ```json
 {
-  "name": "developer",
-  "description": "Developer role",
-  "composite": false
+  "name": "developer",
+  "description": "Developer role",
+  "composite": false
 }
 ```
 
-### Modifier les token lifetimes
+
+### Modify token lifetimes
 
 ```json
 {
-  "accessTokenLifespan": 300,           // 5 minutes
-  "ssoSessionIdleTimeout": 1800,        // 30 minutes
-  "ssoSessionMaxLifespan": 36000        // 10 heures
+  "accessTokenLifespan": 300,           // 5 minutes
+  "ssoSessionIdleTimeout": 1800,        // 30 minutes
+  "ssoSessionMaxLifespan": 36000        // 10 hours
 }
 ```
 
-## 🔗 Liens utiles
+
+## Useful links
 
 - [Keycloak Admin REST API](https://www.keycloak.org/docs-api/latest/rest-api/)
 - [Realm Export/Import](https://www.keycloak.org/server/importExport)
 - [OpenID Connect](https://openid.net/connect/)
+
+

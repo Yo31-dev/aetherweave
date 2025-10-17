@@ -18,21 +18,21 @@ static_resources:
             - name: backend_services
               domains: ["*"]
               routes:
-              # Route vers user-service via Dapr
+              # Route to user-service via Dapr
               - match:
                   prefix: "/api/v1/users"
                 route:
                   cluster: dapr_cluster
                   prefix_rewrite: "/v1.0/invoke/user-service/method/users"
                   timeout: 30s
-              # Route vers health du user-service
+              # Route to user-service health
               - match:
                   prefix: "/api/v1/health"
                 route:
                   cluster: dapr_cluster
                   prefix_rewrite: "/v1.0/invoke/user-service/method/health"
                   timeout: 30s
-              # Route générique vers les services via Dapr (catch-all)
+              # Generic route to services via Dapr (catch-all)
               - match:
                   prefix: "/api/v1/"
                 route:
@@ -42,7 +42,7 @@ static_resources:
                       regex: "^/api/v1/([^/]+)(/.*)?"
                     substitution: "/v1.0/invoke/\\1-service/method\\2"
                   timeout: 30s
-              # Route pour le health check d'Envoy
+              # Route for Envoy health check
               - match:
                   prefix: "/health"
                 direct_response:
@@ -85,10 +85,10 @@ static_resources:
                   prefix: "/api/v1/"
                 requires:
                   provider_name: keycloak_provider
-              # Routes publiques (pas de JWT requis)
+              # Public routes (no JWT required)
               - match:
                   prefix: "/health"
-          # Router (doit être le dernier)
+          # Router (must be last)
           - name: envoy.filters.http.router
             typed_config:
               "@type": type.googleapis.com/envoy.extensions.filters.http.router.v3.Router
@@ -102,7 +102,7 @@ static_resources:
                 collector_endpoint_version: HTTP_JSON
 
   clusters:
-  # Cluster Dapr (vers les sidecars des services)
+  # Dapr cluster (to service sidecars)
   - name: dapr_cluster
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN
@@ -110,13 +110,13 @@ static_resources:
       cluster_name: dapr_cluster
       endpoints:
       - lb_endpoints:
-        # Pointer vers le sidecar Dapr du user-service
+  # Points to the Dapr sidecar of user-service
         - endpoint:
             address:
               socket_address:
                 address: user-service
                 port_value: 3500
-    # Health check optionnel
+  # Optional health check
     health_checks:
     - timeout: 5s
       interval: 10s
@@ -125,7 +125,7 @@ static_resources:
       http_health_check:
         path: "/v1.0/healthz"
 
-  # Cluster Keycloak (pour récupérer les JWKS)
+  # Keycloak cluster (to retrieve JWKS)
   - name: keycloak_cluster
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN
@@ -140,7 +140,7 @@ static_resources:
                 port_value: 8080
     connect_timeout: 5s
 
-  # Cluster Jaeger (pour le tracing)
+  # Jaeger cluster (for tracing)
   - name: jaeger_cluster
     type: STRICT_DNS
     lb_policy: ROUND_ROBIN

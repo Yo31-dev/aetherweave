@@ -14,12 +14,10 @@ services:
       DB_USER: devuser
       DB_PASSWORD: devpassword
       DB_NAME: microservices
-    ports:
-      - "3000:3000"   # App
+    ports:      
+      - "3000:3000"   # App -> must be disabled in production
       - "3500:3500"   # Dapr HTTP
       - "50001:50001" # Dapr gRPC
-    # depends_on:
-    #   - postgres
     networks:
       - aetherweave-net
     restart: unless-stopped
@@ -45,6 +43,3 @@ services:
       - user-service
     network_mode: "service:user-service"
     restart: unless-stopped
-
-  # Reference vers postgres (doit tourner dans infrastructure)
-  

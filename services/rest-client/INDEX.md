@@ -1,160 +1,169 @@
-# 📚 API Documentation - Index
+# API Documentation - Index
 
 Welcome to the complete documentation for the AetherWeave User Service API!
 
-## 🚀 Quick Start
+## Quick Start
 
 1. **[REST Client Installation](INSTALL_REST_CLIENT.md)** - Install the VS Code extension
 2. **[Cheatsheet](CHEATSHEET.md)** - Quick and essential commands
 3. **[Test file](api-tests.http)** - Open and click "Send Request"
 
-## 📖 Full Documentation
+## Full Documentation
 
 ### Practical Guides
 
 | File | Description | For whom? |
-|---------|-------------|-----------|
+| :-- | :-- | :-- |
 | **[README.md](README.md)** | Service overview | Everyone |
 | **[Cheatsheet](CHEATSHEET.md)** | Quick commands and URLs | Daily developers |
 | **[API_TESTING.md](API_TESTING.md)** | Complete API test guide | New developers |
 | **[API_RESPONSES.md](API_RESPONSES.md)** | Response examples | API integration |
-| **[INSTALL_REST_CLIENT.md](INSTALL_REST_CLIENT.md)** | Installation de l'extension | Configuration initiale |
+| **[INSTALL_REST_CLIENT.md](INSTALL_REST_CLIENT.md)** | Extension installation | Initial setup |
 
-### Fichiers de test
+### Test files
 
 | Fichier | Type | Description |
-|---------|------|-------------|
+| :-- | :-- | :-- |
 | **[api-tests.http](api-tests.http)** | REST Client | Tests API complets et interactifs |
 | **[.vscode/rest-client.env.json](.vscode/rest-client.env.json)** | Config | Variables d'environnement (dev/staging/prod) |
 | **[.vscode/settings.json](.vscode/settings.json)** | Config | Configuration REST Client |
 | **[.vscode/http.code-snippets](.vscode/http.code-snippets)** | Snippets | Raccourcis de code HTTP |
 
-## 🎯 Cas d'usage
+## Use Cases
 
-### Je veux tester rapidement l'API
-→ Ouvrez **[api-tests.http](api-tests.http)** et cliquez sur "Envoyer la requête"
+### I want to quickly test the API
 
-### Je cherche une commande cURL
-→ Consultez **[CHEATSHEET.md](CHEATSHEET.md)**
+→ Open **[api-tests.http](api-tests.http)** and click "Send Request"
 
-### Je veux comprendre comment configurer les tests
-→ Lisez **[API_TESTING.md](API_TESTING.md)**
+### I am looking for a cURL command
 
-### Je dois documenter l'API pour un client
-→ Référez-vous à **[API_RESPONSES.md](API_RESPONSES.md)**
+→ See **[CHEATSHEET.md](CHEATSHEET.md)**
 
-### Je n'ai pas REST Client installé
-→ Suivez **[INSTALL_REST_CLIENT.md](INSTALL_REST_CLIENT.md)**
+### I want to understand how to configure tests
 
-## 🔑 Informations essentielles
+→ Read **[API_TESTING.md](API_TESTING.md)**
 
-### URLs de base
+### I need to document the API for a client
+
+→ Refer to **[API_RESPONSES.md](API_RESPONSES.md)**
+
+### I don't have REST Client installed
+
+→ Follow **[INSTALL_REST_CLIENT.md](INSTALL_REST_CLIENT.md)**
+
+## Essential Information
+
+### Base URLs
 
 ```
 API Gateway (Envoy) : http://localhost:8000
-Dapr Direct         : http://localhost:3500
-User Service        : http://localhost:3000
-Keycloak            : http://localhost:8080
+Dapr Direct         : http://localhost:3500
+User Service        : http://localhost:3000
+Keycloak            : http://localhost:8080
 ```
 
-### Authentification
+
+### Authentication
 
 ```bash
-# Utilisateur de test
+# [translate:Utilisateur de test]
 Username: fof
 Password: password
 Client ID: microservices-api
 ```
 
-### Workflow typique
+
+### Typical workflow
 
 ```
-1. Obtenir un token JWT (Keycloak)
-   ↓
-2. Tester via Envoy (API Gateway + Auth)
-   ↓
-3. Vérifier les logs si nécessaire
-   ↓
-4. Tester directement via Dapr (debug)
+1. Get a JWT token (Keycloak)
+   ↓
+2. Test via Envoy (API Gateway + Auth)
+   ↓
+3. Check logs if needed
+   ↓
+4. Test directly via Dapr (debug)
 ```
 
-## 📁 Structure des fichiers
+
+## File structure
 
 ```
 services/user-service/
-├── api-tests.http              # ⭐ Fichier principal de tests
-├── README.md                   # Vue d'ensemble
-├── API_TESTING.md              # Guide complet
-├── API_RESPONSES.md            # Exemples de réponses
-├── CHEATSHEET.md               # Aide-mémoire
-├── INSTALL_REST_CLIENT.md      # Installation
-├── INDEX.md                    # Ce fichier
+├── api-tests.http              # Main test file
+├── README.md                   # Overview
+├── API_TESTING.md              # Complete guide
+├── API_RESPONSES.md            # Response examples
+├── CHEATSHEET.md               # Cheatsheet
+├── INSTALL_REST_CLIENT.md      # Installation
+├── INDEX.md                    # This file
 └── .vscode/
-    ├── rest-client.env.json    # Variables d'environnement
-    ├── settings.json           # Configuration REST Client
-    └── http.code-snippets      # Snippets HTTP
+    ├── rest-client.env.json    # Environment variables
+    ├── settings.json           # REST Client configuration
+    └── http.code-snippets      # HTTP snippets
 ```
 
-## 🛠️ Outils complémentaires
 
-- **Postman** : [Exporter vers Postman](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/)
-- **cURL** : Toutes les commandes dans CHEATSHEET.md
-- **Swagger/OpenAPI** : `http://localhost:3000/api` (si configuré)
+## Additional Tools
 
-## 💡 Astuces
+- **Postman** : [Export to Postman](https://learning.postman.com/docs/getting-started/importing-and-exporting-data/)
+- **cURL** : All commands in CHEATSHEET.md
+- **Swagger/OpenAPI** : `http://localhost:3000/api` (if configured)
 
-### Raccourcis REST Client
-- `Ctrl+Alt+R` : Exécuter la requête
-- `Ctrl+Alt+L` : Re-exécuter la dernière requête
-- `Ctrl+Alt+K` : Annuler la requête
 
-### Changer d'environnement
+## Tips
+
+### REST Client shortcuts
+
+- `Ctrl+Alt+R` : Run the request
+- `Ctrl+Alt+L` : Re-run last request
+- `Ctrl+Alt+K` : Cancel request
+
+
+### Change environment
+
 1. `Ctrl+Shift+P`
-2. Tapez "Rest Client: Switch Environment"
-3. Sélectionnez dev/staging/prod
+2. Type "Rest Client: Switch Environment"
+3. Select dev/staging/prod
 
-### Variables dynamiques
+### Dynamic variables
+
 ```http
-# UUID aléatoire
+# [translate:UUID aléatoire]
 {{$guid}}
+
 
 # Timestamp
 {{$timestamp}}
 
-# Nombre aléatoire
+
+# [translate:Nombre aléatoire]
 {{$randomInt}}
 ```
 
-## 🐛 Dépannage
 
-### Problème : Requête bloquée ou timeout
-✅ Vérifiez que les services Docker sont démarrés : `docker ps`
+## Troubleshooting
 
-### Problème : 401 Unauthorized
-✅ Obtenez un nouveau token JWT (ils expirent après 5 minutes)
+### Issue: Request blocked or timeout
 
-### Problème : Connection refused
-✅ Vérifiez les ports : `netstat -tuln | grep -E "3000|3500|8000"`
+Make sure Docker services are running: `docker ps`
 
-### Problème : REST Client ne fonctionne pas
-✅ Vérifiez l'installation : `code --list-extensions | grep rest-client`
+### Issue: 401 Unauthorized
 
-## 📞 Support
+Get a new JWT token (they expire after 5 minutes)
 
-- **Documentation Dapr** : https://docs.dapr.io
-- **Documentation Envoy** : https://www.envoyproxy.io/docs
-- **Documentation REST Client** : https://github.com/Huachao/vscode-restclient
-- **Issues GitHub** : [Votre repo GitHub]
+### Issue: Connection refused
 
-## 📝 Contribution
+Check ports: `netstat -tuln | grep -E "3000|3500|8000"`
 
-Pour améliorer cette documentation :
-1. Proposez vos modifications
-2. Testez les exemples
-3. Ouvrez une PR
+### Issue: REST Client not working
 
----
+Check installation: `code --list-extensions | grep rest-client`
 
-**Dernière mise à jour** : 17 octobre 2025  
-**Version API** : v1  
-**Auteur** : Équipe AetherWeave
+## Support
+
+- **Dapr Documentation** : [https://docs.dapr.io](https://docs.dapr.io)
+- **Envoy Documentation** : [https://www.envoyproxy.io/docs](https://www.envoyproxy.io/docs)
+- **REST Client Documentation** : [https://github.com/Huachao/vscode-restclient](https://github.com/Huachao/vscode-restclient)
+- **GitHub Issues** : [Your GitHub repo]
+
