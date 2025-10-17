@@ -1,0 +1,5 @@
+# Data directories (generated at runtime)
+data/
+
+# Docker build artifacts
+.docker/
