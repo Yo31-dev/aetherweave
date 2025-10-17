@@ -2,11 +2,13 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
+import * as fs from 'fs';
+import * as path from 'path';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Validation globale
+  // Global validation
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -17,22 +19,35 @@ async function bootstrap() {
   // CORS
   app.enableCors();
 
-  // OpenAPI/Swagger
-  const config = new DocumentBuilder()
-    .setTitle('User Service API')
-    .setDescription('User management service for AetherWeave')
-    .setVersion('1.0')
-    .addBearerAuth()
-    .build();
+  // Generate OpenAPI spec file if GENERATE_OPENAPI env var is set
+  if (process.env.GENERATE_OPENAPI === 'true') {
+    // OpenAPI/Swagger configuration
+    const config = new DocumentBuilder()
+      .setTitle('User Service API')
+      .setDescription('User management service for AetherWeave')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .addServer('http://localhost:9080/api/v1', 'APISIX Gateway (local)')
+      .addServer('http://localhost:3000', 'Direct (dev only)')
+      .addTag('users', 'User management endpoints')
+      .addTag('health', 'Health check endpoints')
+      .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api', app, document);
+    const document = SwaggerModule.createDocument(app, config);
+
+    const outputPath = path.resolve(process.cwd(), 'openapi.json');
+    fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
+    console.log(`OpenAPI spec generated at ${outputPath}`);
+    process.exit(0);
+  }
+
+  // Expose OpenAPI JSON endpoint (no Swagger UI to save memory)
+  app.use();
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
   console.log(`User service running on port ${port}`);
-  console.log(`OpenAPI docs available at http://localhost:${port}/api`);
 }
 
 bootstrap().catch((err) => {

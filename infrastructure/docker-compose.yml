@@ -249,9 +249,28 @@ services:
   #   network_mode: "service:example-service"
 
   # ===================
+  # API DOCUMENTATION
+  # ===================
+
+  # Scalar API Documentation Portal
+  api-docs:
+    build: ./api-docs
+    container_name: api-docs
+    ports:
+      - "3200:80"
+    networks:
+      - aetherweave-net
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # ===================
   # FRONTEND / PORTAL
   # ===================
-  
+
   # Nginx to serve the frontend
   # frontend:
   #   image: nginx:alpine

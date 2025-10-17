@@ -2,6 +2,13 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Language Policy
+
+**CRITICAL**: All code, comments, documentation, commit messages, file names, and project artifacts MUST be written in **ENGLISH ONLY**.
+
+- Communication with the user can be in French
+- Everything generated in the project MUST be in English (code, comments, docs, variable names, commit messages, etc.)
+
 Before doing a really big change, stop and ask to your user if he is connected !!
 
 ## Project Vision
