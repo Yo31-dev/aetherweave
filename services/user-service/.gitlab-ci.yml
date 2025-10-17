@@ -12,6 +12,7 @@ generate-openapi:
     - npm install -g pnpm
   script:
     - pnpm install
+    - npm rebuild sqlite3
     - pnpm run generate:openapi
   artifacts:
     paths:

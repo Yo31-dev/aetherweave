@@ -16,6 +16,9 @@ pnpm run build
 
 # Start in production
 pnpm run start:prod
+
+# local ci/cd 
+gitlab-ci-local generate-openapi
 ```
 
 ## Docker

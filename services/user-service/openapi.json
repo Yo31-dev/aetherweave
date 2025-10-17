@@ -1,0 +1,183 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "HealthController_check",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": [
+          "health"
+        ]
+      }
+    },
+    "/users": {
+      "post": {
+        "operationId": "UserController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new user",
+        "tags": [
+          "users"
+        ]
+      },
+      "get": {
+        "operationId": "UserController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get all users",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/users/{id}": {
+      "get": {
+        "operationId": "UserController_findOne",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user by ID",
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UserController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Delete user by ID",
+        "tags": [
+          "users"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "User Service API",
+    "description": "User management service for AetherWeave",
+    "version": "1.0",
+    "contact": {}
+  },
+  "tags": [
+    {
+      "name": "users",
+      "description": "User management endpoints"
+    },
+    {
+      "name": "health",
+      "description": "Health check endpoints"
+    }
+  ],
+  "servers": [
+    {
+      "url": "http://localhost:9080/api/v1",
+      "description": "APISIX Gateway (local)"
+    },
+    {
+      "url": "http://localhost:3000",
+      "description": "Direct (dev only)"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "john.doe@example.com"
+          },
+          "firstName": {
+            "type": "string",
+            "example": "John"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          }
+        },
+        "required": [
+          "email",
+          "firstName",
+          "lastName"
+        ]
+      }
+    }
+  }
+}
