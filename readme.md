@@ -1,7 +1,21 @@
 # AetherWeave 
 
 microservices architecture weaving
+
 # Development Environment - Microservices Stack
+
+STack 
+
+- postgres
+- redis
+- rabbitmq
+- prometheus
+- grafana
+- keycloak
+- dapr
+- envoy
+- gitlab 
+- backstage
 
 ## 📋 Prerequisites
 ## 🏗️ Architecture
@@ -187,17 +201,17 @@ await fetch('http://localhost:3500/v1.0/publish/pubsub/order-created', {
 
 ## 🔍 URLs Utiles
 
-| Service | URL | Credentials |
-|---------|-----|-------------|
-| Keycloak Admin | http://localhost:8080 | admin / admin |
-| RabbitMQ Management | http://localhost:15672 | admin / admin |
-| Envoy Gateway | http://localhost:8000 | - |
-| Envoy Admin | http://localhost:9901 | - |
-| Jaeger UI | http://localhost:16686 | - |
-| Prometheus | http://localhost:9090 | - |
-| Grafana | http://localhost:3000 | admin / admin |
-| PostgreSQL | localhost:5432 | devuser / devpassword |
-| Redis | localhost:6379 | - |
+| Service             | URL                    | Credentials           |
+| ------------------- | ---------------------- | --------------------- |
+| Keycloak Admin      | http://localhost:8080  | admin / admin         |
+| RabbitMQ Management | http://localhost:15672 | admin / admin         |
+| Envoy Gateway       | http://localhost:8000  | -                     |
+| Envoy Admin         | http://localhost:9901  | -                     |
+| Jaeger UI           | http://localhost:16686 | -                     |
+| Prometheus          | http://localhost:9090  | -                     |
+| Grafana             | http://localhost:3000  | admin / admin         |
+| PostgreSQL          | localhost:5432         | devuser / devpassword |
+| Redis               | localhost:6379         | -                     |
 
 ## 🧪 Tests
 

@@ -10,7 +10,7 @@ services:
   # ===================
   # INFRASTRUCTURE
   # ===================
-  
+
   # PostgreSQL - Primary database
   postgres:
     image: postgres:16-alpine
@@ -56,7 +56,7 @@ services:
       RABBITMQ_DEFAULT_USER: admin
       RABBITMQ_DEFAULT_PASS: admin
     ports:
-      - "5672:5672"   # AMQP
+      - "5672:5672" # AMQP
       - "15672:15672" # Management UI
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
@@ -71,7 +71,7 @@ services:
   # ===================
   # SECURITY / AUTH
   # ===================
-  
+
   # Keycloak PostgreSQL
   keycloak-db:
     image: postgres:16-alpine
@@ -125,14 +125,15 @@ services:
   # ===================
   # API GATEWAY
   # ===================
-  
+
   # Envoy - API Gateway
   envoy:
     image: envoyproxy/envoy:v1.28-latest
     container_name: envoy
     ports:
-      - "8000:8000"   # HTTP
-      - "9901:9901"   # Admin
+      - "80:80" # HTTP
+      - "8000:8000" # HTTP
+      - "9901:9901" # Admin
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy/envoy.yaml
     command: /usr/local/bin/envoy -c /etc/envoy/envoy.yaml
@@ -144,7 +145,7 @@ services:
   # ===================
   # OBSERVABILITY
   # ===================
-  
+
   # Jaeger - Distributed tracing
   jaeger:
     image: jaegertracing/all-in-one:1.52
@@ -153,8 +154,8 @@ services:
       COLLECTOR_OTLP_ENABLED: true
     ports:
       - "16686:16686" # UI
-      - "4317:4317"   # OTLP gRPC
-      - "4318:4318"   # OTLP HTTP
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
     networks:
       - aetherweave-net
 
@@ -163,8 +164,8 @@ services:
     image: prom/prometheus:v2.48.0
     container_name: prometheus
     command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
     ports:
       - "9090:9090"
     volumes:
@@ -195,7 +196,7 @@ services:
   # ===================
   # DAPR PLACEMENT
   # ===================
-  
+
   # Dapr Placement Service (required for actors and workflow)
   dapr-placement:
     image: daprio/dapr:1.12.0
@@ -209,7 +210,7 @@ services:
   # ===================
   # EXAMPLE SERVICE
   # ===================
-  
+
   # Example backend service
   # example-service:
   #   build: ./services/example-service
@@ -261,7 +262,15 @@ services:
     networks:
       - aetherweave-net
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:80/health"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:80/health",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3

@@ -9,7 +9,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Communication with the user can be in French
 - Everything generated in the project MUST be in English (code, comments, docs, variable names, commit messages, etc.)
 
-Before doing a really big change, stop and ask to your user if he is connected !!
+Before doing a really big change, stop and ask to your user if he is connected !
 
 ## Project Vision
 
