@@ -24,7 +24,7 @@ This repository serves dual purposes:
 - **Meta-model driven**: YAML definitions → generated code (custom-code-first oriented)
 - **Multi-language support**: TypeScript/NestJS (v1), C# .NET, Java (future)
 - **Micro-frontend pattern**: Web Components (Lit, Stencil) with portal aggregation
-- **CNCF stack**: Dapr, Envoy/Kong, Keycloak, observability tools
+- **CNCF stack**: Dapr, Apache APISIX, Keycloak, observability tools
 - **GitOps**: Git as source of truth, mono-repo per service (frontend + backend together)
 - **Zero-trust security**: JWT at gateway, mTLS between services via Dapr, no auth in business code
 
@@ -33,7 +33,7 @@ This repository serves dual purposes:
 - **Backend**: NestJS with TypeORM and PostgreSQL
 - **Frontend**: Web Components (planned - not yet implemented)
 - **Service Mesh**: Dapr runtime for service invocation, pub/sub, state management
-- **API Gateway**: Apache APISIX (CNCF project with etcd, replaces Envoy)
+- **API Gateway**: Apache APISIX (CNCF project with etcd for dynamic configuration)
 - **API Documentation**: Scalar UI (beautiful, modern alternative to Swagger UI)
 - **Auth**: Keycloak (SSO/OpenID Connect)
 - **Observability**: Jaeger (tracing), Prometheus (metrics), Grafana (dashboards)
@@ -129,11 +129,11 @@ docker-compose logs -f user-service
 Client → APISIX (JWT validation) → Dapr Sidecar → Service
 ```
 
-All external requests go through APISIX at `http://localhost:9080` which:
-1. Validates JWT tokens from Keycloak via OpenID Connect plugin
+All external requests go through APISIX at `http://localhost:8000` which:
+1. Validates JWT tokens from Keycloak via OpenID Connect plugin (JWKS validation)
 2. Routes to appropriate Dapr sidecar
 3. Dapr invokes the target service
-4. Automatic distributed tracing to Jaeger
+4. Automatic distributed tracing to Jaeger via Zipkin plugin
 5. Prometheus metrics exposed at :9091
 
 ### Dapr Service Invocation
@@ -182,7 +182,7 @@ TOKEN=$(curl -s -X POST http://localhost:8080/realms/aetherweave/protocol/openid
 
 ```bash
 # Via APISIX Gateway (recommended - tests full stack)
-curl http://localhost:9080/api/v1/users \
+curl http://localhost:8000/api/v1/users/ \
   -H "Authorization: Bearer $TOKEN"
 
 # Direct to service (bypasses gateway - dev only)
@@ -278,6 +278,8 @@ routes:
         scope: openid profile email
         bearer_only: true
         realm: aetherweave
+        use_jwks: true
+        token_signing_alg_values_expected: RS256
       proxy-rewrite:
         regex_uri:
           - "^/api/v1/new-service(.*)"
@@ -450,7 +452,7 @@ docker-compose logs [service-name]-dapr
 ### APISIX returns errors
 ```bash
 # Check APISIX health
-curl http://localhost:9080/health
+curl http://localhost:8000/health
 
 # View routes via Admin API
 curl http://localhost:9180/apisix/admin/routes -H 'X-API-KEY: admin-key-aetherweave'

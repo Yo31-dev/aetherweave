@@ -46,8 +46,14 @@ scrape_configs:
   #   static_configs:
   #     - targets: ['postgres-exporter:9187']
 
-  # Envoy Gateway
+  # Envoy Gateway (DEPRECATED)
   - job_name: 'envoy'
     static_configs:
       - targets: ['envoy:9901']
     metrics_path: '/stats/prometheus'
+
+  # APISIX Gateway (NEW)
+  - job_name: 'apisix'
+    static_configs:
+      - targets: ['apisix:9091']
+    metrics_path: '/apisix/prometheus/metrics'
