@@ -51,22 +51,18 @@
               <v-divider></v-divider>
 
               <v-list density="compact">
-                <v-list-item v-if="authStore.profile?.preferred_username">
+                <v-list-item @click="handleAccountSettings">
                   <template v-slot:prepend>
-                    <v-icon icon="mdi-account-circle"></v-icon>
+                    <v-icon icon="mdi-account-cog"></v-icon>
                   </template>
-                  <v-list-item-title>{{ authStore.profile.preferred_username }}</v-list-item-title>
-                  <v-list-item-subtitle>Username</v-list-item-subtitle>
+                  <v-list-item-title>{{ $t('userMenu.accountSettings') }}</v-list-item-title>
                 </v-list-item>
 
-                <v-list-item v-if="authStore.profile?.email_verified !== undefined">
+                <v-list-item @click="handleChangePassword">
                   <template v-slot:prepend>
-                    <v-icon :icon="authStore.profile.email_verified ? 'mdi-check-circle' : 'mdi-alert-circle'"></v-icon>
+                    <v-icon icon="mdi-lock-reset"></v-icon>
                   </template>
-                  <v-list-item-title>
-                    {{ authStore.profile.email_verified ? 'Verified' : 'Not verified' }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle>Email status</v-list-item-subtitle>
+                  <v-list-item-title>{{ $t('userMenu.changePassword') }}</v-list-item-title>
                 </v-list-item>
               </v-list>
 
@@ -142,6 +138,7 @@ import { useAuthStore } from '@/stores/auth.store';
 import { useLogStore } from '@/stores/log.store';
 import { eventBus } from '@/services/event-bus.service';
 import { logService } from '@/services/log.service';
+import { authService } from '@/services/auth.service';
 import AppSidebar from '@/components/AppSidebar.vue';
 
 const { mobile } = useDisplay();
@@ -174,6 +171,16 @@ async function handleLogout() {
   } catch (error) {
     console.error('Logout failed:', error);
   }
+}
+
+function handleAccountSettings() {
+  authService.redirectToAccountManagement();
+  logService.info('Redirecting to identity provider account management', 'DefaultLayout');
+}
+
+function handleChangePassword() {
+  authService.redirectToPasswordChange();
+  logService.info('Redirecting to identity provider password change', 'DefaultLayout');
 }
 
 // Show notification

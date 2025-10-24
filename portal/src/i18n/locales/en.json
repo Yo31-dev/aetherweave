@@ -14,6 +14,10 @@
     "error": "Error",
     "success": "Success"
   },
+  "userMenu": {
+    "accountSettings": "Account Settings",
+    "changePassword": "Change Password"
+  },
   "nav": {
     "dashboard": "Dashboard",
     "user-management": "Users",

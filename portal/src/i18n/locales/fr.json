@@ -14,6 +14,10 @@
     "error": "Erreur",
     "success": "Succès"
   },
+  "userMenu": {
+    "accountSettings": "Paramètres du compte",
+    "changePassword": "Changer le mot de passe"
+  },
   "nav": {
     "dashboard": "Tableau de bord",
     "user-management": "Utilisateurs",
