@@ -52,6 +52,13 @@
         </template>
 
         <v-list-item
+          prepend-icon="mdi-cog"
+          :title="$t('nav.settings', 'Settings')"
+          value="admin-settings"
+          :to="{ path: '/admin/settings' }"
+        ></v-list-item>
+
+        <v-list-item
           prepend-icon="mdi-console-line"
           :title="$t('nav.logs', 'Logs')"
           value="admin-logs"

@@ -94,6 +94,63 @@ class AuthService {
   async handleSilentCallback(): Promise<void> {
     await this.userManager.signinSilentCallback();
   }
+
+  /**
+   * Get Account Management URL
+   * Returns the URL to the identity provider's account management page
+   * Works with Keycloak, Auth0, Okta, and other OIDC-compliant providers
+   */
+  getAccountManagementUrl(): string | null {
+    const authority = import.meta.env.VITE_OIDC_AUTHORITY;
+    if (!authority) {
+      return null;
+    }
+
+    // Standard OIDC account management URL format:
+    // - Keycloak: https://host/realms/{realm}/account
+    // - Auth0: https://{domain}/u/account
+    // - Okta: https://{domain}/enduser/settings
+    // The authority contains the base URL, append /account (Keycloak standard)
+    return `${authority}/account`;
+  }
+
+  /**
+   * Get Password Change URL
+   * Returns the direct URL to the identity provider's password change page
+   */
+  getPasswordChangeUrl(): string | null {
+    const accountUrl = this.getAccountManagementUrl();
+    if (!accountUrl) {
+      return null;
+    }
+
+    // Password change URL format (Keycloak standard):
+    // https://host/realms/{realm}/account/#/security/signingin
+    // Other providers may use different paths (configurable via env if needed)
+    return `${accountUrl}/#/security/signingin`;
+  }
+
+  /**
+   * Redirect to Identity Provider Account Management
+   * Opens account management in a new tab
+   */
+  redirectToAccountManagement(): void {
+    const url = this.getAccountManagementUrl();
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }
+
+  /**
+   * Redirect to Identity Provider Password Change
+   * Opens password change page in a new tab
+   */
+  redirectToPasswordChange(): void {
+    const url = this.getPasswordChangeUrl();
+    if (url) {
+      window.open(url, '_blank');
+    }
+  }
 }
 
 export const authService = new AuthService();

@@ -18,6 +18,7 @@
     "dashboard": "Dashboard",
     "user-management": "Users",
     "admin": "Administration",
+    "settings": "Settings",
     "logs": "Logs"
   },
   "dashboard": {
@@ -66,6 +67,46 @@
       "search": "Search logs",
       "logEntries": "Log Entries",
       "entries": "entries"
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "language": {
+      "title": "Language Settings",
+      "description": "Select your preferred language for the application interface.",
+      "select": "Language"
+    },
+    "account": {
+      "title": "Account Management",
+      "description": "Manage your account settings and security.",
+      "changePassword": "Change Password",
+      "changePasswordDesc": "Update your account password",
+      "accountSettings": "Account Settings",
+      "accountSettingsDesc": "Manage your profile and security settings",
+      "redirectInfo": "You will be redirected to your identity provider account management."
+    },
+    "admin": {
+      "title": "Administration",
+      "logs": "System Logs",
+      "logsDesc": "View and manage system logs"
+    },
+    "data": {
+      "title": "Data Management",
+      "description": "Manage application data stored locally in your browser.",
+      "stats": "Storage Statistics",
+      "refresh": "Refresh",
+      "warning": "Warning",
+      "warningMessage": "This action will permanently delete all stored data including logs, settings, and cached information. This cannot be undone.",
+      "reset": "Reset All Data",
+      "confirmTitle": "Confirm Data Reset",
+      "confirmMessage": "Are you sure you want to delete all application data?",
+      "confirmWarning": "This will clear:",
+      "confirmIndexedDB": "All IndexedDB databases (logs, settings)",
+      "confirmLocalStorage": "localStorage (preferences, cached data)",
+      "confirmSessionStorage": "sessionStorage (temporary session data)",
+      "confirmCookies": "All cookies",
+      "confirmReload": "The page will reload after reset.",
+      "confirmButton": "Yes, Delete All Data"
     }
   }
 }

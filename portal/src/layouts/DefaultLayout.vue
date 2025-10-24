@@ -15,50 +15,6 @@
       <v-spacer></v-spacer>
 
       <div class="d-flex align-center mr-4">
-        <!-- Language Switcher -->
-        <v-menu>
-          <template v-slot:activator="{ props }">
-            <v-btn
-              v-bind="props"
-              icon
-              variant="text"
-              color="white"
-              class="mr-2"
-            >
-              <v-icon>mdi-translate</v-icon>
-            </v-btn>
-          </template>
-          <v-list density="compact">
-            <v-list-item
-              v-for="lang in availableLocales"
-              :key="lang.code"
-              @click="changeLocale(lang.code)"
-              :active="locale === lang.code"
-            >
-              <v-list-item-title>{{ lang.name }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-
-        <!-- Log Drawer Toggle -->
-        <v-btn
-          icon
-          variant="text"
-          color="white"
-          class="mr-2"
-          @click="logStore.toggleDrawer"
-        >
-          <v-badge
-            v-if="logStore.logCount > 0"
-            :content="logStore.logCount"
-            color="error"
-            overlap
-          >
-            <v-icon>mdi-console</v-icon>
-          </v-badge>
-          <v-icon v-else>mdi-console</v-icon>
-        </v-btn>
-
         <!-- User menu (authenticated) -->
         <template v-if="authStore.isAuthenticated">
           <v-menu>
@@ -156,7 +112,7 @@
       <AppBreadcrumbs v-if="showBreadcrumbs" />
 
       <!-- Router view (Web Components or views) -->
-      <v-container fluid class="fill-height pa-0">
+      <v-container fluid class="pa-0">
         <router-view />
       </v-container>
     </v-main>
@@ -178,9 +134,6 @@
         </v-btn>
       </template>
     </v-snackbar>
-
-    <!-- Log Drawer -->
-    <LogDrawer />
   </v-app>
 </template>
 
@@ -195,7 +148,6 @@ import { eventBus } from '@/services/event-bus.service';
 import { logService } from '@/services/log.service';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppBreadcrumbs from '@/components/AppBreadcrumbs.vue';
-import LogDrawer from '@/components/LogDrawer.vue';
 
 const route = useRoute();
 const { mobile } = useDisplay();
@@ -206,12 +158,6 @@ const logStore = useLogStore();
 // Drawer state
 const drawer = ref(!mobile.value);
 
-// Available locales
-const availableLocales = [
-  { code: 'en', name: 'English' },
-  { code: 'fr', name: 'Français' },
-];
-
 // Snackbar for notifications
 const snackbar = ref({
   show: false,
@@ -221,15 +167,6 @@ const snackbar = ref({
 
 // Show breadcrumbs (hide on dashboard)
 const showBreadcrumbs = computed(() => route.path !== '/');
-
-// Change locale
-function changeLocale(newLocale: string) {
-  locale.value = newLocale;
-  localStorage.setItem('locale', newLocale);
-
-  // Publish locale change to Web Components
-  eventBus.publishLocale({ locale: newLocale });
-}
 
 // Auth actions
 async function handleLogin() {
@@ -296,7 +233,7 @@ onMounted(() => {
 
   // Restore saved locale
   const savedLocale = localStorage.getItem('locale');
-  if (savedLocale && availableLocales.some(l => l.code === savedLocale)) {
+  if (savedLocale) {
     locale.value = savedLocale;
   }
 });

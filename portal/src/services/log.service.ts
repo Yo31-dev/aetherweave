@@ -69,12 +69,15 @@ class LogService {
    * Internal log method
    */
   private async log(level: LogLevel, message: string, source: string, meta?: any): Promise<void> {
+    // Serialize meta to make it IndexedDB-compatible (remove non-clonable objects)
+    const serializedMeta = meta ? this.serializeMeta(meta) : undefined;
+
     const logEntry: Omit<LogEntry, 'id'> = {
       timestamp: new Date(),
       level,
       message,
       source,
-      meta,
+      meta: serializedMeta,
     };
 
     try {
@@ -88,6 +91,50 @@ class LogService {
       await this.checkStorageWarning();
     } catch (error) {
       console.error('[LogService] Failed to save log:', error);
+    }
+  }
+
+  /**
+   * Serialize meta object to make it IndexedDB-compatible
+   * Converts Error objects, removes functions, handles circular references
+   */
+  private serializeMeta(meta: any): any {
+    try {
+      // Handle null/undefined
+      if (meta == null) {
+        return meta;
+      }
+
+      // Handle primitives
+      if (typeof meta !== 'object') {
+        return meta;
+      }
+
+      // Handle Error objects specially
+      if (meta instanceof Error) {
+        return {
+          name: meta.name,
+          message: meta.message,
+          stack: meta.stack,
+        };
+      }
+
+      // Handle Date objects
+      if (meta instanceof Date) {
+        return meta.toISOString();
+      }
+
+      // Handle Arrays
+      if (Array.isArray(meta)) {
+        return meta.map(item => this.serializeMeta(item));
+      }
+
+      // Handle plain objects - use JSON parse/stringify to remove functions and circular refs
+      // This is safe and handles most cases
+      return JSON.parse(JSON.stringify(meta));
+    } catch (error) {
+      // If serialization fails, return a safe fallback
+      return { _serializationError: 'Could not serialize meta object', _original: String(meta) };
     }
   }
 

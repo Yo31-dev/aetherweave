@@ -18,6 +18,7 @@
     "dashboard": "Tableau de bord",
     "user-management": "Utilisateurs",
     "admin": "Administration",
+    "settings": "Paramètres",
     "logs": "Journaux"
   },
   "dashboard": {
@@ -66,6 +67,46 @@
       "search": "Rechercher dans les journaux",
       "logEntries": "Entrées de journal",
       "entries": "entrées"
+    }
+  },
+  "settings": {
+    "title": "Paramètres",
+    "language": {
+      "title": "Paramètres de langue",
+      "description": "Sélectionnez votre langue préférée pour l'interface de l'application.",
+      "select": "Langue"
+    },
+    "account": {
+      "title": "Gestion du compte",
+      "description": "Gérez les paramètres de votre compte et la sécurité.",
+      "changePassword": "Changer le mot de passe",
+      "changePasswordDesc": "Mettre à jour votre mot de passe",
+      "accountSettings": "Paramètres du compte",
+      "accountSettingsDesc": "Gérer votre profil et les paramètres de sécurité",
+      "redirectInfo": "Vous serez redirigé vers la gestion de compte de votre fournisseur d'identité."
+    },
+    "admin": {
+      "title": "Administration",
+      "logs": "Journaux système",
+      "logsDesc": "Consulter et gérer les journaux système"
+    },
+    "data": {
+      "title": "Gestion des données",
+      "description": "Gérer les données de l'application stockées localement dans votre navigateur.",
+      "stats": "Statistiques de stockage",
+      "refresh": "Actualiser",
+      "warning": "Attention",
+      "warningMessage": "Cette action supprimera définitivement toutes les données stockées, y compris les journaux, les paramètres et les informations en cache. Cette action est irréversible.",
+      "reset": "Réinitialiser toutes les données",
+      "confirmTitle": "Confirmer la réinitialisation",
+      "confirmMessage": "Êtes-vous sûr de vouloir supprimer toutes les données de l'application ?",
+      "confirmWarning": "Cela effacera :",
+      "confirmIndexedDB": "Toutes les bases de données IndexedDB (journaux, paramètres)",
+      "confirmLocalStorage": "localStorage (préférences, données en cache)",
+      "confirmSessionStorage": "sessionStorage (données de session temporaires)",
+      "confirmCookies": "Tous les cookies",
+      "confirmReload": "La page sera rechargée après la réinitialisation.",
+      "confirmButton": "Oui, supprimer toutes les données"
     }
   }
 }
