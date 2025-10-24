@@ -604,3 +604,6 @@ To implement this architecture:
 
 **Q**: How do we handle event versioning?
 **A**: For now, maintain backward compatibility. Future: version event names (`user:selected:v2`) or include version in payload.
+
+**Q**: How do Web Components receive theme changes (dark/light mode)?
+**A**: The Portal emits a stateful `theme:changed` event when the user toggles the theme. WC listen via `onStateful()` and receive the current theme immediately on load. See [WEB_COMPONENTS.md - Theme Support](./WEB_COMPONENTS.md#theme-support-darklight-mode) for implementation details.

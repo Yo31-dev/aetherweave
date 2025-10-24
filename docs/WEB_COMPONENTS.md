@@ -807,6 +807,208 @@ Use Playwright
 - Don't create circular dependencies
 - Don't forget to handle errors
 
+## Theme Support (Dark/Light Mode)
+
+### Overview
+
+The Portal supports **dark and light themes** that Web Components should respect. The theme is communicated via EventBus using a **stateful event**, which means:
+- WC loaded after theme change will receive the current theme immediately
+- WC can listen for theme changes in real-time
+- Theme persists across page reloads
+
+### Listening to Theme Changes
+
+Use the **stateful EventBus** to listen for theme changes:
+
+```typescript
+// In connectedCallback
+connectedCallback() {
+  super.connectedCallback();
+
+  // Listen to theme changes (receives current theme immediately if already set)
+  this.unsubscribeTheme = window.__AETHERWEAVE_STATEFUL_BUS__.onStateful(
+    'theme:changed',
+    (payload: { theme: 'light' | 'dark', isDark: boolean }) => {
+      this.handleThemeChange(payload);
+    }
+  );
+}
+
+// Handle theme change
+private handleThemeChange(payload: { theme: 'light' | 'dark', isDark: boolean }) {
+  // Update component's internal theme state
+  this.isDark = payload.isDark;
+
+  // Option 1: Use CSS custom properties
+  this.style.setProperty('--background-color', payload.isDark ? '#1E1E1E' : '#FFFFFF');
+  this.style.setProperty('--text-color', payload.isDark ? '#FFFFFF' : '#212121');
+
+  // Option 2: Toggle a CSS class
+  this.classList.toggle('dark-theme', payload.isDark);
+
+  // Option 3: Trigger re-render if using reactive properties
+  this.requestUpdate();
+}
+
+// Cleanup
+disconnectedCallback() {
+  super.disconnectedCallback();
+  if (this.unsubscribeTheme) {
+    this.unsubscribeTheme();
+  }
+}
+```
+
+### Recommended Approach: CSS Custom Properties
+
+Define theme-aware CSS using custom properties:
+
+```typescript
+// In your Lit component styles
+static styles = css`
+  :host {
+    /* Define default colors */
+    --wc-bg-primary: #FFFFFF;
+    --wc-bg-secondary: #FAFAFA;
+    --wc-text-primary: #212121;
+    --wc-text-secondary: #757575;
+    --wc-border: #E0E0E0;
+
+    /* Dark theme overrides */
+    --wc-bg-primary-dark: #1E1E1E;
+    --wc-bg-secondary-dark: #2A2A2A;
+    --wc-text-primary-dark: #FFFFFF;
+    --wc-text-secondary-dark: #B0B0B0;
+    --wc-border-dark: #424242;
+  }
+
+  :host(.dark-theme) {
+    --wc-bg-primary: var(--wc-bg-primary-dark);
+    --wc-bg-secondary: var(--wc-bg-secondary-dark);
+    --wc-text-primary: var(--wc-text-primary-dark);
+    --wc-text-secondary: var(--wc-text-secondary-dark);
+    --wc-border: var(--wc-border-dark);
+  }
+
+  .container {
+    background: var(--wc-bg-primary);
+    color: var(--wc-text-primary);
+    border: 1px solid var(--wc-border);
+  }
+
+  .card {
+    background: var(--wc-bg-secondary);
+  }
+`;
+```
+
+### AetherWeave Theme Colors
+
+**Light Theme:**
+```typescript
+{
+  primary: '#FF6B35',      // AetherWeave Orange
+  secondary: '#FFB74D',    // AetherWeave Yellow-Orange
+  accent: '#FFA726',       // Orange Light
+  background: '#FAFAFA',   // Light Gray
+  surface: '#FFFFFF',      // White
+  textPrimary: '#212121',  // Dark Gray
+  textSecondary: '#757575' // Medium Gray
+}
+```
+
+**Dark Theme:**
+```typescript
+{
+  primary: '#FF6B35',      // AetherWeave Orange (same)
+  secondary: '#FFB74D',    // AetherWeave Yellow-Orange (same)
+  accent: '#FFA726',       // Orange Light (same)
+  background: '#121212',   // Dark Gray
+  surface: '#1E1E1E',      // Slightly lighter dark
+  textPrimary: '#FFFFFF',  // White
+  textSecondary: '#B0B0B0' // Light Gray
+}
+```
+
+**Keep orange accents the same** in both themes for brand consistency.
+
+### Complete Example
+
+```typescript
+import { LitElement, html, css } from 'lit';
+import { customElement, state } from 'lit/decorators.js';
+
+@customElement('my-service-app')
+export class MyServiceApp extends LitElement {
+  @state()
+  private isDark = false;
+
+  private unsubscribeTheme?: () => void;
+
+  static styles = css`
+    :host {
+      display: block;
+      --bg: #FFFFFF;
+      --text: #212121;
+    }
+
+    :host(.dark-theme) {
+      --bg: #1E1E1E;
+      --text: #FFFFFF;
+    }
+
+    .container {
+      background: var(--bg);
+      color: var(--text);
+      padding: 20px;
+    }
+
+    .button {
+      background: #FF6B35; /* Orange stays same in both themes */
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+  `;
+
+  connectedCallback() {
+    super.connectedCallback();
+
+    // Listen to theme changes
+    this.unsubscribeTheme = window.__AETHERWEAVE_STATEFUL_BUS__.onStateful(
+      'theme:changed',
+      (payload: { theme: 'light' | 'dark', isDark: boolean }) => {
+        this.isDark = payload.isDark;
+        this.classList.toggle('dark-theme', payload.isDark);
+      }
+    );
+  }
+
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.unsubscribeTheme?.();
+  }
+
+  render() {
+    return html`
+      <div class="container">
+        <h1>My Service (${this.isDark ? 'Dark' : 'Light'} Mode)</h1>
+        <button class="button">Action</button>
+      </div>
+    `;
+  }
+}
+```
+
+### Testing Theme Support
+
+1. **Manual testing**: Toggle theme button in Portal header (sun/moon icon)
+2. **Check immediately after load**: WC should receive current theme via stateful event
+3. **Check dynamic switching**: Theme should update when user toggles
+4. **Check persistence**: Reload page, theme should be remembered
+
 ## Related Documentation
 
 - [PORTAL.md](../portal/PORTAL.md) - Portal architecture

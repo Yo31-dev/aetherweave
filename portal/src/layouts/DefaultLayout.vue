@@ -160,10 +160,16 @@ const { mobile } = useDisplay();
 const { locale } = useI18n();
 const authStore = useAuthStore();
 const logStore = useLogStore();
-const { isDark, toggleTheme } = useTheme();
+const { isDark, toggleTheme, getCurrentTheme } = useTheme();
 
 // Drawer state
 const drawer = ref(!mobile.value);
+
+// Emit initial theme to Web Components on mount
+onMounted(() => {
+  const currentTheme = getCurrentTheme();
+  eventBus.emitStateful('theme:changed', { theme: currentTheme, isDark: currentTheme === 'dark' });
+});
 
 // Snackbar for notifications
 const snackbar = ref({

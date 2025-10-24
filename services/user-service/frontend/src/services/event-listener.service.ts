@@ -25,6 +25,11 @@ export interface AuthPayload {
   };
 }
 
+export interface ThemePayload {
+  theme: 'light' | 'dark';
+  isDark: boolean;
+}
+
 export const EventType = {
   // Portal → Web Components
   AUTH_LOGOUT: 'portal:auth:logout',
@@ -48,6 +53,18 @@ function getSharedEventBus(): EventEmitter {
     );
   }
   return (window as any).__AETHERWEAVE_EVENT_BUS__;
+}
+
+/**
+ * Get the stateful EventBus instance from the portal
+ */
+function getStatefulEventBus(): any {
+  if (!(window as any).__AETHERWEAVE_STATEFUL_BUS__) {
+    throw new Error(
+      '[EventBus] Portal Stateful EventBus not found. Ensure portal is loaded first.'
+    );
+  }
+  return (window as any).__AETHERWEAVE_STATEFUL_BUS__;
 }
 
 class EventListenerService {
@@ -105,6 +122,20 @@ class EventListenerService {
 
     this.emitter.on(EventType.LOCALE_CHANGE, handler);
     return () => this.emitter.off(EventType.LOCALE_CHANGE, handler);
+  }
+
+  /**
+   * Listen for theme changes from portal (using stateful event bus)
+   * Receives current theme immediately on subscription
+   */
+  onThemeChange(callback: (payload: ThemePayload) => void): () => void {
+    try {
+      const statefulBus = getStatefulEventBus();
+      return statefulBus.onStateful('theme:changed', callback);
+    } catch (error) {
+      console.warn('[WC EventListener] Stateful EventBus not available, theme changes will not work');
+      return () => {};
+    }
   }
 
   // ============================================================================

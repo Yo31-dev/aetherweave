@@ -35,6 +35,20 @@ export class UserManagementApp extends LitElement {
       padding: 24px;
       font-family: var(--font-family, 'Roboto', sans-serif);
       background-color: var(--md-sys-color-background, #fafafa);
+      color: var(--md-sys-color-on-background, #1c1b1f);
+    }
+
+    /* Dark theme overrides */
+    :host(.dark-theme) {
+      background-color: #1E1E1E;
+      color: #FFFFFF;
+      --md-sys-color-background: #1E1E1E;
+      --md-sys-color-on-background: #FFFFFF;
+      --md-sys-color-surface: #2A2A2A;
+      --md-sys-color-on-surface: #FFFFFF;
+      --md-sys-color-surface-variant: #3A3A3A;
+      --md-sys-color-on-surface-variant: #B0B0B0;
+      --md-sys-color-outline-variant: #4A4A4A;
     }
 
     .container {
@@ -159,6 +173,7 @@ export class UserManagementApp extends LitElement {
   private unsubLogout?: () => void;
   private unsubLocale?: () => void;
   private unsubTokenRefresh?: () => void;
+  private unsubTheme?: () => void;
 
   connectedCallback() {
     super.connectedCallback();
@@ -195,6 +210,12 @@ export class UserManagementApp extends LitElement {
         eventListener.emitLog(`Failed to change locale: ${err}`, 'error');
       }
     });
+
+    // Listen for theme changes from portal (stateful event)
+    this.unsubTheme = eventListener.onThemeChange((payload) => {
+      eventListener.emitLog(`Theme changed to: ${payload.theme}`, 'debug');
+      this.classList.toggle('dark-theme', payload.isDark);
+    });
   }
 
   disconnectedCallback() {
@@ -205,6 +226,7 @@ export class UserManagementApp extends LitElement {
     this.unsubLogout?.();
     this.unsubLocale?.();
     this.unsubTokenRefresh?.();
+    this.unsubTheme?.();
   }
 
   /**

@@ -1,7 +1,9 @@
 import { ref, watch } from 'vue';
 import { useTheme as useVuetifyTheme } from 'vuetify';
+import { eventBus } from '@/services/event-bus.service';
 
 const THEME_STORAGE_KEY = 'theme';
+const THEME_CHANGE_EVENT = 'theme:changed';
 
 export function useTheme() {
   const vuetifyTheme = useVuetifyTheme();
@@ -11,15 +13,37 @@ export function useTheme() {
   function toggleTheme() {
     isDark.value = !isDark.value;
     const newTheme = isDark.value ? 'dark' : 'light';
-    vuetifyTheme.global.name.value = newTheme;
+
+    // Check if change method exists (newer Vuetify versions)
+    if (typeof (vuetifyTheme.global as any).change === 'function') {
+      (vuetifyTheme.global as any).change(newTheme);
+    } else {
+      // Fallback to direct assignment for older versions
+      vuetifyTheme.global.name.value = newTheme;
+    }
+
     localStorage.setItem(THEME_STORAGE_KEY, newTheme);
+
+    // Emit event for Web Components using stateful event
+    eventBus.emitStateful(THEME_CHANGE_EVENT, { theme: newTheme, isDark: isDark.value });
   }
 
   // Set specific theme
   function setTheme(theme: 'light' | 'dark') {
     isDark.value = theme === 'dark';
-    vuetifyTheme.global.name.value = theme;
+
+    // Check if change method exists (newer Vuetify versions)
+    if (typeof (vuetifyTheme.global as any).change === 'function') {
+      (vuetifyTheme.global as any).change(theme);
+    } else {
+      // Fallback to direct assignment for older versions
+      vuetifyTheme.global.name.value = theme;
+    }
+
     localStorage.setItem(THEME_STORAGE_KEY, theme);
+
+    // Emit event for Web Components using stateful event
+    eventBus.emitStateful(THEME_CHANGE_EVENT, { theme, isDark: isDark.value });
   }
 
   // Get current theme name
