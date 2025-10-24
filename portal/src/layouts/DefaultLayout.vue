@@ -108,9 +108,6 @@
 
     <!-- Main content area -->
     <v-main>
-      <!-- Breadcrumbs -->
-      <AppBreadcrumbs v-if="showBreadcrumbs" />
-
       <!-- Router view (Web Components or views) -->
       <v-container fluid class="pa-0">
         <router-view />
@@ -138,8 +135,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth.store';
@@ -147,9 +143,7 @@ import { useLogStore } from '@/stores/log.store';
 import { eventBus } from '@/services/event-bus.service';
 import { logService } from '@/services/log.service';
 import AppSidebar from '@/components/AppSidebar.vue';
-import AppBreadcrumbs from '@/components/AppBreadcrumbs.vue';
 
-const route = useRoute();
 const { mobile } = useDisplay();
 const { locale } = useI18n();
 const authStore = useAuthStore();

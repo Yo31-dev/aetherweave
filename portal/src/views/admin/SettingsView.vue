@@ -1,217 +1,189 @@
 <template>
-  <v-container fluid>
+  <v-container fluid class="pa-4">
+    <!-- Header -->
     <v-row>
       <v-col cols="12">
-        <h1 class="text-h4 mb-6">{{ $t('settings.title', 'Settings') }}</h1>
+        <div class="d-flex align-center mb-4">
+          <v-icon size="32" color="primary" class="mr-3">mdi-cog</v-icon>
+          <h1 class="text-h4">{{ $t('settings.title', 'Settings') }}</h1>
+        </div>
       </v-col>
     </v-row>
 
-    <!-- Language Settings -->
+    <!-- Settings Sections as Accordions -->
     <v-row>
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-card-title class="d-flex align-center">
-            <v-icon icon="mdi-translate" class="mr-2"></v-icon>
-            {{ $t('settings.language.title', 'Language Settings') }}
-          </v-card-title>
-          <v-card-text>
-            <p class="text-body-2 mb-4">
-              {{ $t('settings.language.description', 'Select your preferred language for the application interface.') }}
-            </p>
-            <v-select
-              v-model="selectedLocale"
-              :items="locales"
-              :label="$t('settings.language.select', 'Language')"
-              @update:model-value="changeLocale"
-              variant="outlined"
-              density="comfortable"
-            >
-              <template v-slot:item="{ item, props }">
-                <v-list-item v-bind="props">
-                  <template v-slot:prepend>
-                    <v-icon :icon="item.raw.icon"></v-icon>
+      <v-col cols="12">
+        <v-expansion-panels>
+          <!-- Language Settings -->
+          <v-expansion-panel>
+            <v-expansion-panel-title>
+              <div class="d-flex align-center">
+                <v-icon class="mr-2">mdi-translate</v-icon>
+                <span class="text-h6">{{ $t('settings.language.title', 'Language Settings') }}</span>
+              </div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <p class="text-body-2 mb-4">
+                {{ $t('settings.language.description', 'Select your preferred language for the application interface.') }}
+              </p>
+              <v-select
+                v-model="selectedLocale"
+                :items="locales"
+                :label="$t('settings.language.select', 'Language')"
+                @update:model-value="changeLocale"
+                variant="outlined"
+                density="comfortable"
+              >
+                <template v-slot:item="{ item, props }">
+                  <v-list-item v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon :icon="item.raw.icon"></v-icon>
+                    </template>
+                  </v-list-item>
+                </template>
+                <template v-slot:selection="{ item }">
+                  <v-icon :icon="item.raw.icon" class="mr-2"></v-icon>
+                  {{ item.raw.title }}
+                </template>
+              </v-select>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+
+          <!-- Account Management -->
+          <v-expansion-panel>
+            <v-expansion-panel-title>
+              <div class="d-flex align-center">
+                <v-icon class="mr-2">mdi-account-cog</v-icon>
+                <span class="text-h6">{{ $t('settings.account.title', 'Account Management') }}</span>
+              </div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <p class="text-body-2 mb-4">
+                {{ $t('settings.account.description', 'Manage your account settings and security.') }}
+              </p>
+
+              <v-list density="compact">
+                <v-list-item
+                  prepend-icon="mdi-lock-reset"
+                  :title="$t('settings.account.changePassword', 'Change Password')"
+                  :subtitle="$t('settings.account.changePasswordDesc', 'Update your account password')"
+                  @click="redirectToPasswordChange"
+                >
+                  <template v-slot:append>
+                    <v-icon icon="mdi-open-in-new"></v-icon>
                   </template>
                 </v-list-item>
-              </template>
-              <template v-slot:selection="{ item }">
-                <v-icon :icon="item.raw.icon" class="mr-2"></v-icon>
-                {{ item.raw.title }}
-              </template>
-            </v-select>
-          </v-card-text>
-        </v-card>
-      </v-col>
 
-      <!-- Account Management -->
-      <v-col cols="12" md="6">
-        <v-card>
-          <v-card-title class="d-flex align-center">
-            <v-icon icon="mdi-account-cog" class="mr-2"></v-icon>
-            {{ $t('settings.account.title', 'Account Management') }}
-          </v-card-title>
-          <v-card-text>
-            <p class="text-body-2 mb-4">
-              {{ $t('settings.account.description', 'Manage your account settings and security.') }}
-            </p>
+                <v-list-item
+                  prepend-icon="mdi-shield-account"
+                  :title="$t('settings.account.accountSettings', 'Account Settings')"
+                  :subtitle="$t('settings.account.accountSettingsDesc', 'Manage your profile and security settings')"
+                  @click="redirectToAccountManagement"
+                >
+                  <template v-slot:append>
+                    <v-icon icon="mdi-open-in-new"></v-icon>
+                  </template>
+                </v-list-item>
+              </v-list>
 
-            <v-list density="compact">
-              <v-list-item
-                prepend-icon="mdi-lock-reset"
-                :title="$t('settings.account.changePassword', 'Change Password')"
-                :subtitle="$t('settings.account.changePasswordDesc', 'Update your account password')"
-                @click="redirectToPasswordChange"
-              >
-                <template v-slot:append>
-                  <v-icon icon="mdi-open-in-new"></v-icon>
-                </template>
-              </v-list-item>
-
-              <v-list-item
-                prepend-icon="mdi-shield-account"
-                :title="$t('settings.account.accountSettings', 'Account Settings')"
-                :subtitle="$t('settings.account.accountSettingsDesc', 'Manage your profile and security settings')"
-                @click="redirectToAccountManagement"
-              >
-                <template v-slot:append>
-                  <v-icon icon="mdi-open-in-new"></v-icon>
-                </template>
-              </v-list-item>
-            </v-list>
-
-            <v-alert type="info" variant="tonal" class="mt-4">
-              <div class="text-body-2">
-                {{ $t('settings.account.redirectInfo', 'You will be redirected to your identity provider account management.') }}
-              </div>
-            </v-alert>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- Administration Links -->
-    <v-row>
-      <v-col cols="12">
-        <v-card>
-          <v-card-title class="d-flex align-center">
-            <v-icon icon="mdi-cog" class="mr-2"></v-icon>
-            {{ $t('settings.admin.title', 'Administration') }}
-          </v-card-title>
-          <v-card-text>
-            <v-list>
-              <v-list-item
-                prepend-icon="mdi-console-line"
-                :title="$t('settings.admin.logs', 'System Logs')"
-                :subtitle="$t('settings.admin.logsDesc', 'View and manage system logs')"
-                @click="navigateToLogs"
-              >
-                <template v-slot:append>
-                  <v-icon icon="mdi-chevron-right"></v-icon>
-                </template>
-              </v-list-item>
-            </v-list>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
-
-    <!-- Data Management -->
-    <v-row>
-      <v-col cols="12">
-        <v-card color="warning-darken-4">
-          <v-card-title class="d-flex align-center">
-            <v-icon icon="mdi-database-remove" class="mr-2"></v-icon>
-            {{ $t('settings.data.title', 'Data Management') }}
-          </v-card-title>
-          <v-card-text>
-            <p class="text-body-2 mb-4">
-              {{ $t('settings.data.description', 'Manage application data stored locally in your browser.') }}
-            </p>
-
-            <!-- Storage Statistics -->
-            <v-expansion-panels class="mb-4">
-              <v-expansion-panel>
-                <v-expansion-panel-title>
-                  <v-icon icon="mdi-chart-bar" class="mr-2"></v-icon>
-                  {{ $t('settings.data.stats', 'Storage Statistics') }}
-                </v-expansion-panel-title>
-                <v-expansion-panel-text>
-                  <v-list density="compact">
-                    <v-list-item>
-                      <template v-slot:prepend>
-                        <v-icon icon="mdi-database"></v-icon>
-                      </template>
-                      <v-list-item-title>IndexedDB</v-list-item-title>
-                      <v-list-item-subtitle>
-                        {{ storageStats.indexedDB.count }} database(s): {{ storageStats.indexedDB.databases.join(', ') }}
-                      </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item>
-                      <template v-slot:prepend>
-                        <v-icon icon="mdi-package-variant"></v-icon>
-                      </template>
-                      <v-list-item-title>localStorage</v-list-item-title>
-                      <v-list-item-subtitle>
-                        {{ storageStats.localStorage.count }} item(s) - {{ formatBytes(storageStats.localStorage.sizeBytes) }}
-                      </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item>
-                      <template v-slot:prepend>
-                        <v-icon icon="mdi-package-variant-closed"></v-icon>
-                      </template>
-                      <v-list-item-title>sessionStorage</v-list-item-title>
-                      <v-list-item-subtitle>
-                        {{ storageStats.sessionStorage.count }} item(s) - {{ formatBytes(storageStats.sessionStorage.sizeBytes) }}
-                      </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item>
-                      <template v-slot:prepend>
-                        <v-icon icon="mdi-cookie"></v-icon>
-                      </template>
-                      <v-list-item-title>Cookies</v-list-item-title>
-                      <v-list-item-subtitle>
-                        {{ storageStats.cookies.count }} cookie(s)
-                      </v-list-item-subtitle>
-                    </v-list-item>
-                  </v-list>
-                  <v-btn
-                    color="primary"
-                    variant="text"
-                    @click="loadStorageStats"
-                    :loading="statsLoading"
-                    class="mt-2"
-                  >
-                    <v-icon start icon="mdi-refresh"></v-icon>
-                    {{ $t('settings.data.refresh', 'Refresh') }}
-                  </v-btn>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-            </v-expansion-panels>
-
-            <!-- Reset Warning -->
-            <v-alert type="warning" variant="tonal" class="mb-4">
-              <div class="d-flex align-center">
-                <v-icon icon="mdi-alert" class="mr-2"></v-icon>
-                <div>
-                  <div class="font-weight-bold">{{ $t('settings.data.warning', 'Warning') }}</div>
-                  <div class="text-body-2">
-                    {{ $t('settings.data.warningMessage', 'This action will permanently delete all stored data including logs, settings, and cached information. This cannot be undone.') }}
-                  </div>
+              <v-alert type="info" variant="tonal" class="mt-4">
+                <div class="text-body-2">
+                  {{ $t('settings.account.redirectInfo', 'You will be redirected to your identity provider account management.') }}
                 </div>
-              </div>
-            </v-alert>
+              </v-alert>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
 
-            <!-- Reset Button -->
-            <v-btn
-              color="error"
-              variant="elevated"
-              @click="confirmReset = true"
-              :loading="resetLoading"
-            >
-              <v-icon start icon="mdi-delete-forever"></v-icon>
-              {{ $t('settings.data.reset', 'Reset All Data') }}
-            </v-btn>
-          </v-card-text>
-        </v-card>
+          <!-- Data Management -->
+          <v-expansion-panel>
+            <v-expansion-panel-title>
+              <div class="d-flex align-center">
+                <v-icon class="mr-2">mdi-database-remove</v-icon>
+                <span class="text-h6">{{ $t('settings.data.title', 'Data Management') }}</span>
+              </div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <p class="text-body-2 mb-4">
+                {{ $t('settings.data.description', 'Manage application data stored locally in your browser.') }}
+              </p>
+
+              <!-- Storage Statistics -->
+              <div class="mb-4">
+                <div class="d-flex align-center mb-3">
+                  <v-icon icon="mdi-chart-bar" class="mr-2"></v-icon>
+                  <span class="text-subtitle-1 font-weight-medium">{{ $t('settings.data.stats', 'Storage Statistics') }}</span>
+                </div>
+                <v-list density="compact" class="mb-2">
+                  <v-list-item>
+                    <template v-slot:prepend>
+                      <v-icon icon="mdi-database"></v-icon>
+                    </template>
+                    <v-list-item-title>IndexedDB</v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ storageStats.indexedDB.count }} database(s): {{ storageStats.indexedDB.databases.join(', ') }}
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                  <v-list-item>
+                    <template v-slot:prepend>
+                      <v-icon icon="mdi-package-variant"></v-icon>
+                    </template>
+                    <v-list-item-title>localStorage</v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ storageStats.localStorage.count }} item(s) - {{ formatBytes(storageStats.localStorage.sizeBytes) }}
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                  <v-list-item>
+                    <template v-slot:prepend>
+                      <v-icon icon="mdi-package-variant-closed"></v-icon>
+                    </template>
+                    <v-list-item-title>sessionStorage</v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ storageStats.sessionStorage.count }} item(s) - {{ formatBytes(storageStats.sessionStorage.sizeBytes) }}
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                  <v-list-item>
+                    <template v-slot:prepend>
+                      <v-icon icon="mdi-cookie"></v-icon>
+                    </template>
+                    <v-list-item-title>Cookies</v-list-item-title>
+                    <v-list-item-subtitle>
+                      {{ storageStats.cookies.count }} cookie(s)
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                </v-list>
+                <v-btn
+                  color="primary"
+                  variant="text"
+                  size="small"
+                  @click="loadStorageStats"
+                  :loading="statsLoading"
+                >
+                  <v-icon start icon="mdi-refresh"></v-icon>
+                  {{ $t('settings.data.refresh', 'Refresh') }}
+                </v-btn>
+              </div>
+
+              <!-- Reset Warning -->
+              <v-alert type="warning" variant="tonal" class="mb-4">
+                <div class="font-weight-bold">{{ $t('settings.data.warning', 'Warning') }}</div>
+                <div class="text-body-2">
+                  {{ $t('settings.data.warningMessage', 'This action will permanently delete all stored data including logs, settings, and cached information. This cannot be undone.') }}
+                </div>
+              </v-alert>
+
+              <!-- Reset Button -->
+              <v-btn
+                color="error"
+                variant="elevated"
+                @click="confirmReset = true"
+                :loading="resetLoading"
+              >
+                <v-icon start icon="mdi-delete-forever"></v-icon>
+                {{ $t('settings.data.reset', 'Reset All Data') }}
+              </v-btn>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
       </v-col>
     </v-row>
 
