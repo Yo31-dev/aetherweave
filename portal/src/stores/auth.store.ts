@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { User } from 'oidc-client-ts';
 import { authService } from '@/services/auth.service';
+import { eventBus } from '@/services/event-bus.service';
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -39,6 +40,7 @@ export const useAuthStore = defineStore('auth', () => {
       error.value = null;
       const authenticatedUser = await authService.handleCallback();
       user.value = authenticatedUser;
+      console.log('[AuthStore] User authenticated:', authenticatedUser.profile);
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Callback handling failed';
       console.error('Callback error:', err);
@@ -54,6 +56,9 @@ export const useAuthStore = defineStore('auth', () => {
       error.value = null;
       await authService.logout();
       user.value = null;
+
+      // Publish logout to Web Components
+      eventBus.publishLogout();
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Logout failed';
       console.error('Logout error:', err);
@@ -69,6 +74,12 @@ export const useAuthStore = defineStore('auth', () => {
       error.value = null;
       const currentUser = await authService.getUser();
       user.value = currentUser;
+
+      if (currentUser && currentUser.access_token) {
+        console.log('[AuthStore] User loaded:', currentUser.profile);
+      } else {
+        console.log('[AuthStore] No authenticated user');
+      }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load user';
       console.error('Load user error:', err);

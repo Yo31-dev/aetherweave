@@ -1,0 +1,122 @@
+/**
+ * Design Tokens - Material Design 3
+ * Shared between Portal (Vuetify) and Web Components (Material Web)
+ *
+ * These tokens ensure visual consistency across micro-frontends
+ * while maintaining component isolation via Shadow DOM.
+ */
+
+:root {
+  /* Primary Colors (Vuetify primary: #1976D2) */
+  --md-sys-color-primary: #1976D2;
+  --md-sys-color-on-primary: #FFFFFF;
+  --md-sys-color-primary-container: #D3E4FD;
+  --md-sys-color-on-primary-container: #001C38;
+
+  /* Secondary Colors (Vuetify secondary: #424242) */
+  --md-sys-color-secondary: #424242;
+  --md-sys-color-on-secondary: #FFFFFF;
+  --md-sys-color-secondary-container: #E0E0E0;
+  --md-sys-color-on-secondary-container: #1A1C1E;
+
+  /* Error Colors (Vuetify error: #FF5252) */
+  --md-sys-color-error: #FF5252;
+  --md-sys-color-on-error: #FFFFFF;
+  --md-sys-color-error-container: #FFEBEE;
+  --md-sys-color-on-error-container: #B71C1C;
+
+  /* Success Colors (Vuetify success: #4CAF50) */
+  --md-sys-color-success: #4CAF50;
+  --md-sys-color-on-success: #FFFFFF;
+  --md-sys-color-success-container: #C8E6C9;
+  --md-sys-color-on-success-container: #1B5E20;
+
+  /* Warning Colors (Vuetify warning: #FB8C00) */
+  --md-sys-color-warning: #FB8C00;
+  --md-sys-color-on-warning: #FFFFFF;
+  --md-sys-color-warning-container: #FFE0B2;
+  --md-sys-color-on-warning-container: #E65100;
+
+  /* Info Colors (Vuetify info: #2196F3) */
+  --md-sys-color-info: #2196F3;
+  --md-sys-color-on-info: #FFFFFF;
+  --md-sys-color-info-container: #BBDEFB;
+  --md-sys-color-on-info-container: #0D47A1;
+
+  /* Surface Colors */
+  --md-sys-color-surface: #FFFFFF;
+  --md-sys-color-on-surface: #1C1B1F;
+  --md-sys-color-surface-variant: #E7E0EC;
+  --md-sys-color-on-surface-variant: #49454F;
+
+  /* Background */
+  --md-sys-color-background: #FAFAFA;
+  --md-sys-color-on-background: #1C1B1F;
+
+  /* Outline */
+  --md-sys-color-outline: #79747E;
+  --md-sys-color-outline-variant: #CAC4D0;
+
+  /* Spacing (8px base unit) */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+
+  /* Border Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Elevation (shadows) */
+  --elevation-1: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
+  --elevation-2: 0px 1px 2px rgba(0, 0, 0, 0.3), 0px 2px 6px 2px rgba(0, 0, 0, 0.15);
+  --elevation-3: 0px 4px 8px 3px rgba(0, 0, 0, 0.15), 0px 1px 3px rgba(0, 0, 0, 0.3);
+  --elevation-4: 0px 6px 10px 4px rgba(0, 0, 0, 0.15), 0px 2px 3px rgba(0, 0, 0, 0.3);
+  --elevation-5: 0px 8px 12px 6px rgba(0, 0, 0, 0.15), 0px 4px 4px rgba(0, 0, 0, 0.3);
+
+  /* Typography */
+  --font-family: 'Roboto', sans-serif;
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-md: 1rem;       /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 2rem;      /* 32px */
+
+  /* Font Weights */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Line Heights */
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-normal: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Z-index */
+  --z-index-drawer: 1200;
+  --z-index-appbar: 1100;
+  --z-index-modal: 1300;
+  --z-index-tooltip: 1500;
+}
+
+/* Dark mode tokens (optional - for future implementation) */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --md-sys-color-surface: #1C1B1F;
+    --md-sys-color-on-surface: #E6E1E5;
+    --md-sys-color-background: #121212;
+    --md-sys-color-on-background: #E6E1E5;
+  }
+}

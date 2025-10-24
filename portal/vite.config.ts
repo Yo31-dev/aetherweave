@@ -17,5 +17,18 @@ export default defineConfig({
   server: {
     port: 5173,
     host: true,
+    proxy: {
+      // Proxy micro-frontend dev servers
+      '/microservices/user-management': {
+        target: 'http://localhost:3001',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/microservices\/user-management/, ''),
+      },
+      // Proxy API calls to APISIX Gateway
+      '/api': {
+        target: 'http://localhost:8000',
+        changeOrigin: true,
+      },
+    },
   }
 })

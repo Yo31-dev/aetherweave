@@ -1,0 +1,39 @@
+{
+  "common": {
+    "login": "Connexion",
+    "logout": "Déconnexion",
+    "close": "Fermer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "create": "Créer",
+    "search": "Rechercher",
+    "loading": "Chargement...",
+    "error": "Erreur",
+    "success": "Succès"
+  },
+  "nav": {
+    "dashboard": "Tableau de bord",
+    "user-management": "Utilisateurs"
+  },
+  "dashboard": {
+    "welcome": "Bienvenue sur AetherWeave",
+    "welcomeUser": "Bienvenue, {name}",
+    "pleaseLogin": "Veuillez vous connecter pour accéder aux microservices",
+    "loginRequired": "Authentification requise",
+    "open": "Ouvrir",
+    "user-management": "Utilisateurs",
+    "user-managementDescription": "Gérer les utilisateurs, rôles et permissions"
+  },
+  "loader": {
+    "loading": "Chargement",
+    "loadingService": "Chargement de {name}...",
+    "errorTitle": "Échec du chargement du micro-frontend",
+    "errorDescription": "Le microservice n'a pas pu être chargé. Cela peut être causé par :",
+    "errorCheckNetwork": "Problèmes de connexion réseau",
+    "errorCheckService": "Le microservice n'est pas démarré",
+    "errorCheckConsole": "Consultez la console du navigateur pour plus de détails",
+    "retry": "Réessayer"
+  }
+}

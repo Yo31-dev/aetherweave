@@ -1,0 +1,39 @@
+{
+  "common": {
+    "login": "Login",
+    "logout": "Logout",
+    "close": "Close",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "search": "Search",
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "user-management": "Users"
+  },
+  "dashboard": {
+    "welcome": "Welcome to AetherWeave",
+    "welcomeUser": "Welcome back, {name}",
+    "pleaseLogin": "Please login to access the microservices",
+    "loginRequired": "Authentication Required",
+    "open": "Open",
+    "user-management": "Users",
+    "user-managementDescription": "Manage users, roles, and permissions"
+  },
+  "loader": {
+    "loading": "Loading",
+    "loadingService": "Loading {name}...",
+    "errorTitle": "Failed to Load Micro-Frontend",
+    "errorDescription": "The microservice could not be loaded. This might be caused by:",
+    "errorCheckNetwork": "Network connection issues",
+    "errorCheckService": "The microservice is not running",
+    "errorCheckConsole": "Check the browser console for more details",
+    "retry": "Retry"
+  }
+}
