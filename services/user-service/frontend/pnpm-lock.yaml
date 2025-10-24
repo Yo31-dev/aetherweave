@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  lit: ^3.3.1
+
 importers:
 
   .:
@@ -17,6 +20,9 @@ importers:
       lit:
         specifier: ^3.3.1
         version: 3.3.1
+      lit-translate:
+        specifier: ^2.0.1
+        version: 2.0.1
     devDependencies:
       typescript:
         specifier: ~5.9.3
@@ -336,6 +342,9 @@ packages:
   lit-html@3.3.1:
     resolution: {integrity: sha512-S9hbyDu/vs1qNrithiNyeyv64c9yqiW9l+DBgI18fL+MTvOtWoFR0FWiyq1TxaYef5wNlpEmzlXoBlZEO+WjoA==}
 
+  lit-translate@2.0.1:
+    resolution: {integrity: sha512-AcGwE0d3M3KwMPZ0YlJRMB48V18LwRmkjkIYQaU+JycFA5yxkel2LJg1gThfrHFIPS8fcmtTMrXXSVEMg1BCTg==}
+
   lit@3.3.1:
     resolution: {integrity: sha512-Ksr/8L3PTapbdXJCk+EJVB78jDodUMaP54gD24W186zGRARvwrsPfS60wae/SSCTCNZVPd1chXqio1qHQmu4NA==}
 
@@ -624,6 +633,10 @@ snapshots:
   lit-html@3.3.1:
     dependencies:
       '@types/trusted-types': 2.0.7
+
+  lit-translate@2.0.1:
+    dependencies:
+      lit: 3.3.1
 
   lit@3.3.1:
     dependencies:

@@ -2,6 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { eventListener } from './services/event-listener.service';
 import { userApi, type User } from './services/user-api.service';
+import { translate, use } from './i18n';
 
 // Import Material Web Components
 import '@material/web/button/filled-button.js';
@@ -17,6 +18,12 @@ import '@material/web/progress/circular-progress.js';
  * Properties (passed by Portal):
  * - token: JWT auth token
  * - user: User profile object
+ * - lang: Language code (optional, defaults to 'en')
+ *
+ * Supported languages: en, fr
+ *
+ * The component listens to locale change events from the portal
+ * and automatically re-renders with the new translations.
  */
 @customElement('user-management-app')
 export class UserManagementApp extends LitElement {
@@ -128,6 +135,13 @@ export class UserManagementApp extends LitElement {
   @property({ type: Object })
   user: any = null;
 
+  /**
+   * Language code (passed by portal, optional)
+   * Defaults to 'en'
+   */
+  @property({ type: String })
+  lang: string = 'en';
+
   // ============================================================================
   // INTERNAL STATE
   // ============================================================================
@@ -147,25 +161,35 @@ export class UserManagementApp extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    console.log('[UserManagement] Component connected');
+    eventListener.emitLog('Component connected', 'info');
+
+    // Set initial locale from lang property
+    use(this.lang).catch(err => {
+      eventListener.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
+    });
 
     // Listen for logout from portal
     this.unsubLogout = eventListener.onLogout(() => {
-      console.log('[UserManagement] Logout received, clearing state');
+      eventListener.emitLog('Logout received, clearing state', 'info');
       this.users = [];
       this.loading = true;
     });
 
-    // Listen for locale changes (future use)
-    this.unsubLocale = eventListener.onLocaleChange((payload) => {
-      console.log('[UserManagement] Locale changed:', payload.locale);
-      // TODO: Update i18n
+    // Listen for locale changes from portal
+    this.unsubLocale = eventListener.onLocaleChange(async (payload) => {
+      eventListener.emitLog(`Locale changed to: ${payload.locale}`, 'debug');
+      try {
+        await use(payload.locale);
+        // Lit will automatically re-render when locale changes
+      } catch (err) {
+        eventListener.emitLog(`Failed to change locale: ${err}`, 'error');
+      }
     });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    console.log('[UserManagement] Component disconnected');
+    eventListener.emitLog('Component disconnected', 'info');
 
     // Cleanup event listeners
     this.unsubLogout?.();
@@ -174,17 +198,25 @@ export class UserManagementApp extends LitElement {
 
   /**
    * Lit lifecycle: called when properties change
-   * This is where we react to token/user changes from the portal
+   * This is where we react to token/user/lang changes from the portal
    */
   updated(changedProperties: Map<string, any>) {
     super.updated(changedProperties);
 
+    // If lang changed, update locale
+    if (changedProperties.has('lang') && this.lang) {
+      eventListener.emitLog(`Lang property changed to: ${this.lang}`, 'debug');
+      use(this.lang).catch(err => {
+        eventListener.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
+      });
+    }
+
     // If token changed, reload users
     if (changedProperties.has('token')) {
-      console.log('[UserManagement] Token changed:', this.token ? 'Present' : 'Absent');
+      eventListener.emitLog(`Token changed: ${this.token ? 'Present' : 'Absent'}`, 'debug');
 
       if (this.token) {
-        console.log('[UserManagement] User:', this.user?.username || this.user?.email);
+        eventListener.emitLog(`User: ${this.user?.username || this.user?.email}`, 'debug');
         this.loadUsers();
       } else {
         this.users = [];
@@ -218,15 +250,18 @@ export class UserManagementApp extends LitElement {
   }
 
   private async handleDelete(id: number) {
-    if (!confirm('Are you sure you want to delete this user?')) {
+    // Get translated confirmation message
+    const { get } = await import('./i18n');
+    if (!confirm(get('messages.deleteConfirm'))) {
       return;
     }
 
     try {
       await userApi.deleteUser(id, this.token);
       await this.loadUsers(); // Reload list
+      eventListener.emitLog('User deleted successfully', 'info');
     } catch (err) {
-      console.error('Delete failed:', err);
+      eventListener.emitLog(`Delete failed: ${err}`, 'error');
     }
   }
 
@@ -236,40 +271,40 @@ export class UserManagementApp extends LitElement {
     return html`
       <div class="container">
         <div class="header">
-          <h1>User Management</h1>
+          <h1>${translate('title')}</h1>
           <md-filled-button @click=${() => alert('Create user form - TODO')}>
             <md-icon slot="icon">add</md-icon>
-            Add User
+            ${translate('actions.add')}
           </md-filled-button>
         </div>
 
         ${!isAuthenticated ? html`
           <div class="error">
-            <strong>Not Authenticated</strong>
-            <p>Please login to view users.</p>
+            <strong>${translate('messages.notAuthenticated')}</strong>
+            <p>${translate('messages.pleaseLogin')}</p>
           </div>
         ` : ''}
 
         ${this.loading && isAuthenticated ? html`
           <div class="loading">
             <md-circular-progress indeterminate></md-circular-progress>
-            <p>Loading users...</p>
+            <p>${translate('messages.loading')}</p>
           </div>
         ` : this.error ? html`
           <div class="error">
-            <strong>Error:</strong> ${this.error}
+            <strong>${translate('messages.error')}</strong> ${this.error}
             <br><br>
             <md-text-button @click=${this.loadUsers}>
               <md-icon slot="icon">refresh</md-icon>
-              Retry
+              ${translate('actions.retry')}
             </md-text-button>
           </div>
         ` : this.users.length === 0 && isAuthenticated ? html`
           <div class="user-table">
             <div class="empty-state">
               <md-icon>person_off</md-icon>
-              <h3>No Users Found</h3>
-              <p>Click "Add User" to create your first user.</p>
+              <h3>${translate('messages.noUsers')}</h3>
+              <p>${translate('messages.noUsersDescription')}</p>
             </div>
           </div>
         ` : isAuthenticated ? html`
@@ -277,11 +312,11 @@ export class UserManagementApp extends LitElement {
             <table>
               <thead>
                 <tr>
-                  <th>ID</th>
-                  <th>Username</th>
-                  <th>Email</th>
-                  <th>Created</th>
-                  <th>Actions</th>
+                  <th>${translate('table.id')}</th>
+                  <th>${translate('table.username')}</th>
+                  <th>${translate('table.email')}</th>
+                  <th>${translate('table.created')}</th>
+                  <th>${translate('table.actions')}</th>
                 </tr>
               </thead>
               <tbody>
@@ -295,11 +330,11 @@ export class UserManagementApp extends LitElement {
                       <div class="actions">
                         <md-text-button @click=${() => alert(`Edit user ${user.id} - TODO`)}>
                           <md-icon slot="icon">edit</md-icon>
-                          Edit
+                          ${translate('actions.edit')}
                         </md-text-button>
                         <md-text-button @click=${() => this.handleDelete(user.id)}>
                           <md-icon slot="icon">delete</md-icon>
-                          Delete
+                          ${translate('actions.delete')}
                         </md-text-button>
                       </div>
                     </td>

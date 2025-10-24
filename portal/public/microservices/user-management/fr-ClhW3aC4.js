@@ -1,0 +1,29 @@
+const e = {
+  title: "Gestion des utilisateurs",
+  actions: {
+    add: "Ajouter un utilisateur",
+    edit: "Modifier",
+    delete: "Supprimer",
+    retry: "Réessayer"
+  },
+  table: {
+    id: "ID",
+    username: "Nom d'utilisateur",
+    email: "Email",
+    created: "Créé",
+    actions: "Actions"
+  },
+  messages: {
+    notAuthenticated: "Non authentifié",
+    pleaseLogin: "Veuillez vous connecter pour voir les utilisateurs.",
+    loading: "Chargement des utilisateurs...",
+    error: "Erreur :",
+    noUsers: "Aucun utilisateur trouvé",
+    noUsersDescription: 'Cliquez sur "Ajouter un utilisateur" pour créer votre premier utilisateur.',
+    deleteConfirm: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?"
+  }
+};
+export {
+  e as default
+};
+//# sourceMappingURL=fr-ClhW3aC4.js.map

@@ -71,6 +71,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, watch } from 'vue';
+import { useI18n } from 'vue-i18n';
 import type { MicroService } from '@/config/microservices.config';
 import { useMicroFrontend } from '@/composables/useMicroFrontend';
 import { useAuthStore } from '@/stores/auth.store';
@@ -82,6 +83,7 @@ interface Props {
 
 const props = defineProps<Props>();
 const authStore = useAuthStore();
+const { locale } = useI18n();
 
 const containerRef = ref<HTMLDivElement | null>(null);
 const webComponentInstance = ref<HTMLElement | null>(null);
@@ -103,6 +105,18 @@ watch(() => [authStore.accessToken, authStore.profile], ([token, profile]) => {
   }
 }, { immediate: true });
 
+// Update Web Component lang property when portal locale changes
+watch(locale, (newLocale) => {
+  if (webComponentInstance.value) {
+    (webComponentInstance.value as any).lang = newLocale;
+    logService.debug(
+      'Updated Web Component lang property',
+      'MicroFrontendLoader',
+      { locale: newLocale, componentTag: props.microservice.componentTag }
+    );
+  }
+});
+
 // Load and mount Web Component
 async function loadAndMount() {
   try {
@@ -116,16 +130,17 @@ async function loadAndMount() {
     if (containerRef.value) {
       const element = document.createElement(props.microservice.componentTag);
 
-      // Set initial auth properties
+      // Set initial properties
       (element as any).token = authStore.accessToken || '';
       (element as any).user = authStore.profile || null;
+      (element as any).lang = locale.value;
 
       containerRef.value.appendChild(element);
       webComponentInstance.value = element;
       logService.info(
         `Mounted Web Component: ${props.microservice.componentTag}`,
         'MicroFrontendLoader',
-        { hasToken: !!authStore.accessToken }
+        { hasToken: !!authStore.accessToken, lang: locale.value }
       );
     }
   } catch (error) {
