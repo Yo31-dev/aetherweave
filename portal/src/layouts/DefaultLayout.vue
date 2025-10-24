@@ -159,9 +159,6 @@ const snackbar = ref({
   color: 'info',
 });
 
-// Show breadcrumbs (hide on dashboard)
-const showBreadcrumbs = computed(() => route.path !== '/');
-
 // Auth actions
 async function handleLogin() {
   try {
