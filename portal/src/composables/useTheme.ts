@@ -14,13 +14,8 @@ export function useTheme() {
     isDark.value = !isDark.value;
     const newTheme = isDark.value ? 'dark' : 'light';
 
-    // Check if change method exists (newer Vuetify versions)
-    if (typeof (vuetifyTheme.global as any).change === 'function') {
-      (vuetifyTheme.global as any).change(newTheme);
-    } else {
-      // Fallback to direct assignment for older versions
-      vuetifyTheme.global.name.value = newTheme;
-    }
+    // Vuetify 3.10.7 uses .value for reactivity
+    vuetifyTheme.global.name.value = newTheme;
 
     localStorage.setItem(THEME_STORAGE_KEY, newTheme);
 
@@ -32,13 +27,8 @@ export function useTheme() {
   function setTheme(theme: 'light' | 'dark') {
     isDark.value = theme === 'dark';
 
-    // Check if change method exists (newer Vuetify versions)
-    if (typeof (vuetifyTheme.global as any).change === 'function') {
-      (vuetifyTheme.global as any).change(theme);
-    } else {
-      // Fallback to direct assignment for older versions
-      vuetifyTheme.global.name.value = theme;
-    }
+    // Vuetify 3.10.7 uses .value for reactivity
+    vuetifyTheme.global.name.value = theme;
 
     localStorage.setItem(THEME_STORAGE_KEY, theme);
 

@@ -269,6 +269,7 @@ onUnmounted(() => {
   height: 100%;
   display: flex;
   flex-direction: column;
+  padding-top: 16px;
 }
 
 /* Ensure Web Component takes full height */

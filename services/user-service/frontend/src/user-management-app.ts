@@ -32,7 +32,7 @@ export class UserManagementApp extends LitElement {
       display: block;
       width: 100%;
       height: 100%;
-      padding: 24px;
+      padding: 32px 24px 24px 24px;
       font-family: var(--font-family, 'Roboto', sans-serif);
       background-color: var(--md-sys-color-background, #fafafa);
       color: var(--md-sys-color-on-background, #1c1b1f);
@@ -60,6 +60,7 @@ export class UserManagementApp extends LitElement {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      margin-top: 0;
       margin-bottom: 24px;
     }
 

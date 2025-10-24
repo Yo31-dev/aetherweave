@@ -3,8 +3,8 @@
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const et = globalThis, wt = et.ShadowRoot && (et.ShadyCSS === void 0 || et.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, At = Symbol(), It = /* @__PURE__ */ new WeakMap();
-let Yt = class {
+const et = globalThis, wt = et.ShadowRoot && (et.ShadyCSS === void 0 || et.ShadyCSS.nativeShadow) && "adoptedStyleSheets" in Document.prototype && "replace" in CSSStyleSheet.prototype, At = Symbol(), Rt = /* @__PURE__ */ new WeakMap();
+let Kt = class {
   constructor(t, e, r) {
     if (this._$cssResult$ = !0, r !== At) throw Error("CSSResult is not constructable. Use `unsafeCSS` or `css` instead.");
     this.cssText = t, this.t = e;
@@ -14,7 +14,7 @@ let Yt = class {
     const e = this.t;
     if (wt && t === void 0) {
       const r = e !== void 0 && e.length === 1;
-      r && (t = It.get(e)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), r && It.set(e, t));
+      r && (t = Rt.get(e)), t === void 0 && ((this.o = t = new CSSStyleSheet()).replaceSync(this.cssText), r && Rt.set(e, t));
     }
     return t;
   }
@@ -22,20 +22,20 @@ let Yt = class {
     return this.cssText;
   }
 };
-const pe = (o) => new Yt(typeof o == "string" ? o : o + "", void 0, At), E = (o, ...t) => {
+const pe = (o) => new Kt(typeof o == "string" ? o : o + "", void 0, At), S = (o, ...t) => {
   const e = o.length === 1 ? o[0] : t.reduce(((r, i, s) => r + ((n) => {
     if (n._$cssResult$ === !0) return n.cssText;
     if (typeof n == "number") return n;
     throw Error("Value passed to 'css' function must be a 'css' function result: " + n + ". Use 'unsafeCSS' to pass non-literal values, but take care to ensure page security.");
   })(i) + o[s + 1]), o[0]);
-  return new Yt(e, o, At);
+  return new Kt(e, o, At);
 }, fe = (o, t) => {
   if (wt) o.adoptedStyleSheets = t.map(((e) => e instanceof CSSStyleSheet ? e : e.styleSheet));
   else for (const e of t) {
     const r = document.createElement("style"), i = et.litNonce;
     i !== void 0 && r.setAttribute("nonce", i), r.textContent = e.cssText, o.appendChild(r);
   }
-}, Rt = wt ? (o) => o : (o) => o instanceof CSSStyleSheet ? ((t) => {
+}, It = wt ? (o) => o : (o) => o instanceof CSSStyleSheet ? ((t) => {
   let e = "";
   for (const r of t.cssRules) e += r.cssText;
   return pe(e);
@@ -45,7 +45,7 @@ const pe = (o) => new Yt(typeof o == "string" ? o : o + "", void 0, At), E = (o,
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const { is: me, defineProperty: ve, getOwnPropertyDescriptor: be, getOwnPropertyNames: ge, getOwnPropertySymbols: ye, getPrototypeOf: _e } = Object, st = globalThis, Ut = st.trustedTypes, $e = Ut ? Ut.emptyScript : "", xe = st.reactiveElementPolyfillSupport, j = (o, t) => o, rt = { toAttribute(o, t) {
+const { is: me, defineProperty: ve, getOwnPropertyDescriptor: be, getOwnPropertyNames: ge, getOwnPropertySymbols: ye, getPrototypeOf: _e } = Object, st = globalThis, Nt = st.trustedTypes, $e = Nt ? Nt.emptyScript : "", xe = st.reactiveElementPolyfillSupport, j = (o, t) => o, rt = { toAttribute(o, t) {
   switch (t) {
     case Boolean:
       o = o ? $e : null;
@@ -73,16 +73,16 @@ const { is: me, defineProperty: ve, getOwnPropertyDescriptor: be, getOwnProperty
       }
   }
   return e;
-} }, Ct = (o, t) => !me(o, t), Nt = { attribute: !0, type: String, converter: rt, reflect: !1, useDefault: !1, hasChanged: Ct };
+} }, Et = (o, t) => !me(o, t), Ut = { attribute: !0, type: String, converter: rt, reflect: !1, useDefault: !1, hasChanged: Et };
 Symbol.metadata ??= Symbol("metadata"), st.litPropertyMetadata ??= /* @__PURE__ */ new WeakMap();
-let D = class extends HTMLElement {
+let M = class extends HTMLElement {
   static addInitializer(t) {
     this._$Ei(), (this.l ??= []).push(t);
   }
   static get observedAttributes() {
     return this.finalize(), this._$Eh && [...this._$Eh.keys()];
   }
-  static createProperty(t, e = Nt) {
+  static createProperty(t, e = Ut) {
     if (e.state && (e.attribute = !1), this._$Ei(), this.prototype.hasOwnProperty(t) && ((e = Object.create(e)).wrapped = !0), this.elementProperties.set(t, e), !e.noAccessor) {
       const r = Symbol(), i = this.getPropertyDescriptor(t, r, e);
       i !== void 0 && ve(this.prototype, t, i);
@@ -100,7 +100,7 @@ let D = class extends HTMLElement {
     }, configurable: !0, enumerable: !0 };
   }
   static getPropertyOptions(t) {
-    return this.elementProperties.get(t) ?? Nt;
+    return this.elementProperties.get(t) ?? Ut;
   }
   static _$Ei() {
     if (this.hasOwnProperty(j("elementProperties"))) return;
@@ -129,8 +129,8 @@ let D = class extends HTMLElement {
     const e = [];
     if (Array.isArray(t)) {
       const r = new Set(t.flat(1 / 0).reverse());
-      for (const i of r) e.unshift(Rt(i));
-    } else t !== void 0 && e.push(Rt(t));
+      for (const i of r) e.unshift(It(i));
+    } else t !== void 0 && e.push(It(t));
     return e;
   }
   static _$Eu(t, e) {
@@ -188,7 +188,7 @@ let D = class extends HTMLElement {
   requestUpdate(t, e, r) {
     if (t !== void 0) {
       const i = this.constructor, s = this[t];
-      if (r ??= i.getPropertyOptions(t), !((r.hasChanged ?? Ct)(s, e) || r.useDefault && r.reflect && s === this._$Ej?.get(t) && !this.hasAttribute(i._$Eu(t, r)))) return;
+      if (r ??= i.getPropertyOptions(t), !((r.hasChanged ?? Et)(s, e) || r.useDefault && r.reflect && s === this._$Ej?.get(t) && !this.hasAttribute(i._$Eu(t, r)))) return;
       this.C(t, e, r);
     }
     this.isUpdatePending === !1 && (this._$ES = this._$EP());
@@ -256,53 +256,53 @@ let D = class extends HTMLElement {
   firstUpdated(t) {
   }
 };
-D.elementStyles = [], D.shadowRootOptions = { mode: "open" }, D[j("elementProperties")] = /* @__PURE__ */ new Map(), D[j("finalized")] = /* @__PURE__ */ new Map(), xe?.({ ReactiveElement: D }), (st.reactiveElementVersions ??= []).push("2.1.1");
+M.elementStyles = [], M.shadowRootOptions = { mode: "open" }, M[j("elementProperties")] = /* @__PURE__ */ new Map(), M[j("finalized")] = /* @__PURE__ */ new Map(), xe?.({ ReactiveElement: M }), (st.reactiveElementVersions ??= []).push("2.1.1");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const Et = globalThis, ot = Et.trustedTypes, zt = ot ? ot.createPolicy("lit-html", { createHTML: (o) => o }) : void 0, Kt = "$lit$", O = `lit$${Math.random().toFixed(9).slice(2)}$`, Zt = "?" + O, we = `<${Zt}>`, z = document, q = () => z.createComment(""), W = (o) => o === null || typeof o != "object" && typeof o != "function", St = Array.isArray, Ae = (o) => St(o) || typeof o?.[Symbol.iterator] == "function", at = `[ 	
-\f\r]`, F = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Mt = /-->/g, Dt = />/g, U = RegExp(`>|${at}(?:([^\\s"'>=/]+)(${at}*=${at}*(?:[^ 	
-\f\r"'\`<>=]|("|')|))|$)`, "g"), Ht = /'/g, Bt = /"/g, Jt = /^(?:script|style|textarea|title)$/i, Ce = (o) => (t, ...e) => ({ _$litType$: o, strings: t, values: e }), $ = Ce(1), k = Symbol.for("lit-noChange"), p = Symbol.for("lit-nothing"), Ft = /* @__PURE__ */ new WeakMap(), N = z.createTreeWalker(z, 129);
+const Ct = globalThis, ot = Ct.trustedTypes, zt = ot ? ot.createPolicy("lit-html", { createHTML: (o) => o }) : void 0, Yt = "$lit$", O = `lit$${Math.random().toFixed(9).slice(2)}$`, Zt = "?" + O, we = `<${Zt}>`, z = document, q = () => z.createComment(""), W = (o) => o === null || typeof o != "object" && typeof o != "function", St = Array.isArray, Ae = (o) => St(o) || typeof o?.[Symbol.iterator] == "function", at = `[ 	
+\f\r]`, B = /<(?:(!--|\/[^a-zA-Z])|(\/?[a-zA-Z][^>\s]*)|(\/?$))/g, Ht = /-->/g, Mt = />/g, N = RegExp(`>|${at}(?:([^\\s"'>=/]+)(${at}*=${at}*(?:[^ 	
+\f\r"'\`<>=]|("|')|))|$)`, "g"), Dt = /'/g, Ft = /"/g, Jt = /^(?:script|style|textarea|title)$/i, Ee = (o) => (t, ...e) => ({ _$litType$: o, strings: t, values: e }), $ = Ee(1), P = Symbol.for("lit-noChange"), p = Symbol.for("lit-nothing"), Bt = /* @__PURE__ */ new WeakMap(), U = z.createTreeWalker(z, 129);
 function Xt(o, t) {
   if (!St(o) || !o.hasOwnProperty("raw")) throw Error("invalid template strings array");
   return zt !== void 0 ? zt.createHTML(t) : t;
 }
-const Ee = (o, t) => {
+const Ce = (o, t) => {
   const e = o.length - 1, r = [];
-  let i, s = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", n = F;
+  let i, s = t === 2 ? "<svg>" : t === 3 ? "<math>" : "", n = B;
   for (let l = 0; l < e; l++) {
     const a = o[l];
-    let d, h, c = -1, b = 0;
-    for (; b < a.length && (n.lastIndex = b, h = n.exec(a), h !== null); ) b = n.lastIndex, n === F ? h[1] === "!--" ? n = Mt : h[1] !== void 0 ? n = Dt : h[2] !== void 0 ? (Jt.test(h[2]) && (i = RegExp("</" + h[2], "g")), n = U) : h[3] !== void 0 && (n = U) : n === U ? h[0] === ">" ? (n = i ?? F, c = -1) : h[1] === void 0 ? c = -2 : (c = n.lastIndex - h[2].length, d = h[1], n = h[3] === void 0 ? U : h[3] === '"' ? Bt : Ht) : n === Bt || n === Ht ? n = U : n === Mt || n === Dt ? n = F : (n = U, i = void 0);
-    const v = n === U && o[l + 1].startsWith("/>") ? " " : "";
-    s += n === F ? a + we : c >= 0 ? (r.push(d), a.slice(0, c) + Kt + a.slice(c) + O + v) : a + O + (c === -2 ? l : v);
+    let d, h, c = -1, g = 0;
+    for (; g < a.length && (n.lastIndex = g, h = n.exec(a), h !== null); ) g = n.lastIndex, n === B ? h[1] === "!--" ? n = Ht : h[1] !== void 0 ? n = Mt : h[2] !== void 0 ? (Jt.test(h[2]) && (i = RegExp("</" + h[2], "g")), n = N) : h[3] !== void 0 && (n = N) : n === N ? h[0] === ">" ? (n = i ?? B, c = -1) : h[1] === void 0 ? c = -2 : (c = n.lastIndex - h[2].length, d = h[1], n = h[3] === void 0 ? N : h[3] === '"' ? Ft : Dt) : n === Ft || n === Dt ? n = N : n === Ht || n === Mt ? n = B : (n = N, i = void 0);
+    const b = n === N && o[l + 1].startsWith("/>") ? " " : "";
+    s += n === B ? a + we : c >= 0 ? (r.push(d), a.slice(0, c) + Yt + a.slice(c) + O + b) : a + O + (c === -2 ? l : b);
   }
   return [Xt(o, s + (o[e] || "<?>") + (t === 2 ? "</svg>" : t === 3 ? "</math>" : "")), r];
 };
-class Y {
+class K {
   constructor({ strings: t, _$litType$: e }, r) {
     let i;
     this.parts = [];
     let s = 0, n = 0;
-    const l = t.length - 1, a = this.parts, [d, h] = Ee(t, e);
-    if (this.el = Y.createElement(d, r), N.currentNode = this.el.content, e === 2 || e === 3) {
+    const l = t.length - 1, a = this.parts, [d, h] = Ce(t, e);
+    if (this.el = K.createElement(d, r), U.currentNode = this.el.content, e === 2 || e === 3) {
       const c = this.el.content.firstChild;
       c.replaceWith(...c.childNodes);
     }
-    for (; (i = N.nextNode()) !== null && a.length < l; ) {
+    for (; (i = U.nextNode()) !== null && a.length < l; ) {
       if (i.nodeType === 1) {
-        if (i.hasAttributes()) for (const c of i.getAttributeNames()) if (c.endsWith(Kt)) {
-          const b = h[n++], v = i.getAttribute(c).split(O), m = /([.?@])?(.*)/.exec(b);
-          a.push({ type: 1, index: s, name: m[2], strings: v, ctor: m[1] === "." ? Te : m[1] === "?" ? Pe : m[1] === "@" ? Le : nt }), i.removeAttribute(c);
+        if (i.hasAttributes()) for (const c of i.getAttributeNames()) if (c.endsWith(Yt)) {
+          const g = h[n++], b = i.getAttribute(c).split(O), v = /([.?@])?(.*)/.exec(g);
+          a.push({ type: 1, index: s, name: v[2], strings: b, ctor: v[1] === "." ? Te : v[1] === "?" ? Le : v[1] === "@" ? ke : nt }), i.removeAttribute(c);
         } else c.startsWith(O) && (a.push({ type: 6, index: s }), i.removeAttribute(c));
         if (Jt.test(i.tagName)) {
-          const c = i.textContent.split(O), b = c.length - 1;
-          if (b > 0) {
+          const c = i.textContent.split(O), g = c.length - 1;
+          if (g > 0) {
             i.textContent = ot ? ot.emptyScript : "";
-            for (let v = 0; v < b; v++) i.append(c[v], q()), N.nextNode(), a.push({ type: 2, index: ++s });
-            i.append(c[b], q());
+            for (let b = 0; b < g; b++) i.append(c[b], q()), U.nextNode(), a.push({ type: 2, index: ++s });
+            i.append(c[g], q());
           }
         }
       } else if (i.nodeType === 8) if (i.data === Zt) a.push({ type: 2, index: s });
@@ -318,11 +318,11 @@ class Y {
     return r.innerHTML = t, r;
   }
 }
-function H(o, t, e = o, r) {
-  if (t === k) return t;
+function D(o, t, e = o, r) {
+  if (t === P) return t;
   let i = r !== void 0 ? e._$Co?.[r] : e._$Cl;
   const s = W(t) ? void 0 : t._$litDirective$;
-  return i?.constructor !== s && (i?._$AO?.(!1), s === void 0 ? i = void 0 : (i = new s(o), i._$AT(o, e, r)), r !== void 0 ? (e._$Co ??= [])[r] = i : e._$Cl = i), i !== void 0 && (t = H(o, i._$AS(o, t.values), i, r)), t;
+  return i?.constructor !== s && (i?._$AO?.(!1), s === void 0 ? i = void 0 : (i = new s(o), i._$AT(o, e, r)), r !== void 0 ? (e._$Co ??= [])[r] = i : e._$Cl = i), i !== void 0 && (t = D(o, i._$AS(o, t.values), i, r)), t;
 }
 class Se {
   constructor(t, e) {
@@ -336,16 +336,16 @@ class Se {
   }
   u(t) {
     const { el: { content: e }, parts: r } = this._$AD, i = (t?.creationScope ?? z).importNode(e, !0);
-    N.currentNode = i;
-    let s = N.nextNode(), n = 0, l = 0, a = r[0];
+    U.currentNode = i;
+    let s = U.nextNode(), n = 0, l = 0, a = r[0];
     for (; a !== void 0; ) {
       if (n === a.index) {
         let d;
         a.type === 2 ? d = new Z(s, s.nextSibling, this, t) : a.type === 1 ? d = new a.ctor(s, a.name, a.strings, this, t) : a.type === 6 && (d = new Oe(s, this, t)), this._$AV.push(d), a = r[++l];
       }
-      n !== a?.index && (s = N.nextNode(), n++);
+      n !== a?.index && (s = U.nextNode(), n++);
     }
-    return N.currentNode = z, i;
+    return U.currentNode = z, i;
   }
   p(t) {
     let e = 0;
@@ -371,7 +371,7 @@ class Z {
     return this._$AB;
   }
   _$AI(t, e = this) {
-    t = H(this, t, e), W(t) ? t === p || t == null || t === "" ? (this._$AH !== p && this._$AR(), this._$AH = p) : t !== this._$AH && t !== k && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Ae(t) ? this.k(t) : this._(t);
+    t = D(this, t, e), W(t) ? t === p || t == null || t === "" ? (this._$AH !== p && this._$AR(), this._$AH = p) : t !== this._$AH && t !== P && this._(t) : t._$litType$ !== void 0 ? this.$(t) : t.nodeType !== void 0 ? this.T(t) : Ae(t) ? this.k(t) : this._(t);
   }
   O(t) {
     return this._$AA.parentNode.insertBefore(t, this._$AB);
@@ -383,7 +383,7 @@ class Z {
     this._$AH !== p && W(this._$AH) ? this._$AA.nextSibling.data = t : this.T(z.createTextNode(t)), this._$AH = t;
   }
   $(t) {
-    const { values: e, _$litType$: r } = t, i = typeof r == "number" ? this._$AC(t) : (r.el === void 0 && (r.el = Y.createElement(Xt(r.h, r.h[0]), this.options)), r);
+    const { values: e, _$litType$: r } = t, i = typeof r == "number" ? this._$AC(t) : (r.el === void 0 && (r.el = K.createElement(Xt(r.h, r.h[0]), this.options)), r);
     if (this._$AH?._$AD === i) this._$AH.p(e);
     else {
       const s = new Se(i, this), n = s.u(this.options);
@@ -391,8 +391,8 @@ class Z {
     }
   }
   _$AC(t) {
-    let e = Ft.get(t.strings);
-    return e === void 0 && Ft.set(t.strings, e = new Y(t)), e;
+    let e = Bt.get(t.strings);
+    return e === void 0 && Bt.set(t.strings, e = new K(t)), e;
   }
   k(t) {
     St(this._$AH) || (this._$AH = [], this._$AR());
@@ -424,11 +424,11 @@ class nt {
   _$AI(t, e = this, r, i) {
     const s = this.strings;
     let n = !1;
-    if (s === void 0) t = H(this, t, e, 0), n = !W(t) || t !== this._$AH && t !== k, n && (this._$AH = t);
+    if (s === void 0) t = D(this, t, e, 0), n = !W(t) || t !== this._$AH && t !== P, n && (this._$AH = t);
     else {
       const l = t;
       let a, d;
-      for (t = s[0], a = 0; a < s.length - 1; a++) d = H(this, l[r + a], e, a), d === k && (d = this._$AH[a]), n ||= !W(d) || d !== this._$AH[a], d === p ? t = p : t !== p && (t += (d ?? "") + s[a + 1]), this._$AH[a] = d;
+      for (t = s[0], a = 0; a < s.length - 1; a++) d = D(this, l[r + a], e, a), d === P && (d = this._$AH[a]), n ||= !W(d) || d !== this._$AH[a], d === p ? t = p : t !== p && (t += (d ?? "") + s[a + 1]), this._$AH[a] = d;
     }
     n && !i && this.j(t);
   }
@@ -444,7 +444,7 @@ class Te extends nt {
     this.element[this.name] = t === p ? void 0 : t;
   }
 }
-class Pe extends nt {
+class Le extends nt {
   constructor() {
     super(...arguments), this.type = 4;
   }
@@ -452,12 +452,12 @@ class Pe extends nt {
     this.element.toggleAttribute(this.name, !!t && t !== p);
   }
 }
-class Le extends nt {
+class ke extends nt {
   constructor(t, e, r, i, s) {
     super(t, e, r, i, s), this.type = 5;
   }
   _$AI(t, e = this) {
-    if ((t = H(this, t, e, 0) ?? p) === k) return;
+    if ((t = D(this, t, e, 0) ?? p) === P) return;
     const r = this._$AH, i = t === p && r !== p || t.capture !== r.capture || t.once !== r.once || t.passive !== r.passive, s = t !== p && (r === p || i);
     i && this.element.removeEventListener(this.name, this, r), s && this.element.addEventListener(this.name, this, t), this._$AH = t;
   }
@@ -473,12 +473,12 @@ class Oe {
     return this._$AM._$AU;
   }
   _$AI(t) {
-    H(this, t);
+    D(this, t);
   }
 }
-const ke = Et.litHtmlPolyfillSupport;
-ke?.(Y, Z), (Et.litHtmlVersions ??= []).push("3.3.1");
-const Ie = (o, t, e) => {
+const Pe = Ct.litHtmlPolyfillSupport;
+Pe?.(K, Z), (Ct.litHtmlVersions ??= []).push("3.3.1");
+const Re = (o, t, e) => {
   const r = e?.renderBefore ?? t;
   let i = r._$litPart$;
   if (i === void 0) {
@@ -493,7 +493,7 @@ const Ie = (o, t, e) => {
  * SPDX-License-Identifier: BSD-3-Clause
  */
 const Tt = globalThis;
-let C = class extends D {
+let E = class extends M {
   constructor() {
     super(...arguments), this.renderOptions = { host: this }, this._$Do = void 0;
   }
@@ -503,7 +503,7 @@ let C = class extends D {
   }
   update(t) {
     const e = this.render();
-    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = Ie(e, this.renderRoot, this.renderOptions);
+    this.hasUpdated || (this.renderOptions.isConnected = this.isConnected), super.update(t), this._$Do = Re(e, this.renderRoot, this.renderOptions);
   }
   connectedCallback() {
     super.connectedCallback(), this._$Do?.setConnected(!0);
@@ -512,19 +512,19 @@ let C = class extends D {
     super.disconnectedCallback(), this._$Do?.setConnected(!1);
   }
   render() {
-    return k;
+    return P;
   }
 };
-C._$litElement$ = !0, C.finalized = !0, Tt.litElementHydrateSupport?.({ LitElement: C });
-const Re = Tt.litElementPolyfillSupport;
-Re?.({ LitElement: C });
+E._$litElement$ = !0, E.finalized = !0, Tt.litElementHydrateSupport?.({ LitElement: E });
+const Ie = Tt.litElementPolyfillSupport;
+Ie?.({ LitElement: E });
 (Tt.litElementVersions ??= []).push("4.2.1");
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const I = (o) => (t, e) => {
+const R = (o) => (t, e) => {
   e !== void 0 ? e.addInitializer((() => {
     customElements.define(o, t);
   })) : customElements.define(o, t);
@@ -534,7 +534,7 @@ const I = (o) => (t, e) => {
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const Ue = { attribute: !0, type: String, converter: rt, reflect: !1, hasChanged: Ct }, Ne = (o = Ue, t, e) => {
+const Ne = { attribute: !0, type: String, converter: rt, reflect: !1, hasChanged: Et }, Ue = (o = Ne, t, e) => {
   const { kind: r, metadata: i } = e;
   let s = globalThis.litPropertyMetadata.get(i);
   if (s === void 0 && globalThis.litPropertyMetadata.set(i, s = /* @__PURE__ */ new Map()), r === "setter" && ((o = Object.create(o)).wrapped = !0), s.set(e.name, o), r === "accessor") {
@@ -556,7 +556,7 @@ const Ue = { attribute: !0, type: String, converter: rt, reflect: !1, hasChanged
   throw Error("Unsupported decorator location: " + r);
 };
 function _(o) {
-  return (t, e) => typeof e == "object" ? Ne(o, t, e) : ((r, i, s) => {
+  return (t, e) => typeof e == "object" ? Ue(o, t, e) : ((r, i, s) => {
     const n = i.hasOwnProperty(s);
     return i.constructor.createProperty(s, r), n ? Object.getOwnPropertyDescriptor(i, s) : void 0;
   })(o, t, e);
@@ -603,7 +603,7 @@ function ze(o) {
   };
 }
 var lt = { exports: {} }, jt;
-function Me() {
+function He() {
   return jt || (jt = 1, (function(o) {
     var t = Object.prototype.hasOwnProperty, e = "~";
     function r() {
@@ -612,11 +612,11 @@ function Me() {
     function i(a, d, h) {
       this.fn = a, this.context = d, this.once = h || !1;
     }
-    function s(a, d, h, c, b) {
+    function s(a, d, h, c, g) {
       if (typeof h != "function")
         throw new TypeError("The listener must be a function");
-      var v = new i(h, c || a, b), m = e ? e + d : d;
-      return a._events[m] ? a._events[m].fn ? a._events[m] = [a._events[m], v] : a._events[m].push(v) : (a._events[m] = v, a._eventsCount++), a;
+      var b = new i(h, c || a, g), v = e ? e + d : d;
+      return a._events[v] ? a._events[v].fn ? a._events[v] = [a._events[v], b] : a._events[v].push(b) : (a._events[v] = b, a._eventsCount++), a;
     }
     function n(a, d) {
       --a._eventsCount === 0 ? a._events = new r() : delete a._events[d];
@@ -634,18 +634,18 @@ function Me() {
       var h = e ? e + d : d, c = this._events[h];
       if (!c) return [];
       if (c.fn) return [c.fn];
-      for (var b = 0, v = c.length, m = new Array(v); b < v; b++)
-        m[b] = c[b].fn;
-      return m;
+      for (var g = 0, b = c.length, v = new Array(b); g < b; g++)
+        v[g] = c[g].fn;
+      return v;
     }, l.prototype.listenerCount = function(d) {
       var h = e ? e + d : d, c = this._events[h];
       return c ? c.fn ? 1 : c.length : 0;
-    }, l.prototype.emit = function(d, h, c, b, v, m) {
-      var S = e ? e + d : d;
-      if (!this._events[S]) return !1;
-      var u = this._events[S], P = arguments.length, R, y;
+    }, l.prototype.emit = function(d, h, c, g, b, v) {
+      var T = e ? e + d : d;
+      if (!this._events[T]) return !1;
+      var u = this._events[T], k = arguments.length, I, y;
       if (u.fn) {
-        switch (u.once && this.removeListener(d, u.fn, void 0, !0), P) {
+        switch (u.once && this.removeListener(d, u.fn, void 0, !0), k) {
           case 1:
             return u.fn.call(u.context), !0;
           case 2:
@@ -653,19 +653,19 @@ function Me() {
           case 3:
             return u.fn.call(u.context, h, c), !0;
           case 4:
-            return u.fn.call(u.context, h, c, b), !0;
+            return u.fn.call(u.context, h, c, g), !0;
           case 5:
-            return u.fn.call(u.context, h, c, b, v), !0;
+            return u.fn.call(u.context, h, c, g, b), !0;
           case 6:
-            return u.fn.call(u.context, h, c, b, v, m), !0;
+            return u.fn.call(u.context, h, c, g, b, v), !0;
         }
-        for (y = 1, R = new Array(P - 1); y < P; y++)
-          R[y - 1] = arguments[y];
-        u.fn.apply(u.context, R);
+        for (y = 1, I = new Array(k - 1); y < k; y++)
+          I[y - 1] = arguments[y];
+        u.fn.apply(u.context, I);
       } else {
-        var ue = u.length, B;
+        var ue = u.length, F;
         for (y = 0; y < ue; y++)
-          switch (u[y].once && this.removeListener(d, u[y].fn, void 0, !0), P) {
+          switch (u[y].once && this.removeListener(d, u[y].fn, void 0, !0), k) {
             case 1:
               u[y].fn.call(u[y].context);
               break;
@@ -676,12 +676,12 @@ function Me() {
               u[y].fn.call(u[y].context, h, c);
               break;
             case 4:
-              u[y].fn.call(u[y].context, h, c, b);
+              u[y].fn.call(u[y].context, h, c, g);
               break;
             default:
-              if (!R) for (B = 1, R = new Array(P - 1); B < P; B++)
-                R[B - 1] = arguments[B];
-              u[y].fn.apply(u[y].context, R);
+              if (!I) for (F = 1, I = new Array(k - 1); F < k; F++)
+                I[F - 1] = arguments[F];
+              u[y].fn.apply(u[y].context, I);
           }
       }
       return !0;
@@ -689,18 +689,18 @@ function Me() {
       return s(this, d, h, c, !1);
     }, l.prototype.once = function(d, h, c) {
       return s(this, d, h, c, !0);
-    }, l.prototype.removeListener = function(d, h, c, b) {
-      var v = e ? e + d : d;
-      if (!this._events[v]) return this;
+    }, l.prototype.removeListener = function(d, h, c, g) {
+      var b = e ? e + d : d;
+      if (!this._events[b]) return this;
       if (!h)
-        return n(this, v), this;
-      var m = this._events[v];
-      if (m.fn)
-        m.fn === h && (!b || m.once) && (!c || m.context === c) && n(this, v);
+        return n(this, b), this;
+      var v = this._events[b];
+      if (v.fn)
+        v.fn === h && (!g || v.once) && (!c || v.context === c) && n(this, b);
       else {
-        for (var S = 0, u = [], P = m.length; S < P; S++)
-          (m[S].fn !== h || b && !m[S].once || c && m[S].context !== c) && u.push(m[S]);
-        u.length ? this._events[v] = u.length === 1 ? u[0] : u : n(this, v);
+        for (var T = 0, u = [], k = v.length; T < k; T++)
+          (v[T].fn !== h || g && !v[T].once || c && v[T].context !== c) && u.push(v[T]);
+        u.length ? this._events[b] = u.length === 1 ? u[0] : u : n(this, b);
       }
       return this;
     }, l.prototype.removeAllListeners = function(d) {
@@ -709,10 +709,11 @@ function Me() {
     }, l.prototype.off = l.prototype.removeListener, l.prototype.addListener = l.prototype.on, l.prefixed = e, l.EventEmitter = l, o.exports = l;
   })(lt)), lt.exports;
 }
-Me();
-const L = {
+He();
+const C = {
   // Portal → Web Components
   AUTH_LOGOUT: "portal:auth:logout",
+  AUTH_TOKEN_REFRESHED: "portal:auth:token-refreshed",
   LOCALE_CHANGE: "portal:locale:change",
   // Web Components → Portal
   NAVIGATE: "wc:navigate",
@@ -720,18 +721,25 @@ const L = {
   NOTIFICATION: "wc:notification",
   LOG: "wc:log"
 };
-function De() {
+function Me() {
   if (!window.__AETHERWEAVE_EVENT_BUS__)
     throw new Error(
       "[EventBus] Portal EventBus not found. Ensure portal is loaded first."
     );
   return window.__AETHERWEAVE_EVENT_BUS__;
 }
-class He {
+function De() {
+  if (!window.__AETHERWEAVE_STATEFUL_BUS__)
+    throw new Error(
+      "[EventBus] Portal Stateful EventBus not found. Ensure portal is loaded first."
+    );
+  return window.__AETHERWEAVE_STATEFUL_BUS__;
+}
+class Fe {
   constructor() {
     this.locale = "en", this.source = "user-management";
     try {
-      this.emitter = De(), this.emitLog("Connected to portal EventBus", "debug");
+      this.emitter = Me(), this.emitLog("Connected to portal EventBus", "debug");
     } catch (t) {
       throw console.error("[WC EventListener] Failed to connect:", t), t;
     }
@@ -746,7 +754,16 @@ class He {
     const e = () => {
       this.emitLog("Logged out", "info"), t();
     };
-    return this.emitter.on(L.AUTH_LOGOUT, e), () => this.emitter.off(L.AUTH_LOGOUT, e);
+    return this.emitter.on(C.AUTH_LOGOUT, e), () => this.emitter.off(C.AUTH_LOGOUT, e);
+  }
+  /**
+   * Listen for token refresh from portal
+   */
+  onTokenRefresh(t) {
+    const e = (r) => {
+      this.emitLog("Token refreshed", "info"), t(r);
+    };
+    return this.emitter.on(C.AUTH_TOKEN_REFRESHED, e), () => this.emitter.off(C.AUTH_TOKEN_REFRESHED, e);
   }
   /**
    * Listen for locale changes from portal
@@ -755,7 +772,19 @@ class He {
     const e = (r) => {
       this.locale = r.locale, this.emitLog(`Locale changed: ${this.locale}`, "debug"), t(r);
     };
-    return this.emitter.on(L.LOCALE_CHANGE, e), () => this.emitter.off(L.LOCALE_CHANGE, e);
+    return this.emitter.on(C.LOCALE_CHANGE, e), () => this.emitter.off(C.LOCALE_CHANGE, e);
+  }
+  /**
+   * Listen for theme changes from portal (using stateful event bus)
+   * Receives current theme immediately on subscription
+   */
+  onThemeChange(t) {
+    try {
+      return De().onStateful("theme:changed", t);
+    } catch {
+      return console.warn("[WC EventListener] Stateful EventBus not available, theme changes will not work"), () => {
+      };
+    }
   }
   // ============================================================================
   // GETTERS
@@ -773,28 +802,28 @@ class He {
    * Request navigation to a route
    */
   navigate(t, e = !1) {
-    this.emitter.emit(L.NAVIGATE, { path: t, replace: e }), this.emitLog(`Navigation requested: ${t}`, "debug");
+    this.emitter.emit(C.NAVIGATE, { path: t, replace: e }), this.emitLog(`Navigation requested: ${t}`, "debug");
   }
   /**
    * Emit error to portal (will show error snackbar)
    */
   emitError(t, e, r = "user-management") {
-    this.emitter.emit(L.ERROR, { message: t, code: e, source: r }), this.emitLog(`Error emitted: ${t}`, "error", { code: e });
+    this.emitter.emit(C.ERROR, { message: t, code: e, source: r }), this.emitLog(`Error emitted: ${t}`, "error", { code: e });
   }
   /**
    * Emit notification to portal (will show snackbar)
    */
   emitNotification(t, e = "info") {
-    this.emitter.emit(L.NOTIFICATION, { message: t, type: e }), this.emitLog(`Notification (${e}): ${t}`, "debug");
+    this.emitter.emit(C.NOTIFICATION, { message: t, type: e }), this.emitLog(`Notification (${e}): ${t}`, "debug");
   }
   /**
    * Emit log message to portal (will appear in log panel)
    */
   emitLog(t, e, r) {
-    this.emitter.emit(L.LOG, { message: t, level: e, source: this.source, meta: r });
+    this.emitter.emit(C.LOG, { message: t, level: e, source: this.source, meta: r });
   }
 }
-const g = new He();
+const f = new Fe();
 class Be {
   constructor() {
     this.baseUrl = "/api/v1/users";
@@ -829,7 +858,7 @@ class Be {
       });
       return this.handleResponse(e);
     } catch (e) {
-      throw console.error("[UserAPI] Failed to fetch users:", e), g.emitError(e instanceof Error ? e.message : "Failed to fetch users"), e;
+      throw f.emitLog("Failed to fetch users", "error", e), f.emitError(e instanceof Error ? e.message : "Failed to fetch users"), e;
     }
   }
   /**
@@ -843,7 +872,7 @@ class Be {
       });
       return this.handleResponse(r);
     } catch (r) {
-      throw console.error("[UserAPI] Failed to fetch user:", r), g.emitError(r instanceof Error ? r.message : "Failed to fetch user"), r;
+      throw f.emitLog("Failed to fetch user", "error", r), f.emitError(r instanceof Error ? r.message : "Failed to fetch user"), r;
     }
   }
   /**
@@ -856,9 +885,9 @@ class Be {
         headers: this.getHeaders(e),
         body: JSON.stringify(t)
       }), i = await this.handleResponse(r);
-      return g.emitNotification("User created successfully", "success"), i;
+      return f.emitNotification("User created successfully", "success"), i;
     } catch (r) {
-      throw console.error("[UserAPI] Failed to create user:", r), g.emitError(r instanceof Error ? r.message : "Failed to create user"), r;
+      throw f.emitLog("Failed to create user", "error", r), f.emitError(r instanceof Error ? r.message : "Failed to create user"), r;
     }
   }
   /**
@@ -871,9 +900,9 @@ class Be {
         headers: this.getHeaders(r),
         body: JSON.stringify(e)
       }), s = await this.handleResponse(i);
-      return g.emitNotification("User updated successfully", "success"), s;
+      return f.emitNotification("User updated successfully", "success"), s;
     } catch (i) {
-      throw console.error("[UserAPI] Failed to update user:", i), g.emitError(i instanceof Error ? i.message : "Failed to update user"), i;
+      throw f.emitLog("Failed to update user", "error", i), f.emitError(i instanceof Error ? i.message : "Failed to update user"), i;
     }
   }
   /**
@@ -889,17 +918,17 @@ class Be {
         const i = await r.json().catch(() => ({ message: r.statusText }));
         throw new Error(i.message || `HTTP ${r.status}: ${r.statusText}`);
       }
-      g.emitNotification("User deleted successfully", "success");
+      f.emitNotification("User deleted successfully", "success");
     } catch (r) {
-      throw console.error("[UserAPI] Failed to delete user:", r), g.emitError(r instanceof Error ? r.message : "Failed to delete user"), r;
+      throw f.emitLog("Failed to delete user", "error", r), f.emitError(r instanceof Error ? r.message : "Failed to delete user"), r;
     }
   }
 }
 const Vt = new Be(), ht = "langChanged";
-function Fe(o, t, e) {
+function je(o, t, e) {
   return Object.entries(ut(t || {})).reduce((r, [i, s]) => r.replace(new RegExp(`{{[  ]*${i}[  ]*}}`, "gm"), String(ut(s))), o);
 }
-function je(o, t) {
+function Ve(o, t) {
   const e = o.split(".");
   let r = t.strings;
   for (; r != null && e.length > 0; )
@@ -909,22 +938,22 @@ function je(o, t) {
 function ut(o) {
   return typeof o == "function" ? o() : o;
 }
-const Ve = () => ({
+const Ge = () => ({
   loader: () => Promise.resolve({}),
   empty: (o) => `[${o}]`,
-  lookup: je,
-  interpolate: Fe,
+  lookup: Ve,
+  interpolate: je,
   translationCache: {}
 });
-let K = Ve();
-function Ge(o) {
-  return K = Object.assign(Object.assign({}, K), o);
-}
+let Y = Ge();
 function qe(o) {
+  return Y = Object.assign(Object.assign({}, Y), o);
+}
+function We(o) {
   window.dispatchEvent(new CustomEvent(ht, { detail: o }));
 }
-function We(o, t, e = K) {
-  qe({
+function Ke(o, t, e = Y) {
+  We({
     previousStrings: e.strings,
     previousLang: e.lang,
     lang: e.lang = o,
@@ -935,11 +964,11 @@ function Ye(o, t) {
   const e = (r) => o(r.detail);
   return window.addEventListener(ht, e, t), () => window.removeEventListener(ht, e);
 }
-async function V(o, t = K) {
+async function V(o, t = Y) {
   const e = await t.loader(o, t);
-  t.translationCache = {}, We(o, e, t);
+  t.translationCache = {}, Ke(o, e, t);
 }
-function ee(o, t, e = K) {
+function ee(o, t, e = Y) {
   let r = e.translationCache[o] || (e.translationCache[o] = e.lookup(o, e) || e.empty(o, e));
   return t = t != null ? ut(t) : null, t != null ? e.interpolate(r, t, e) : r;
 }
@@ -948,8 +977,8 @@ function ee(o, t, e = K) {
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const Pt = { ATTRIBUTE: 1, CHILD: 2 }, re = (o) => (...t) => ({ _$litDirective$: o, values: t });
-class Lt {
+const Lt = { ATTRIBUTE: 1, CHILD: 2 }, re = (o) => (...t) => ({ _$litDirective$: o, values: t });
+class kt {
   constructor(t) {
   }
   get _$AU() {
@@ -970,7 +999,7 @@ class Lt {
  * Copyright 2020 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const Ke = (o) => o.strings === void 0;
+const Ze = (o) => o.strings === void 0;
 /**
  * @license
  * Copyright 2017 Google LLC
@@ -992,22 +1021,22 @@ const G = (o, t) => {
     let e = t._$AN;
     if (e === void 0) t._$AN = e = /* @__PURE__ */ new Set();
     else if (e.has(o)) break;
-    e.add(o), Xe(t);
+    e.add(o), Qe(t);
   }
 };
-function Ze(o) {
+function Je(o) {
   this._$AN !== void 0 ? (it(this), this._$AM = o, oe(this)) : this._$AM = o;
 }
-function Je(o, t = !1, e = 0) {
+function Xe(o, t = !1, e = 0) {
   const r = this._$AH, i = this._$AN;
   if (i !== void 0 && i.size !== 0) if (t) if (Array.isArray(r)) for (let s = e; s < r.length; s++) G(r[s], !1), it(r[s]);
   else r != null && (G(r, !1), it(r));
   else G(this, o);
 }
-const Xe = (o) => {
-  o.type == Pt.CHILD && (o._$AP ??= Je, o._$AQ ??= Ze);
+const Qe = (o) => {
+  o.type == Lt.CHILD && (o._$AP ??= Xe, o._$AQ ??= Je);
 };
-class Qe extends Lt {
+class tr extends kt {
   constructor() {
     super(...arguments), this._$AN = void 0;
   }
@@ -1018,7 +1047,7 @@ class Qe extends Lt {
     t !== this.isConnected && (this.isConnected = t, t ? this.reconnected?.() : this.disconnected?.()), e && (G(this, t), it(this));
   }
   setValue(t) {
-    if (Ke(this._$Ct)) this._$Ct._$AI(t, this);
+    if (Ze(this._$Ct)) this._$Ct._$AI(t, this);
     else {
       const e = [...this._$Ct._$AH];
       e[this._$Ci] = t, this._$Ct._$AI(e, this, 0);
@@ -1029,7 +1058,7 @@ class Qe extends Lt {
   reconnected() {
   }
 }
-class tr extends Qe {
+class er extends tr {
   constructor() {
     super(...arguments), this.langChangedSubscription = null, this.getValue = (() => "");
   }
@@ -1073,24 +1102,24 @@ class tr extends Qe {
     this.subscribe();
   }
 }
-class er extends tr {
+class rr extends er {
   render(t, e, r) {
     return this.renderValue(() => ee(t, e, r));
   }
 }
-const x = re(er);
+const x = re(rr);
 /**
  * @license
  * Copyright 2017 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-let Gt = class extends Lt {
+let Gt = class extends kt {
   constructor(t) {
-    if (super(t), this.it = p, t.type !== Pt.CHILD) throw Error(this.constructor.directiveName + "() can only be used in child bindings");
+    if (super(t), this.it = p, t.type !== Lt.CHILD) throw Error(this.constructor.directiveName + "() can only be used in child bindings");
   }
   render(t) {
     if (t === p || t == null) return this._t = void 0, this.it = t;
-    if (t === k) return t;
+    if (t === P) return t;
     if (typeof t != "string") throw Error(this.constructor.directiveName + "() called with a non-string value");
     if (t === this.it) return this._t;
     this.it = t;
@@ -1099,7 +1128,7 @@ let Gt = class extends Lt {
   }
 };
 Gt.directiveName = "unsafeHTML", Gt.resultType = 1;
-Ge({
+qe({
   loader: async (o) => {
     switch (o) {
       case "en":
@@ -1112,13 +1141,13 @@ Ge({
   }
 });
 V("en");
-const rr = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+const or = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   get: ee,
   translate: x,
   use: V
 }, Symbol.toStringTag, { value: "Module" }));
-function f(o, t, e, r) {
+function m(o, t, e, r) {
   var i = arguments.length, s = i < 3 ? t : r === null ? r = Object.getOwnPropertyDescriptor(t, e) : r, n;
   if (typeof Reflect == "object" && typeof Reflect.decorate == "function") s = Reflect.decorate(o, t, e, r);
   else for (var l = o.length - 1; l >= 0; l--) (n = o[l]) && (s = (i < 3 ? n(s) : i > 3 ? n(t, e, s) : n(t, e)) || s);
@@ -1129,7 +1158,7 @@ function f(o, t, e, r) {
  * Copyright 2022 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-class or extends C {
+class ir extends E {
   connectedCallback() {
     super.connectedCallback(), this.setAttribute("aria-hidden", "true");
   }
@@ -1142,18 +1171,18 @@ class or extends C {
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const ir = E`:host,.shadow,.shadow::before,.shadow::after{border-radius:inherit;inset:0;position:absolute;transition-duration:inherit;transition-property:inherit;transition-timing-function:inherit}:host{display:flex;pointer-events:none;transition-property:box-shadow,opacity}.shadow::before,.shadow::after{content:"";transition-property:box-shadow,opacity;--_level: var(--md-elevation-level, 0);--_shadow-color: var(--md-elevation-shadow-color, var(--md-sys-color-shadow, #000))}.shadow::before{box-shadow:0px calc(1px*(clamp(0,var(--_level),1) + clamp(0,var(--_level) - 3,1) + 2*clamp(0,var(--_level) - 4,1))) calc(1px*(2*clamp(0,var(--_level),1) + clamp(0,var(--_level) - 2,1) + clamp(0,var(--_level) - 4,1))) 0px var(--_shadow-color);opacity:.3}.shadow::after{box-shadow:0px calc(1px*(clamp(0,var(--_level),1) + clamp(0,var(--_level) - 1,1) + 2*clamp(0,var(--_level) - 2,3))) calc(1px*(3*clamp(0,var(--_level),2) + 2*clamp(0,var(--_level) - 2,3))) calc(1px*(clamp(0,var(--_level),4) + 2*clamp(0,var(--_level) - 4,1))) var(--_shadow-color);opacity:.15}
+const sr = S`:host,.shadow,.shadow::before,.shadow::after{border-radius:inherit;inset:0;position:absolute;transition-duration:inherit;transition-property:inherit;transition-timing-function:inherit}:host{display:flex;pointer-events:none;transition-property:box-shadow,opacity}.shadow::before,.shadow::after{content:"";transition-property:box-shadow,opacity;--_level: var(--md-elevation-level, 0);--_shadow-color: var(--md-elevation-shadow-color, var(--md-sys-color-shadow, #000))}.shadow::before{box-shadow:0px calc(1px*(clamp(0,var(--_level),1) + clamp(0,var(--_level) - 3,1) + 2*clamp(0,var(--_level) - 4,1))) calc(1px*(2*clamp(0,var(--_level),1) + clamp(0,var(--_level) - 2,1) + clamp(0,var(--_level) - 4,1))) 0px var(--_shadow-color);opacity:.3}.shadow::after{box-shadow:0px calc(1px*(clamp(0,var(--_level),1) + clamp(0,var(--_level) - 1,1) + 2*clamp(0,var(--_level) - 2,3))) calc(1px*(3*clamp(0,var(--_level),2) + 2*clamp(0,var(--_level) - 2,3))) calc(1px*(clamp(0,var(--_level),4) + 2*clamp(0,var(--_level) - 4,1))) var(--_shadow-color);opacity:.15}
 `;
 /**
  * @license
  * Copyright 2022 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-let pt = class extends or {
+let pt = class extends ir {
 };
-pt.styles = [ir];
-pt = f([
-  I("md-elevation")
+pt.styles = [sr];
+pt = m([
+  R("md-elevation")
 ], pt);
 /**
  * @license
@@ -1213,8 +1242,8 @@ class ne {
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const sr = ["focusin", "focusout", "pointerdown"];
-class Ot extends C {
+const nr = ["focusin", "focusout", "pointerdown"];
+class Ot extends E {
   constructor() {
     super(...arguments), this.visible = !1, this.inward = !1, this.attachableController = new ne(this, this.onControlChange.bind(this));
   }
@@ -1257,17 +1286,17 @@ class Ot extends C {
     }
   }
   onControlChange(t, e) {
-    for (const r of sr)
+    for (const r of nr)
       t?.removeEventListener(r, this), e?.addEventListener(r, this);
   }
   update(t) {
     t.has("visible") && this.dispatchEvent(new Event("visibility-changed")), super.update(t);
   }
 }
-f([
+m([
   _({ type: Boolean, reflect: !0 })
 ], Ot.prototype, "visible", void 0);
-f([
+m([
   _({ type: Boolean, reflect: !0 })
 ], Ot.prototype, "inward", void 0);
 const qt = Symbol("handledByFocusRing");
@@ -1276,7 +1305,7 @@ const qt = Symbol("handledByFocusRing");
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const nr = E`:host{animation-delay:0s,calc(var(--md-focus-ring-duration, 600ms)*.25);animation-duration:calc(var(--md-focus-ring-duration, 600ms)*.25),calc(var(--md-focus-ring-duration, 600ms)*.75);animation-timing-function:cubic-bezier(0.2, 0, 0, 1);box-sizing:border-box;color:var(--md-focus-ring-color, var(--md-sys-color-secondary, #625b71));display:none;pointer-events:none;position:absolute}:host([visible]){display:flex}:host(:not([inward])){animation-name:outward-grow,outward-shrink;border-end-end-radius:calc(var(--md-focus-ring-shape-end-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-end-start-radius:calc(var(--md-focus-ring-shape-end-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-start-end-radius:calc(var(--md-focus-ring-shape-start-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-start-start-radius:calc(var(--md-focus-ring-shape-start-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));inset:calc(-1*var(--md-focus-ring-outward-offset, 2px));outline:var(--md-focus-ring-width, 3px) solid currentColor}:host([inward]){animation-name:inward-grow,inward-shrink;border-end-end-radius:calc(var(--md-focus-ring-shape-end-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-end-start-radius:calc(var(--md-focus-ring-shape-end-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-start-end-radius:calc(var(--md-focus-ring-shape-start-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-start-start-radius:calc(var(--md-focus-ring-shape-start-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border:var(--md-focus-ring-width, 3px) solid currentColor;inset:var(--md-focus-ring-inward-offset, 0px)}@keyframes outward-grow{from{outline-width:0}to{outline-width:var(--md-focus-ring-active-width, 8px)}}@keyframes outward-shrink{from{outline-width:var(--md-focus-ring-active-width, 8px)}}@keyframes inward-grow{from{border-width:0}to{border-width:var(--md-focus-ring-active-width, 8px)}}@keyframes inward-shrink{from{border-width:var(--md-focus-ring-active-width, 8px)}}@media(prefers-reduced-motion){:host{animation:none}}
+const ar = S`:host{animation-delay:0s,calc(var(--md-focus-ring-duration, 600ms)*.25);animation-duration:calc(var(--md-focus-ring-duration, 600ms)*.25),calc(var(--md-focus-ring-duration, 600ms)*.75);animation-timing-function:cubic-bezier(0.2, 0, 0, 1);box-sizing:border-box;color:var(--md-focus-ring-color, var(--md-sys-color-secondary, #625b71));display:none;pointer-events:none;position:absolute}:host([visible]){display:flex}:host(:not([inward])){animation-name:outward-grow,outward-shrink;border-end-end-radius:calc(var(--md-focus-ring-shape-end-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-end-start-radius:calc(var(--md-focus-ring-shape-end-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-start-end-radius:calc(var(--md-focus-ring-shape-start-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));border-start-start-radius:calc(var(--md-focus-ring-shape-start-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) + var(--md-focus-ring-outward-offset, 2px));inset:calc(-1*var(--md-focus-ring-outward-offset, 2px));outline:var(--md-focus-ring-width, 3px) solid currentColor}:host([inward]){animation-name:inward-grow,inward-shrink;border-end-end-radius:calc(var(--md-focus-ring-shape-end-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-end-start-radius:calc(var(--md-focus-ring-shape-end-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-start-end-radius:calc(var(--md-focus-ring-shape-start-end, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border-start-start-radius:calc(var(--md-focus-ring-shape-start-start, var(--md-focus-ring-shape, var(--md-sys-shape-corner-full, 9999px))) - var(--md-focus-ring-inward-offset, 0px));border:var(--md-focus-ring-width, 3px) solid currentColor;inset:var(--md-focus-ring-inward-offset, 0px)}@keyframes outward-grow{from{outline-width:0}to{outline-width:var(--md-focus-ring-active-width, 8px)}}@keyframes outward-shrink{from{outline-width:var(--md-focus-ring-active-width, 8px)}}@keyframes inward-grow{from{border-width:0}to{border-width:var(--md-focus-ring-active-width, 8px)}}@keyframes inward-shrink{from{border-width:var(--md-focus-ring-active-width, 8px)}}@media(prefers-reduced-motion){:host{animation:none}}
 `;
 /**
  * @license
@@ -1285,18 +1314,18 @@ const nr = E`:host{animation-delay:0s,calc(var(--md-focus-ring-duration, 600ms)*
  */
 let ft = class extends Ot {
 };
-ft.styles = [nr];
-ft = f([
-  I("md-focus-ring")
+ft.styles = [ar];
+ft = m([
+  R("md-focus-ring")
 ], ft);
 /**
  * @license
  * Copyright 2018 Google LLC
  * SPDX-License-Identifier: BSD-3-Clause
  */
-const ae = re(class extends Lt {
+const ae = re(class extends kt {
   constructor(o) {
-    if (super(o), o.type !== Pt.ATTRIBUTE || o.name !== "class" || o.strings?.length > 2) throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.");
+    if (super(o), o.type !== Lt.ATTRIBUTE || o.name !== "class" || o.strings?.length > 2) throw Error("`classMap()` can only be used in the `class` attribute and must be the only part in the attribute.");
   }
   render(o) {
     return " " + Object.keys(o).filter(((t) => o[t])).join(" ") + " ";
@@ -1313,7 +1342,7 @@ const ae = re(class extends Lt {
       const i = !!t[r];
       i === this.st.has(r) || this.nt?.has(r) || (i ? (e.add(r), this.st.add(r)) : (e.remove(r), this.st.delete(r)));
     }
-    return k;
+    return P;
   }
 });
 /**
@@ -1321,7 +1350,7 @@ const ae = re(class extends Lt {
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const ar = {
+const lr = {
   STANDARD: "cubic-bezier(0.2, 0, 0, 1)"
 };
 /**
@@ -1329,12 +1358,12 @@ const ar = {
  * Copyright 2022 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const lr = 450, Wt = 225, cr = 0.2, dr = 10, hr = 75, ur = 0.35, pr = "::after", fr = "forwards";
+const cr = 450, Wt = 225, dr = 0.2, hr = 10, ur = 75, pr = 0.35, fr = "::after", mr = "forwards";
 var A;
 (function(o) {
   o[o.INACTIVE = 0] = "INACTIVE", o[o.TOUCH_DELAY = 1] = "TOUCH_DELAY", o[o.HOLDING = 2] = "HOLDING", o[o.WAITING_FOR_CLICK = 3] = "WAITING_FOR_CLICK";
 })(A || (A = {}));
-const mr = [
+const vr = [
   "click",
   "contextmenu",
   "pointercancel",
@@ -1342,8 +1371,8 @@ const mr = [
   "pointerenter",
   "pointerleave",
   "pointerup"
-], vr = 150, br = window.matchMedia("(forced-colors: active)");
-class X extends C {
+], br = 150, gr = window.matchMedia("(forced-colors: active)");
+class X extends E {
   constructor() {
     super(...arguments), this.disabled = !1, this.hovered = !1, this.pressed = !1, this.rippleSize = "", this.rippleScale = "", this.initialSize = 0, this.state = A.INACTIVE, this.attachableController = new ne(this, this.onControlChange.bind(this));
   }
@@ -1411,7 +1440,7 @@ class X extends C {
         return;
       }
       this.state = A.TOUCH_DELAY, await new Promise((e) => {
-        setTimeout(e, vr);
+        setTimeout(e, br);
       }), this.state === A.TOUCH_DELAY && (this.state = A.HOLDING, this.startPressAnimation(t));
     }
   }
@@ -1431,7 +1460,7 @@ class X extends C {
     this.disabled || this.endPressAnimation();
   }
   determineRippleSize() {
-    const { height: t, width: e } = this.getBoundingClientRect(), r = Math.max(t, e), i = Math.max(ur * r, hr), s = this.currentCSSZoom ?? 1, n = Math.floor(r * cr / s), a = Math.sqrt(e ** 2 + t ** 2) + dr;
+    const { height: t, width: e } = this.getBoundingClientRect(), r = Math.max(t, e), i = Math.max(pr * r, ur), s = this.currentCSSZoom ?? 1, n = Math.floor(r * dr / s), a = Math.sqrt(e ** 2 + t ** 2) + hr;
     this.initialSize = n;
     const d = (a + i) / n;
     this.rippleScale = `${d / s}`, this.rippleSize = `${n}px`;
@@ -1472,10 +1501,10 @@ class X extends C {
         `translate(${s}) scale(${this.rippleScale})`
       ]
     }, {
-      pseudoElement: pr,
-      duration: lr,
-      easing: ar.STANDARD,
-      fill: fr
+      pseudoElement: fr,
+      duration: cr,
+      easing: lr.STANDARD,
+      fill: mr
     });
   }
   async endPressAnimation() {
@@ -1512,7 +1541,7 @@ class X extends C {
   }
   /** @private */
   async handleEvent(t) {
-    if (!br?.matches)
+    if (!gr?.matches)
       switch (t.type) {
         case "click":
           this.handleClick();
@@ -1538,20 +1567,20 @@ class X extends C {
       }
   }
   onControlChange(t, e) {
-    for (const r of mr)
+    for (const r of vr)
       t?.removeEventListener(r, this), e?.addEventListener(r, this);
   }
 }
-f([
+m([
   _({ type: Boolean, reflect: !0 })
 ], X.prototype, "disabled", void 0);
-f([
+m([
   J()
 ], X.prototype, "hovered", void 0);
-f([
+m([
   J()
 ], X.prototype, "pressed", void 0);
-f([
+m([
   te(".surface")
 ], X.prototype, "mdRoot", void 0);
 /**
@@ -1559,7 +1588,7 @@ f([
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const gr = E`:host{display:flex;margin:auto;pointer-events:none}:host([disabled]){display:none}@media(forced-colors: active){:host{display:none}}:host,.surface{border-radius:inherit;position:absolute;inset:0;overflow:hidden}.surface{-webkit-tap-highlight-color:rgba(0,0,0,0)}.surface::before,.surface::after{content:"";opacity:0;position:absolute}.surface::before{background-color:var(--md-ripple-hover-color, var(--md-sys-color-on-surface, #1d1b20));inset:0;transition:opacity 15ms linear,background-color 15ms linear}.surface::after{background:radial-gradient(closest-side, var(--md-ripple-pressed-color, var(--md-sys-color-on-surface, #1d1b20)) max(100% - 70px, 65%), transparent 100%);transform-origin:center center;transition:opacity 375ms linear}.hovered::before{background-color:var(--md-ripple-hover-color, var(--md-sys-color-on-surface, #1d1b20));opacity:var(--md-ripple-hover-opacity, 0.08)}.pressed::after{opacity:var(--md-ripple-pressed-opacity, 0.12);transition-duration:105ms}
+const yr = S`:host{display:flex;margin:auto;pointer-events:none}:host([disabled]){display:none}@media(forced-colors: active){:host{display:none}}:host,.surface{border-radius:inherit;position:absolute;inset:0;overflow:hidden}.surface{-webkit-tap-highlight-color:rgba(0,0,0,0)}.surface::before,.surface::after{content:"";opacity:0;position:absolute}.surface::before{background-color:var(--md-ripple-hover-color, var(--md-sys-color-on-surface, #1d1b20));inset:0;transition:opacity 15ms linear,background-color 15ms linear}.surface::after{background:radial-gradient(closest-side, var(--md-ripple-pressed-color, var(--md-sys-color-on-surface, #1d1b20)) max(100% - 70px, 65%), transparent 100%);transform-origin:center center;transition:opacity 375ms linear}.hovered::before{background-color:var(--md-ripple-hover-color, var(--md-sys-color-on-surface, #1d1b20));opacity:var(--md-ripple-hover-opacity, 0.08)}.pressed::after{opacity:var(--md-ripple-pressed-opacity, 0.12);transition-duration:105ms}
 `;
 /**
  * @license
@@ -1568,9 +1597,9 @@ const gr = E`:host{display:flex;margin:auto;pointer-events:none}:host([disabled]
  */
 let mt = class extends X {
 };
-mt.styles = [gr];
-mt = f([
-  I("md-ripple")
+mt.styles = [yr];
+mt = m([
+  R("md-ripple")
 ], mt);
 /**
  * @license
@@ -1616,9 +1645,9 @@ const le = [
   "ariaValueMin",
   "ariaValueNow",
   "ariaValueText"
-], yr = le.map(ce);
+], _r = le.map(ce);
 function ct(o) {
-  return yr.includes(o);
+  return _r.includes(o);
 }
 function ce(o) {
   return o.replace("aria", "aria-").replace(/Elements?/g, "").toLowerCase();
@@ -1653,9 +1682,9 @@ function de(o) {
       super.removeAttribute(i), ct(i) && (super.removeAttribute(vt(i)), this.requestUpdate());
     }
   }
-  return t = tt, _r(e), e;
+  return t = tt, $r(e), e;
 }
-function _r(o) {
+function $r(o) {
   for (const t of le) {
     const e = ce(t), r = vt(e), i = bt(e);
     o.createProperty(t, {
@@ -1688,10 +1717,10 @@ function bt(o) {
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const kt = Symbol("internals"), dt = Symbol("privateInternals");
-function $r(o) {
+const Pt = Symbol("internals"), dt = Symbol("privateInternals");
+function xr(o) {
   class t extends o {
-    get [kt]() {
+    get [Pt]() {
       return this[dt] || (this[dt] = this.attachInternals()), this[dt];
     }
   }
@@ -1702,11 +1731,11 @@ function $r(o) {
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-function xr(o) {
+function wr(o) {
   o.addInitializer((t) => {
     const e = t;
     e.addEventListener("click", async (r) => {
-      const { type: i, [kt]: s } = e, { form: n } = s;
+      const { type: i, [Pt]: s } = e, { form: n } = s;
       if (!(!n || i === "button") && (await new Promise((l) => {
         setTimeout(l);
       }), !r.defaultPrevented)) {
@@ -1730,19 +1759,19 @@ function xr(o) {
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-function wr(o) {
+function Ar(o) {
   const t = new MouseEvent("click", { bubbles: !0 });
   return o.dispatchEvent(t), t;
 }
-function Ar(o) {
+function Er(o) {
   return o.currentTarget !== o.target || o.composedPath()[0] !== o.target || o.target.disabled ? !1 : !Cr(o);
 }
 function Cr(o) {
   const t = gt;
-  return t && (o.preventDefault(), o.stopImmediatePropagation()), Er(), t;
+  return t && (o.preventDefault(), o.stopImmediatePropagation()), Sr(), t;
 }
 let gt = !1;
-async function Er() {
+async function Sr() {
   gt = !0, await null, gt = !1;
 }
 /**
@@ -1750,8 +1779,8 @@ async function Er() {
  * Copyright 2019 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const Sr = de($r(C));
-class w extends Sr {
+const Tr = de(xr(E));
+class w extends Tr {
   get name() {
     return this.getAttribute("name") ?? "";
   }
@@ -1762,7 +1791,7 @@ class w extends Sr {
    * The associated form element with which this element's value will submit.
    */
   get form() {
-    return this[kt].form;
+    return this[Pt].form;
   }
   constructor() {
     super(), this.disabled = !1, this.softDisabled = !1, this.href = "", this.download = "", this.target = "", this.trailingIcon = !1, this.hasIcon = !1, this.type = "submit", this.value = "", this.addEventListener("click", this.handleClick.bind(this));
@@ -1831,49 +1860,49 @@ class w extends Sr {
       t.stopImmediatePropagation(), t.preventDefault();
       return;
     }
-    !Ar(t) || !this.buttonElement || (this.focus(), wr(this.buttonElement));
+    !Er(t) || !this.buttonElement || (this.focus(), Ar(this.buttonElement));
   }
   handleSlotChange() {
     this.hasIcon = this.assignedIcons.length > 0;
   }
 }
-xr(w);
+wr(w);
 w.formAssociated = !0;
 w.shadowRootOptions = {
   mode: "open",
   delegatesFocus: !0
 };
-f([
+m([
   _({ type: Boolean, reflect: !0 })
 ], w.prototype, "disabled", void 0);
-f([
+m([
   _({ type: Boolean, attribute: "soft-disabled", reflect: !0 })
 ], w.prototype, "softDisabled", void 0);
-f([
+m([
   _()
 ], w.prototype, "href", void 0);
-f([
+m([
   _()
 ], w.prototype, "download", void 0);
-f([
+m([
   _()
 ], w.prototype, "target", void 0);
-f([
+m([
   _({ type: Boolean, attribute: "trailing-icon", reflect: !0 })
 ], w.prototype, "trailingIcon", void 0);
-f([
+m([
   _({ type: Boolean, attribute: "has-icon", reflect: !0 })
 ], w.prototype, "hasIcon", void 0);
-f([
+m([
   _()
 ], w.prototype, "type", void 0);
-f([
+m([
   _({ reflect: !0 })
 ], w.prototype, "value", void 0);
-f([
+m([
   te(".button")
 ], w.prototype, "buttonElement", void 0);
-f([
+m([
   ze({ slot: "icon", flatten: !0 })
 ], w.prototype, "assignedIcons", void 0);
 /**
@@ -1881,7 +1910,7 @@ f([
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-class Tr extends w {
+class Lr extends w {
   renderElevationOrOutline() {
     return $`<md-elevation part="elevation"></md-elevation>`;
   }
@@ -1891,68 +1920,68 @@ class Tr extends w {
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const Pr = E`:host{--_container-color: var(--md-filled-button-container-color, var(--md-sys-color-primary, #6750a4));--_container-elevation: var(--md-filled-button-container-elevation, 0);--_container-height: var(--md-filled-button-container-height, 40px);--_container-shadow-color: var(--md-filled-button-container-shadow-color, var(--md-sys-color-shadow, #000));--_disabled-container-color: var(--md-filled-button-disabled-container-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-container-elevation: var(--md-filled-button-disabled-container-elevation, 0);--_disabled-container-opacity: var(--md-filled-button-disabled-container-opacity, 0.12);--_disabled-label-text-color: var(--md-filled-button-disabled-label-text-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-label-text-opacity: var(--md-filled-button-disabled-label-text-opacity, 0.38);--_focus-container-elevation: var(--md-filled-button-focus-container-elevation, 0);--_focus-label-text-color: var(--md-filled-button-focus-label-text-color, var(--md-sys-color-on-primary, #fff));--_hover-container-elevation: var(--md-filled-button-hover-container-elevation, 1);--_hover-label-text-color: var(--md-filled-button-hover-label-text-color, var(--md-sys-color-on-primary, #fff));--_hover-state-layer-color: var(--md-filled-button-hover-state-layer-color, var(--md-sys-color-on-primary, #fff));--_hover-state-layer-opacity: var(--md-filled-button-hover-state-layer-opacity, 0.08);--_label-text-color: var(--md-filled-button-label-text-color, var(--md-sys-color-on-primary, #fff));--_label-text-font: var(--md-filled-button-label-text-font, var(--md-sys-typescale-label-large-font, var(--md-ref-typeface-plain, Roboto)));--_label-text-line-height: var(--md-filled-button-label-text-line-height, var(--md-sys-typescale-label-large-line-height, 1.25rem));--_label-text-size: var(--md-filled-button-label-text-size, var(--md-sys-typescale-label-large-size, 0.875rem));--_label-text-weight: var(--md-filled-button-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));--_pressed-container-elevation: var(--md-filled-button-pressed-container-elevation, 0);--_pressed-label-text-color: var(--md-filled-button-pressed-label-text-color, var(--md-sys-color-on-primary, #fff));--_pressed-state-layer-color: var(--md-filled-button-pressed-state-layer-color, var(--md-sys-color-on-primary, #fff));--_pressed-state-layer-opacity: var(--md-filled-button-pressed-state-layer-opacity, 0.12);--_disabled-icon-color: var(--md-filled-button-disabled-icon-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-icon-opacity: var(--md-filled-button-disabled-icon-opacity, 0.38);--_focus-icon-color: var(--md-filled-button-focus-icon-color, var(--md-sys-color-on-primary, #fff));--_hover-icon-color: var(--md-filled-button-hover-icon-color, var(--md-sys-color-on-primary, #fff));--_icon-color: var(--md-filled-button-icon-color, var(--md-sys-color-on-primary, #fff));--_icon-size: var(--md-filled-button-icon-size, 18px);--_pressed-icon-color: var(--md-filled-button-pressed-icon-color, var(--md-sys-color-on-primary, #fff));--_container-shape-start-start: var(--md-filled-button-container-shape-start-start, var(--md-filled-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-start-end: var(--md-filled-button-container-shape-start-end, var(--md-filled-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-end-end: var(--md-filled-button-container-shape-end-end, var(--md-filled-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-end-start: var(--md-filled-button-container-shape-end-start, var(--md-filled-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_leading-space: var(--md-filled-button-leading-space, 24px);--_trailing-space: var(--md-filled-button-trailing-space, 24px);--_with-leading-icon-leading-space: var(--md-filled-button-with-leading-icon-leading-space, 16px);--_with-leading-icon-trailing-space: var(--md-filled-button-with-leading-icon-trailing-space, 24px);--_with-trailing-icon-leading-space: var(--md-filled-button-with-trailing-icon-leading-space, 24px);--_with-trailing-icon-trailing-space: var(--md-filled-button-with-trailing-icon-trailing-space, 16px)}
+const kr = S`:host{--_container-color: var(--md-filled-button-container-color, var(--md-sys-color-primary, #6750a4));--_container-elevation: var(--md-filled-button-container-elevation, 0);--_container-height: var(--md-filled-button-container-height, 40px);--_container-shadow-color: var(--md-filled-button-container-shadow-color, var(--md-sys-color-shadow, #000));--_disabled-container-color: var(--md-filled-button-disabled-container-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-container-elevation: var(--md-filled-button-disabled-container-elevation, 0);--_disabled-container-opacity: var(--md-filled-button-disabled-container-opacity, 0.12);--_disabled-label-text-color: var(--md-filled-button-disabled-label-text-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-label-text-opacity: var(--md-filled-button-disabled-label-text-opacity, 0.38);--_focus-container-elevation: var(--md-filled-button-focus-container-elevation, 0);--_focus-label-text-color: var(--md-filled-button-focus-label-text-color, var(--md-sys-color-on-primary, #fff));--_hover-container-elevation: var(--md-filled-button-hover-container-elevation, 1);--_hover-label-text-color: var(--md-filled-button-hover-label-text-color, var(--md-sys-color-on-primary, #fff));--_hover-state-layer-color: var(--md-filled-button-hover-state-layer-color, var(--md-sys-color-on-primary, #fff));--_hover-state-layer-opacity: var(--md-filled-button-hover-state-layer-opacity, 0.08);--_label-text-color: var(--md-filled-button-label-text-color, var(--md-sys-color-on-primary, #fff));--_label-text-font: var(--md-filled-button-label-text-font, var(--md-sys-typescale-label-large-font, var(--md-ref-typeface-plain, Roboto)));--_label-text-line-height: var(--md-filled-button-label-text-line-height, var(--md-sys-typescale-label-large-line-height, 1.25rem));--_label-text-size: var(--md-filled-button-label-text-size, var(--md-sys-typescale-label-large-size, 0.875rem));--_label-text-weight: var(--md-filled-button-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));--_pressed-container-elevation: var(--md-filled-button-pressed-container-elevation, 0);--_pressed-label-text-color: var(--md-filled-button-pressed-label-text-color, var(--md-sys-color-on-primary, #fff));--_pressed-state-layer-color: var(--md-filled-button-pressed-state-layer-color, var(--md-sys-color-on-primary, #fff));--_pressed-state-layer-opacity: var(--md-filled-button-pressed-state-layer-opacity, 0.12);--_disabled-icon-color: var(--md-filled-button-disabled-icon-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-icon-opacity: var(--md-filled-button-disabled-icon-opacity, 0.38);--_focus-icon-color: var(--md-filled-button-focus-icon-color, var(--md-sys-color-on-primary, #fff));--_hover-icon-color: var(--md-filled-button-hover-icon-color, var(--md-sys-color-on-primary, #fff));--_icon-color: var(--md-filled-button-icon-color, var(--md-sys-color-on-primary, #fff));--_icon-size: var(--md-filled-button-icon-size, 18px);--_pressed-icon-color: var(--md-filled-button-pressed-icon-color, var(--md-sys-color-on-primary, #fff));--_container-shape-start-start: var(--md-filled-button-container-shape-start-start, var(--md-filled-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-start-end: var(--md-filled-button-container-shape-start-end, var(--md-filled-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-end-end: var(--md-filled-button-container-shape-end-end, var(--md-filled-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-end-start: var(--md-filled-button-container-shape-end-start, var(--md-filled-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_leading-space: var(--md-filled-button-leading-space, 24px);--_trailing-space: var(--md-filled-button-trailing-space, 24px);--_with-leading-icon-leading-space: var(--md-filled-button-with-leading-icon-leading-space, 16px);--_with-leading-icon-trailing-space: var(--md-filled-button-with-leading-icon-trailing-space, 24px);--_with-trailing-icon-leading-space: var(--md-filled-button-with-trailing-icon-leading-space, 24px);--_with-trailing-icon-trailing-space: var(--md-filled-button-with-trailing-icon-trailing-space, 16px)}
 `;
 /**
  * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const Lr = E`md-elevation{transition-duration:280ms}:host(:is([disabled],[soft-disabled])) md-elevation{transition:none}md-elevation{--md-elevation-level: var(--_container-elevation);--md-elevation-shadow-color: var(--_container-shadow-color)}:host(:focus-within) md-elevation{--md-elevation-level: var(--_focus-container-elevation)}:host(:hover) md-elevation{--md-elevation-level: var(--_hover-container-elevation)}:host(:active) md-elevation{--md-elevation-level: var(--_pressed-container-elevation)}:host(:is([disabled],[soft-disabled])) md-elevation{--md-elevation-level: var(--_disabled-container-elevation)}
+const Or = S`md-elevation{transition-duration:280ms}:host(:is([disabled],[soft-disabled])) md-elevation{transition:none}md-elevation{--md-elevation-level: var(--_container-elevation);--md-elevation-shadow-color: var(--_container-shadow-color)}:host(:focus-within) md-elevation{--md-elevation-level: var(--_focus-container-elevation)}:host(:hover) md-elevation{--md-elevation-level: var(--_hover-container-elevation)}:host(:active) md-elevation{--md-elevation-level: var(--_pressed-container-elevation)}:host(:is([disabled],[soft-disabled])) md-elevation{--md-elevation-level: var(--_disabled-container-elevation)}
 `;
 /**
  * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const he = E`:host{border-start-start-radius:var(--_container-shape-start-start);border-start-end-radius:var(--_container-shape-start-end);border-end-start-radius:var(--_container-shape-end-start);border-end-end-radius:var(--_container-shape-end-end);box-sizing:border-box;cursor:pointer;display:inline-flex;gap:8px;min-height:var(--_container-height);outline:none;padding-block:calc((var(--_container-height) - max(var(--_label-text-line-height),var(--_icon-size)))/2);padding-inline-start:var(--_leading-space);padding-inline-end:var(--_trailing-space);place-content:center;place-items:center;position:relative;font-family:var(--_label-text-font);font-size:var(--_label-text-size);line-height:var(--_label-text-line-height);font-weight:var(--_label-text-weight);text-overflow:ellipsis;text-wrap:nowrap;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);vertical-align:top;--md-ripple-hover-color: var(--_hover-state-layer-color);--md-ripple-pressed-color: var(--_pressed-state-layer-color);--md-ripple-hover-opacity: var(--_hover-state-layer-opacity);--md-ripple-pressed-opacity: var(--_pressed-state-layer-opacity)}md-focus-ring{--md-focus-ring-shape-start-start: var(--_container-shape-start-start);--md-focus-ring-shape-start-end: var(--_container-shape-start-end);--md-focus-ring-shape-end-end: var(--_container-shape-end-end);--md-focus-ring-shape-end-start: var(--_container-shape-end-start)}:host(:is([disabled],[soft-disabled])){cursor:default;pointer-events:none}.button{border-radius:inherit;cursor:inherit;display:inline-flex;align-items:center;justify-content:center;border:none;outline:none;-webkit-appearance:none;vertical-align:middle;background:rgba(0,0,0,0);text-decoration:none;min-width:calc(64px - var(--_leading-space) - var(--_trailing-space));width:100%;z-index:0;height:100%;font:inherit;color:var(--_label-text-color);padding:0;gap:inherit;text-transform:inherit}.button::-moz-focus-inner{padding:0;border:0}:host(:hover) .button{color:var(--_hover-label-text-color)}:host(:focus-within) .button{color:var(--_focus-label-text-color)}:host(:active) .button{color:var(--_pressed-label-text-color)}.background{background:var(--_container-color);border-radius:inherit;inset:0;position:absolute}.label{overflow:hidden}:is(.button,.label,.label slot),.label ::slotted(*){text-overflow:inherit}:host(:is([disabled],[soft-disabled])) .label{color:var(--_disabled-label-text-color);opacity:var(--_disabled-label-text-opacity)}:host(:is([disabled],[soft-disabled])) .background{background:var(--_disabled-container-color);opacity:var(--_disabled-container-opacity)}@media(forced-colors: active){.background{border:1px solid CanvasText}:host(:is([disabled],[soft-disabled])){--_disabled-icon-color: GrayText;--_disabled-icon-opacity: 1;--_disabled-container-opacity: 1;--_disabled-label-text-color: GrayText;--_disabled-label-text-opacity: 1}}:host([has-icon]:not([trailing-icon])){padding-inline-start:var(--_with-leading-icon-leading-space);padding-inline-end:var(--_with-leading-icon-trailing-space)}:host([has-icon][trailing-icon]){padding-inline-start:var(--_with-trailing-icon-leading-space);padding-inline-end:var(--_with-trailing-icon-trailing-space)}::slotted([slot=icon]){display:inline-flex;position:relative;writing-mode:horizontal-tb;fill:currentColor;flex-shrink:0;color:var(--_icon-color);font-size:var(--_icon-size);inline-size:var(--_icon-size);block-size:var(--_icon-size)}:host(:hover) ::slotted([slot=icon]){color:var(--_hover-icon-color)}:host(:focus-within) ::slotted([slot=icon]){color:var(--_focus-icon-color)}:host(:active) ::slotted([slot=icon]){color:var(--_pressed-icon-color)}:host(:is([disabled],[soft-disabled])) ::slotted([slot=icon]){color:var(--_disabled-icon-color);opacity:var(--_disabled-icon-opacity)}.touch{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%)}:host([touch-target=wrapper]){margin:max(0px,(48px - var(--_container-height))/2) 0}:host([touch-target=none]) .touch{display:none}
+const he = S`:host{border-start-start-radius:var(--_container-shape-start-start);border-start-end-radius:var(--_container-shape-start-end);border-end-start-radius:var(--_container-shape-end-start);border-end-end-radius:var(--_container-shape-end-end);box-sizing:border-box;cursor:pointer;display:inline-flex;gap:8px;min-height:var(--_container-height);outline:none;padding-block:calc((var(--_container-height) - max(var(--_label-text-line-height),var(--_icon-size)))/2);padding-inline-start:var(--_leading-space);padding-inline-end:var(--_trailing-space);place-content:center;place-items:center;position:relative;font-family:var(--_label-text-font);font-size:var(--_label-text-size);line-height:var(--_label-text-line-height);font-weight:var(--_label-text-weight);text-overflow:ellipsis;text-wrap:nowrap;user-select:none;-webkit-tap-highlight-color:rgba(0,0,0,0);vertical-align:top;--md-ripple-hover-color: var(--_hover-state-layer-color);--md-ripple-pressed-color: var(--_pressed-state-layer-color);--md-ripple-hover-opacity: var(--_hover-state-layer-opacity);--md-ripple-pressed-opacity: var(--_pressed-state-layer-opacity)}md-focus-ring{--md-focus-ring-shape-start-start: var(--_container-shape-start-start);--md-focus-ring-shape-start-end: var(--_container-shape-start-end);--md-focus-ring-shape-end-end: var(--_container-shape-end-end);--md-focus-ring-shape-end-start: var(--_container-shape-end-start)}:host(:is([disabled],[soft-disabled])){cursor:default;pointer-events:none}.button{border-radius:inherit;cursor:inherit;display:inline-flex;align-items:center;justify-content:center;border:none;outline:none;-webkit-appearance:none;vertical-align:middle;background:rgba(0,0,0,0);text-decoration:none;min-width:calc(64px - var(--_leading-space) - var(--_trailing-space));width:100%;z-index:0;height:100%;font:inherit;color:var(--_label-text-color);padding:0;gap:inherit;text-transform:inherit}.button::-moz-focus-inner{padding:0;border:0}:host(:hover) .button{color:var(--_hover-label-text-color)}:host(:focus-within) .button{color:var(--_focus-label-text-color)}:host(:active) .button{color:var(--_pressed-label-text-color)}.background{background:var(--_container-color);border-radius:inherit;inset:0;position:absolute}.label{overflow:hidden}:is(.button,.label,.label slot),.label ::slotted(*){text-overflow:inherit}:host(:is([disabled],[soft-disabled])) .label{color:var(--_disabled-label-text-color);opacity:var(--_disabled-label-text-opacity)}:host(:is([disabled],[soft-disabled])) .background{background:var(--_disabled-container-color);opacity:var(--_disabled-container-opacity)}@media(forced-colors: active){.background{border:1px solid CanvasText}:host(:is([disabled],[soft-disabled])){--_disabled-icon-color: GrayText;--_disabled-icon-opacity: 1;--_disabled-container-opacity: 1;--_disabled-label-text-color: GrayText;--_disabled-label-text-opacity: 1}}:host([has-icon]:not([trailing-icon])){padding-inline-start:var(--_with-leading-icon-leading-space);padding-inline-end:var(--_with-leading-icon-trailing-space)}:host([has-icon][trailing-icon]){padding-inline-start:var(--_with-trailing-icon-leading-space);padding-inline-end:var(--_with-trailing-icon-trailing-space)}::slotted([slot=icon]){display:inline-flex;position:relative;writing-mode:horizontal-tb;fill:currentColor;flex-shrink:0;color:var(--_icon-color);font-size:var(--_icon-size);inline-size:var(--_icon-size);block-size:var(--_icon-size)}:host(:hover) ::slotted([slot=icon]){color:var(--_hover-icon-color)}:host(:focus-within) ::slotted([slot=icon]){color:var(--_focus-icon-color)}:host(:active) ::slotted([slot=icon]){color:var(--_pressed-icon-color)}:host(:is([disabled],[soft-disabled])) ::slotted([slot=icon]){color:var(--_disabled-icon-color);opacity:var(--_disabled-icon-opacity)}.touch{position:absolute;top:50%;height:48px;left:0;right:0;transform:translateY(-50%)}:host([touch-target=wrapper]){margin:max(0px,(48px - var(--_container-height))/2) 0}:host([touch-target=none]) .touch{display:none}
 `;
 /**
  * @license
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-let yt = class extends Tr {
+let yt = class extends Lr {
 };
 yt.styles = [
   he,
-  Lr,
-  Pr
+  Or,
+  kr
 ];
-yt = f([
-  I("md-filled-button")
+yt = m([
+  R("md-filled-button")
 ], yt);
 /**
  * @license
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-class Or extends w {
+class Pr extends w {
 }
 /**
  * @license
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const kr = E`:host{--_container-height: var(--md-text-button-container-height, 40px);--_disabled-label-text-color: var(--md-text-button-disabled-label-text-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-label-text-opacity: var(--md-text-button-disabled-label-text-opacity, 0.38);--_focus-label-text-color: var(--md-text-button-focus-label-text-color, var(--md-sys-color-primary, #6750a4));--_hover-label-text-color: var(--md-text-button-hover-label-text-color, var(--md-sys-color-primary, #6750a4));--_hover-state-layer-color: var(--md-text-button-hover-state-layer-color, var(--md-sys-color-primary, #6750a4));--_hover-state-layer-opacity: var(--md-text-button-hover-state-layer-opacity, 0.08);--_label-text-color: var(--md-text-button-label-text-color, var(--md-sys-color-primary, #6750a4));--_label-text-font: var(--md-text-button-label-text-font, var(--md-sys-typescale-label-large-font, var(--md-ref-typeface-plain, Roboto)));--_label-text-line-height: var(--md-text-button-label-text-line-height, var(--md-sys-typescale-label-large-line-height, 1.25rem));--_label-text-size: var(--md-text-button-label-text-size, var(--md-sys-typescale-label-large-size, 0.875rem));--_label-text-weight: var(--md-text-button-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));--_pressed-label-text-color: var(--md-text-button-pressed-label-text-color, var(--md-sys-color-primary, #6750a4));--_pressed-state-layer-color: var(--md-text-button-pressed-state-layer-color, var(--md-sys-color-primary, #6750a4));--_pressed-state-layer-opacity: var(--md-text-button-pressed-state-layer-opacity, 0.12);--_disabled-icon-color: var(--md-text-button-disabled-icon-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-icon-opacity: var(--md-text-button-disabled-icon-opacity, 0.38);--_focus-icon-color: var(--md-text-button-focus-icon-color, var(--md-sys-color-primary, #6750a4));--_hover-icon-color: var(--md-text-button-hover-icon-color, var(--md-sys-color-primary, #6750a4));--_icon-color: var(--md-text-button-icon-color, var(--md-sys-color-primary, #6750a4));--_icon-size: var(--md-text-button-icon-size, 18px);--_pressed-icon-color: var(--md-text-button-pressed-icon-color, var(--md-sys-color-primary, #6750a4));--_container-shape-start-start: var(--md-text-button-container-shape-start-start, var(--md-text-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-start-end: var(--md-text-button-container-shape-start-end, var(--md-text-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-end-end: var(--md-text-button-container-shape-end-end, var(--md-text-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-end-start: var(--md-text-button-container-shape-end-start, var(--md-text-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_leading-space: var(--md-text-button-leading-space, 12px);--_trailing-space: var(--md-text-button-trailing-space, 12px);--_with-leading-icon-leading-space: var(--md-text-button-with-leading-icon-leading-space, 12px);--_with-leading-icon-trailing-space: var(--md-text-button-with-leading-icon-trailing-space, 16px);--_with-trailing-icon-leading-space: var(--md-text-button-with-trailing-icon-leading-space, 16px);--_with-trailing-icon-trailing-space: var(--md-text-button-with-trailing-icon-trailing-space, 12px);--_container-color: none;--_disabled-container-color: none;--_disabled-container-opacity: 0}
+const Rr = S`:host{--_container-height: var(--md-text-button-container-height, 40px);--_disabled-label-text-color: var(--md-text-button-disabled-label-text-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-label-text-opacity: var(--md-text-button-disabled-label-text-opacity, 0.38);--_focus-label-text-color: var(--md-text-button-focus-label-text-color, var(--md-sys-color-primary, #6750a4));--_hover-label-text-color: var(--md-text-button-hover-label-text-color, var(--md-sys-color-primary, #6750a4));--_hover-state-layer-color: var(--md-text-button-hover-state-layer-color, var(--md-sys-color-primary, #6750a4));--_hover-state-layer-opacity: var(--md-text-button-hover-state-layer-opacity, 0.08);--_label-text-color: var(--md-text-button-label-text-color, var(--md-sys-color-primary, #6750a4));--_label-text-font: var(--md-text-button-label-text-font, var(--md-sys-typescale-label-large-font, var(--md-ref-typeface-plain, Roboto)));--_label-text-line-height: var(--md-text-button-label-text-line-height, var(--md-sys-typescale-label-large-line-height, 1.25rem));--_label-text-size: var(--md-text-button-label-text-size, var(--md-sys-typescale-label-large-size, 0.875rem));--_label-text-weight: var(--md-text-button-label-text-weight, var(--md-sys-typescale-label-large-weight, var(--md-ref-typeface-weight-medium, 500)));--_pressed-label-text-color: var(--md-text-button-pressed-label-text-color, var(--md-sys-color-primary, #6750a4));--_pressed-state-layer-color: var(--md-text-button-pressed-state-layer-color, var(--md-sys-color-primary, #6750a4));--_pressed-state-layer-opacity: var(--md-text-button-pressed-state-layer-opacity, 0.12);--_disabled-icon-color: var(--md-text-button-disabled-icon-color, var(--md-sys-color-on-surface, #1d1b20));--_disabled-icon-opacity: var(--md-text-button-disabled-icon-opacity, 0.38);--_focus-icon-color: var(--md-text-button-focus-icon-color, var(--md-sys-color-primary, #6750a4));--_hover-icon-color: var(--md-text-button-hover-icon-color, var(--md-sys-color-primary, #6750a4));--_icon-color: var(--md-text-button-icon-color, var(--md-sys-color-primary, #6750a4));--_icon-size: var(--md-text-button-icon-size, 18px);--_pressed-icon-color: var(--md-text-button-pressed-icon-color, var(--md-sys-color-primary, #6750a4));--_container-shape-start-start: var(--md-text-button-container-shape-start-start, var(--md-text-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-start-end: var(--md-text-button-container-shape-start-end, var(--md-text-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-end-end: var(--md-text-button-container-shape-end-end, var(--md-text-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_container-shape-end-start: var(--md-text-button-container-shape-end-start, var(--md-text-button-container-shape, var(--md-sys-shape-corner-full, 9999px)));--_leading-space: var(--md-text-button-leading-space, 12px);--_trailing-space: var(--md-text-button-trailing-space, 12px);--_with-leading-icon-leading-space: var(--md-text-button-with-leading-icon-leading-space, 12px);--_with-leading-icon-trailing-space: var(--md-text-button-with-leading-icon-trailing-space, 16px);--_with-trailing-icon-leading-space: var(--md-text-button-with-trailing-icon-leading-space, 16px);--_with-trailing-icon-trailing-space: var(--md-text-button-with-trailing-icon-trailing-space, 12px);--_container-color: none;--_disabled-container-color: none;--_disabled-container-opacity: 0}
 `;
 /**
  * @license
  * Copyright 2021 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-let _t = class extends Or {
+let _t = class extends Pr {
 };
-_t.styles = [he, kr];
-_t = f([
-  I("md-text-button")
+_t.styles = [he, Rr];
+_t = m([
+  R("md-text-button")
 ], _t);
 /**
  * @license
  * Copyright 2022 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-class Ir extends C {
+class Ir extends E {
   render() {
     return $`<slot></slot>`;
   }
@@ -1969,7 +1998,7 @@ class Ir extends C {
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const Rr = E`:host{font-size:var(--md-icon-size, 24px);width:var(--md-icon-size, 24px);height:var(--md-icon-size, 24px);color:inherit;font-variation-settings:inherit;font-weight:400;font-family:var(--md-icon-font, Material Symbols Outlined);display:inline-flex;font-style:normal;place-items:center;place-content:center;line-height:1;overflow:hidden;letter-spacing:normal;text-transform:none;user-select:none;white-space:nowrap;word-wrap:normal;flex-shrink:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale}::slotted(svg){fill:currentColor}::slotted(*){height:100%;width:100%}
+const Nr = S`:host{font-size:var(--md-icon-size, 24px);width:var(--md-icon-size, 24px);height:var(--md-icon-size, 24px);color:inherit;font-variation-settings:inherit;font-weight:400;font-family:var(--md-icon-font, Material Symbols Outlined);display:inline-flex;font-style:normal;place-items:center;place-content:center;line-height:1;overflow:hidden;letter-spacing:normal;text-transform:none;user-select:none;white-space:nowrap;word-wrap:normal;flex-shrink:0;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;-moz-osx-font-smoothing:grayscale}::slotted(svg){fill:currentColor}::slotted(*){height:100%;width:100%}
 `;
 /**
  * @license
@@ -1978,16 +2007,16 @@ const Rr = E`:host{font-size:var(--md-icon-size, 24px);width:var(--md-icon-size,
  */
 let $t = class extends Ir {
 };
-$t.styles = [Rr];
-$t = f([
-  I("md-icon")
+$t.styles = [Nr];
+$t = m([
+  R("md-icon")
 ], $t);
 /**
  * @license
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const Ur = de(C);
+const Ur = de(E);
 class Q extends Ur {
   constructor() {
     super(...arguments), this.value = 0, this.max = 1, this.indeterminate = !1, this.fourColor = !1;
@@ -2013,16 +2042,16 @@ class Q extends Ur {
     };
   }
 }
-f([
+m([
   _({ type: Number })
 ], Q.prototype, "value", void 0);
-f([
+m([
   _({ type: Number })
 ], Q.prototype, "max", void 0);
-f([
+m([
   _({ type: Boolean })
 ], Q.prototype, "indeterminate", void 0);
-f([
+m([
   _({ type: Boolean, attribute: "four-color" })
 ], Q.prototype, "fourColor", void 0);
 /**
@@ -2030,7 +2059,7 @@ f([
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-class Nr extends Q {
+class zr extends Q {
   renderIndicator() {
     return this.indeterminate ? this.renderIndeterminateContainer() : this.renderDeterminateContainer();
   }
@@ -2069,53 +2098,57 @@ class Nr extends Q {
  * Copyright 2024 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-const zr = E`:host{--_active-indicator-color: var(--md-circular-progress-active-indicator-color, var(--md-sys-color-primary, #6750a4));--_active-indicator-width: var(--md-circular-progress-active-indicator-width, 10);--_four-color-active-indicator-four-color: var(--md-circular-progress-four-color-active-indicator-four-color, var(--md-sys-color-tertiary-container, #ffd8e4));--_four-color-active-indicator-one-color: var(--md-circular-progress-four-color-active-indicator-one-color, var(--md-sys-color-primary, #6750a4));--_four-color-active-indicator-three-color: var(--md-circular-progress-four-color-active-indicator-three-color, var(--md-sys-color-tertiary, #7d5260));--_four-color-active-indicator-two-color: var(--md-circular-progress-four-color-active-indicator-two-color, var(--md-sys-color-primary-container, #eaddff));--_size: var(--md-circular-progress-size, 48px);display:inline-flex;vertical-align:middle;width:var(--_size);height:var(--_size);position:relative;align-items:center;justify-content:center;contain:strict;content-visibility:auto}.progress{flex:1;align-self:stretch;margin:4px}.progress,.spinner,.left,.right,.circle,svg,.track,.active-track{position:absolute;inset:0}svg{transform:rotate(-90deg)}circle{cx:50%;cy:50%;r:calc(50%*(1 - var(--_active-indicator-width)/100));stroke-width:calc(var(--_active-indicator-width)*1%);stroke-dasharray:100;fill:rgba(0,0,0,0)}.active-track{transition:stroke-dashoffset 500ms cubic-bezier(0, 0, 0.2, 1);stroke:var(--_active-indicator-color)}.track{stroke:rgba(0,0,0,0)}.progress.indeterminate{animation:linear infinite linear-rotate;animation-duration:1568.2352941176ms}.spinner{animation:infinite both rotate-arc;animation-duration:5332ms;animation-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.left{overflow:hidden;inset:0 50% 0 0}.right{overflow:hidden;inset:0 0 0 50%}.circle{box-sizing:border-box;border-radius:50%;border:solid calc(var(--_active-indicator-width)/100*(var(--_size) - 8px));border-color:var(--_active-indicator-color) var(--_active-indicator-color) rgba(0,0,0,0) rgba(0,0,0,0);animation:expand-arc;animation-iteration-count:infinite;animation-fill-mode:both;animation-duration:1333ms,5332ms;animation-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.four-color .circle{animation-name:expand-arc,four-color}.left .circle{rotate:135deg;inset:0 -100% 0 0}.right .circle{rotate:100deg;inset:0 0 0 -100%;animation-delay:-666.5ms,0ms}@media(forced-colors: active){.active-track{stroke:CanvasText}.circle{border-color:CanvasText CanvasText Canvas Canvas}}@keyframes expand-arc{0%{transform:rotate(265deg)}50%{transform:rotate(130deg)}100%{transform:rotate(265deg)}}@keyframes rotate-arc{12.5%{transform:rotate(135deg)}25%{transform:rotate(270deg)}37.5%{transform:rotate(405deg)}50%{transform:rotate(540deg)}62.5%{transform:rotate(675deg)}75%{transform:rotate(810deg)}87.5%{transform:rotate(945deg)}100%{transform:rotate(1080deg)}}@keyframes linear-rotate{to{transform:rotate(360deg)}}@keyframes four-color{0%{border-top-color:var(--_four-color-active-indicator-one-color);border-right-color:var(--_four-color-active-indicator-one-color)}15%{border-top-color:var(--_four-color-active-indicator-one-color);border-right-color:var(--_four-color-active-indicator-one-color)}25%{border-top-color:var(--_four-color-active-indicator-two-color);border-right-color:var(--_four-color-active-indicator-two-color)}40%{border-top-color:var(--_four-color-active-indicator-two-color);border-right-color:var(--_four-color-active-indicator-two-color)}50%{border-top-color:var(--_four-color-active-indicator-three-color);border-right-color:var(--_four-color-active-indicator-three-color)}65%{border-top-color:var(--_four-color-active-indicator-three-color);border-right-color:var(--_four-color-active-indicator-three-color)}75%{border-top-color:var(--_four-color-active-indicator-four-color);border-right-color:var(--_four-color-active-indicator-four-color)}90%{border-top-color:var(--_four-color-active-indicator-four-color);border-right-color:var(--_four-color-active-indicator-four-color)}100%{border-top-color:var(--_four-color-active-indicator-one-color);border-right-color:var(--_four-color-active-indicator-one-color)}}
+const Hr = S`:host{--_active-indicator-color: var(--md-circular-progress-active-indicator-color, var(--md-sys-color-primary, #6750a4));--_active-indicator-width: var(--md-circular-progress-active-indicator-width, 10);--_four-color-active-indicator-four-color: var(--md-circular-progress-four-color-active-indicator-four-color, var(--md-sys-color-tertiary-container, #ffd8e4));--_four-color-active-indicator-one-color: var(--md-circular-progress-four-color-active-indicator-one-color, var(--md-sys-color-primary, #6750a4));--_four-color-active-indicator-three-color: var(--md-circular-progress-four-color-active-indicator-three-color, var(--md-sys-color-tertiary, #7d5260));--_four-color-active-indicator-two-color: var(--md-circular-progress-four-color-active-indicator-two-color, var(--md-sys-color-primary-container, #eaddff));--_size: var(--md-circular-progress-size, 48px);display:inline-flex;vertical-align:middle;width:var(--_size);height:var(--_size);position:relative;align-items:center;justify-content:center;contain:strict;content-visibility:auto}.progress{flex:1;align-self:stretch;margin:4px}.progress,.spinner,.left,.right,.circle,svg,.track,.active-track{position:absolute;inset:0}svg{transform:rotate(-90deg)}circle{cx:50%;cy:50%;r:calc(50%*(1 - var(--_active-indicator-width)/100));stroke-width:calc(var(--_active-indicator-width)*1%);stroke-dasharray:100;fill:rgba(0,0,0,0)}.active-track{transition:stroke-dashoffset 500ms cubic-bezier(0, 0, 0.2, 1);stroke:var(--_active-indicator-color)}.track{stroke:rgba(0,0,0,0)}.progress.indeterminate{animation:linear infinite linear-rotate;animation-duration:1568.2352941176ms}.spinner{animation:infinite both rotate-arc;animation-duration:5332ms;animation-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.left{overflow:hidden;inset:0 50% 0 0}.right{overflow:hidden;inset:0 0 0 50%}.circle{box-sizing:border-box;border-radius:50%;border:solid calc(var(--_active-indicator-width)/100*(var(--_size) - 8px));border-color:var(--_active-indicator-color) var(--_active-indicator-color) rgba(0,0,0,0) rgba(0,0,0,0);animation:expand-arc;animation-iteration-count:infinite;animation-fill-mode:both;animation-duration:1333ms,5332ms;animation-timing-function:cubic-bezier(0.4, 0, 0.2, 1)}.four-color .circle{animation-name:expand-arc,four-color}.left .circle{rotate:135deg;inset:0 -100% 0 0}.right .circle{rotate:100deg;inset:0 0 0 -100%;animation-delay:-666.5ms,0ms}@media(forced-colors: active){.active-track{stroke:CanvasText}.circle{border-color:CanvasText CanvasText Canvas Canvas}}@keyframes expand-arc{0%{transform:rotate(265deg)}50%{transform:rotate(130deg)}100%{transform:rotate(265deg)}}@keyframes rotate-arc{12.5%{transform:rotate(135deg)}25%{transform:rotate(270deg)}37.5%{transform:rotate(405deg)}50%{transform:rotate(540deg)}62.5%{transform:rotate(675deg)}75%{transform:rotate(810deg)}87.5%{transform:rotate(945deg)}100%{transform:rotate(1080deg)}}@keyframes linear-rotate{to{transform:rotate(360deg)}}@keyframes four-color{0%{border-top-color:var(--_four-color-active-indicator-one-color);border-right-color:var(--_four-color-active-indicator-one-color)}15%{border-top-color:var(--_four-color-active-indicator-one-color);border-right-color:var(--_four-color-active-indicator-one-color)}25%{border-top-color:var(--_four-color-active-indicator-two-color);border-right-color:var(--_four-color-active-indicator-two-color)}40%{border-top-color:var(--_four-color-active-indicator-two-color);border-right-color:var(--_four-color-active-indicator-two-color)}50%{border-top-color:var(--_four-color-active-indicator-three-color);border-right-color:var(--_four-color-active-indicator-three-color)}65%{border-top-color:var(--_four-color-active-indicator-three-color);border-right-color:var(--_four-color-active-indicator-three-color)}75%{border-top-color:var(--_four-color-active-indicator-four-color);border-right-color:var(--_four-color-active-indicator-four-color)}90%{border-top-color:var(--_four-color-active-indicator-four-color);border-right-color:var(--_four-color-active-indicator-four-color)}100%{border-top-color:var(--_four-color-active-indicator-one-color);border-right-color:var(--_four-color-active-indicator-one-color)}}
 `;
 /**
  * @license
  * Copyright 2023 Google LLC
  * SPDX-License-Identifier: Apache-2.0
  */
-let xt = class extends Nr {
+let xt = class extends zr {
 };
-xt.styles = [zr];
-xt = f([
-  I("md-circular-progress")
+xt.styles = [Hr];
+xt = m([
+  R("md-circular-progress")
 ], xt);
-var Mr = Object.defineProperty, Dr = Object.getOwnPropertyDescriptor, M = (o, t, e, r) => {
+var Mr = Object.defineProperty, Dr = Object.getOwnPropertyDescriptor, H = (o, t, e, r) => {
   for (var i = r > 1 ? void 0 : r ? Dr(t, e) : t, s = o.length - 1, n; s >= 0; s--)
     (n = o[s]) && (i = (r ? n(t, e, i) : n(i)) || i);
   return r && i && Mr(t, e, i), i;
 };
-let T = class extends C {
+let L = class extends E {
   constructor() {
     super(...arguments), this.token = "", this.user = null, this.lang = "en", this.users = [], this.loading = !0, this.error = null;
   }
   connectedCallback() {
-    super.connectedCallback(), g.emitLog("Component connected", "info"), V(this.lang).catch((o) => {
-      g.emitLog(`Failed to load locale ${this.lang}: ${o}`, "error");
-    }), this.unsubLogout = g.onLogout(() => {
-      g.emitLog("Logout received, clearing state", "info"), this.users = [], this.loading = !0;
-    }), this.unsubLocale = g.onLocaleChange(async (o) => {
-      g.emitLog(`Locale changed to: ${o.locale}`, "debug");
+    super.connectedCallback(), f.emitLog("Component connected", "info"), V(this.lang).catch((o) => {
+      f.emitLog(`Failed to load locale ${this.lang}: ${o}`, "error");
+    }), this.unsubLogout = f.onLogout(() => {
+      f.emitLog("Logout received, clearing state", "info"), this.users = [], this.loading = !0;
+    }), this.unsubTokenRefresh = f.onTokenRefresh((o) => {
+      f.emitLog("Token refreshed, updating local token", "info"), this.token = o.token, this.user = o.user;
+    }), this.unsubLocale = f.onLocaleChange(async (o) => {
+      f.emitLog(`Locale changed to: ${o.locale}`, "debug");
       try {
         await V(o.locale);
       } catch (t) {
-        g.emitLog(`Failed to change locale: ${t}`, "error");
+        f.emitLog(`Failed to change locale: ${t}`, "error");
       }
+    }), this.unsubTheme = f.onThemeChange((o) => {
+      f.emitLog(`Theme changed to: ${o.theme}`, "debug"), this.classList.toggle("dark-theme", o.isDark);
     });
   }
   disconnectedCallback() {
-    super.disconnectedCallback(), g.emitLog("Component disconnected", "info"), this.unsubLogout?.(), this.unsubLocale?.();
+    super.disconnectedCallback(), f.emitLog("Component disconnected", "info"), this.unsubLogout?.(), this.unsubLocale?.(), this.unsubTokenRefresh?.(), this.unsubTheme?.();
   }
   /**
    * Lit lifecycle: called when properties change
    * This is where we react to token/user/lang changes from the portal
    */
   updated(o) {
-    super.updated(o), o.has("lang") && this.lang && (g.emitLog(`Lang property changed to: ${this.lang}`, "debug"), V(this.lang).catch((t) => {
-      g.emitLog(`Failed to load locale ${this.lang}: ${t}`, "error");
-    })), o.has("token") && (g.emitLog(`Token changed: ${this.token ? "Present" : "Absent"}`, "debug"), this.token ? (g.emitLog(`User: ${this.user?.username || this.user?.email}`, "debug"), this.loadUsers()) : (this.users = [], this.loading = !0));
+    super.updated(o), o.has("lang") && this.lang && (f.emitLog(`Lang property changed to: ${this.lang}`, "debug"), V(this.lang).catch((t) => {
+      f.emitLog(`Failed to load locale ${this.lang}: ${t}`, "error");
+    })), o.has("token") && (f.emitLog(`Token changed: ${this.token ? "Present" : "Absent"}`, "debug"), this.token ? (f.emitLog(`User: ${this.user?.username || this.user?.email}`, "debug"), this.loadUsers()) : (this.users = [], this.loading = !0));
   }
   async loadUsers() {
     if (!this.token) {
@@ -2123,20 +2156,20 @@ let T = class extends C {
       return;
     }
     try {
-      this.loading = !0, this.error = null, this.users = await Vt.getUsers(this.token), console.log("[UserManagement] Loaded users:", this.users.length);
+      this.loading = !0, this.error = null, this.users = await Vt.getUsers(this.token), f.emitLog(`Loaded ${this.users.length} users`, "info");
     } catch (o) {
-      this.error = o instanceof Error ? o.message : "Failed to load users", console.error("[UserManagement] Load error:", o);
+      this.error = o instanceof Error ? o.message : "Failed to load users", f.emitLog("Load error", "error", o);
     } finally {
       this.loading = !1;
     }
   }
   async handleDelete(o) {
-    const { get: t } = await Promise.resolve().then(() => rr);
+    const { get: t } = await Promise.resolve().then(() => or);
     if (confirm(t("messages.deleteConfirm")))
       try {
-        await Vt.deleteUser(o, this.token), await this.loadUsers(), g.emitLog("User deleted successfully", "info");
+        await Vt.deleteUser(o, this.token), await this.loadUsers(), f.emitLog("User deleted successfully", "info");
       } catch (e) {
-        g.emitLog(`Delete failed: ${e}`, "error");
+        f.emitLog(`Delete failed: ${e}`, "error");
       }
   }
   render() {
@@ -2221,14 +2254,28 @@ let T = class extends C {
     `;
   }
 };
-T.styles = E`
+L.styles = S`
     :host {
       display: block;
       width: 100%;
       height: 100%;
-      padding: 24px;
+      padding: 48px 24px 24px 24px;
       font-family: var(--font-family, 'Roboto', sans-serif);
       background-color: var(--md-sys-color-background, #fafafa);
+      color: var(--md-sys-color-on-background, #1c1b1f);
+    }
+
+    /* Dark theme overrides */
+    :host(.dark-theme) {
+      background-color: #1E1E1E;
+      color: #FFFFFF;
+      --md-sys-color-background: #1E1E1E;
+      --md-sys-color-on-background: #FFFFFF;
+      --md-sys-color-surface: #2A2A2A;
+      --md-sys-color-on-surface: #FFFFFF;
+      --md-sys-color-surface-variant: #3A3A3A;
+      --md-sys-color-on-surface-variant: #B0B0B0;
+      --md-sys-color-outline-variant: #4A4A4A;
     }
 
     .container {
@@ -2312,26 +2359,26 @@ T.styles = E`
       margin-bottom: 16px;
     }
   `;
-M([
+H([
   _({ type: String })
-], T.prototype, "token", 2);
-M([
+], L.prototype, "token", 2);
+H([
   _({ type: Object })
-], T.prototype, "user", 2);
-M([
+], L.prototype, "user", 2);
+H([
   _({ type: String })
-], T.prototype, "lang", 2);
-M([
+], L.prototype, "lang", 2);
+H([
   J()
-], T.prototype, "users", 2);
-M([
+], L.prototype, "users", 2);
+H([
   J()
-], T.prototype, "loading", 2);
-M([
+], L.prototype, "loading", 2);
+H([
   J()
-], T.prototype, "error", 2);
-T = M([
-  I("user-management-app")
-], T);
-g.emitLog("Web Component registered", "info");
+], L.prototype, "error", 2);
+L = H([
+  R("user-management-app")
+], L);
+f.emitLog("Web Component registered", "info");
 //# sourceMappingURL=user-management.js.map
