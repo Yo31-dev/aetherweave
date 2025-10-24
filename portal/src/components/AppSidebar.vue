@@ -167,9 +167,9 @@ function onDrawerClick() {
   /* Background color now handled by Vuetify theme */
 }
 
-/* Active menu item - orange background */
+/* Active menu item - dark grey background with orange text */
 :deep(.v-list-item--active) {
-  background-color: rgba(255, 107, 53, 0.12) !important;
+  background-color: #2D2D2D !important;
   color: #FF6B35 !important;
 }
 

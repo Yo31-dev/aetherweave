@@ -59,6 +59,11 @@ export class UserManagementApp extends LitElement {
       --md-sys-color-outline-variant: #4A4A4A;
     }
 
+    :host(.dark-theme) th {
+      background-color: #2D2D2D;
+      color: #FFFFFF;
+    }
+
     .container {
       max-width: 1200px;
       margin: 0 auto;
@@ -115,9 +120,10 @@ export class UserManagementApp extends LitElement {
     }
 
     th {
-      background-color: #FFE4DB;
+      background-color: #F5F5F5;
       font-weight: var(--font-weight-medium, 500);
-      color: #3D1500;
+      color: #212121;
+      border-bottom: 2px solid #FF6B35;
     }
 
     tr:last-child td {
