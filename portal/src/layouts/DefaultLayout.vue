@@ -1,16 +1,21 @@
 <template>
   <v-app>
     <!-- App Bar (already created, but need to add burger menu button) -->
-    <v-app-bar color="primary" prominent>
+    <v-app-bar color="#1E1E1E" prominent dark>
       <!-- Burger menu button (mobile only) -->
       <v-app-bar-nav-icon
         v-if="mobile"
         @click="drawer = !drawer"
       ></v-app-bar-nav-icon>
 
-      <v-toolbar-title class="text-h5 font-weight-bold">
-        AetherWeave Portal
-      </v-toolbar-title>
+      <div style="display: flex; align-items: center; gap: 10px; margin-left: 16px;">
+        <img
+          src="@/assets/logo-icon.svg"
+          alt="AetherWeave Icon"
+          style="height: 32px; width: 32px;"
+        />
+        <span style="font-size: 20px; font-weight: 500;">AetherWeave</span>
+      </div>
 
       <v-spacer></v-spacer>
 

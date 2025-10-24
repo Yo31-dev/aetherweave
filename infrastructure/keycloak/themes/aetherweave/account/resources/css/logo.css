@@ -1,0 +1,22 @@
+/**
+ * AetherWeave Account Console - Logo Override Only
+ */
+
+/* Replace Keycloak logo with AetherWeave logo */
+.pf-c-brand,
+.pf-c-page__header-brand-link img,
+.pf-c-page__header-brand img,
+img[src*="keycloak"],
+img[alt="Logo"] {
+  content: url('../img/logo.svg') !important;
+  height: 40px !important;
+  width: auto !important;
+  max-width: 200px !important;
+}
+
+/* Ensure logo container is properly sized */
+.pf-c-page__header-brand,
+.pf-c-page__header-brand-link {
+  display: flex !important;
+  align-items: center !important;
+}

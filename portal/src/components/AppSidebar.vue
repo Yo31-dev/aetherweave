@@ -5,6 +5,7 @@
     :temporary="mobile"
     :permanent="!mobile"
     color="surface"
+    class="sidebar-light"
     @click="onDrawerClick"
   >
     <v-list density="compact" nav>
@@ -161,8 +162,56 @@ function onDrawerClick() {
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
+.sidebar-light {
+  background-color: #FFFFFF !important;
+}
+
+/* Active menu item - orange background */
+:deep(.v-list-item--active) {
+  background-color: rgba(255, 107, 53, 0.12) !important;
+  color: #FF6B35 !important;
+}
+
+:deep(.v-list-item--active .v-icon) {
+  color: #FF6B35 !important;
+}
+
+:deep(.v-list-item--active .v-list-item-title) {
+  color: #FF6B35 !important;
+  font-weight: 600;
+}
+
+/* Hover state - light orange */
+:deep(.v-list-item:hover) {
+  background-color: rgba(255, 107, 53, 0.08) !important;
+}
+
+/* Active group title */
+:deep(.v-list-group__header.v-list-item--active) {
+  background-color: rgba(255, 107, 53, 0.08) !important;
+}
+
+:deep(.v-list-group__header.v-list-item--active .v-icon) {
+  color: #FF6B35 !important;
+}
+
+:deep(.v-list-group__header.v-list-item--active .v-list-item-title) {
+  color: #FF6B35 !important;
+  font-weight: 600;
+}
+
 /* Remove indentation for admin group items */
 :deep(.v-list-group__items .v-list-item) {
   padding-inline-start: 16px !important;
+}
+
+/* Footer text color */
+.text-grey {
+  color: #757575 !important;
+}
+
+/* Dividers - subtle gray */
+:deep(.v-divider) {
+  border-color: rgba(0, 0, 0, 0.08) !important;
 }
 </style>

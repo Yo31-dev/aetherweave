@@ -1,0 +1,296 @@
+/**
+ * AetherWeave Account Theme
+ * Orange-yellow branding for Keycloak account management pages
+ */
+
+/* ===========================
+   Global Variables & Resets
+   =========================== */
+
+:root {
+  --aether-orange: #FF6B35;
+  --aether-orange-light: #FF8C42;
+  --aether-accent: #FFA726;
+  --aether-yellow: #FFB74D;
+  --aether-bg: #FAFAFA;
+  --aether-surface: #FFFFFF;
+  --aether-text: #212121;
+  --aether-text-secondary: #757575;
+  --aether-border: #E0E0E0;
+  --aether-hover: rgba(255, 107, 53, 0.08);
+  --aether-active: rgba(255, 107, 53, 0.12);
+}
+
+/* ===========================
+   Header & Branding
+   =========================== */
+
+#kc-header-wrapper {
+  background-color: var(--aether-orange) !important;
+  border-bottom: none;
+  padding: 1rem 0;
+}
+
+#kc-header {
+  color: white !important;
+}
+
+.navbar-title {
+  color: white !important;
+  font-weight: 500;
+}
+
+/* Logo in header */
+#kc-logo {
+  background-image: url('../img/logo.svg') !important;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  height: 40px;
+  width: auto;
+  min-width: 200px;
+}
+
+#kc-logo-wrapper {
+  background: none;
+}
+
+/* ===========================
+   Navigation Sidebar
+   =========================== */
+
+.navbar {
+  background-color: var(--aether-surface) !important;
+  border-right: 1px solid var(--aether-border);
+}
+
+.navbar .list-group-item {
+  border: none;
+  color: var(--aether-text);
+  border-radius: 8px;
+  margin: 4px 8px;
+  transition: all 0.2s ease;
+}
+
+.navbar .list-group-item:hover {
+  background-color: var(--aether-hover);
+  color: var(--aether-orange);
+}
+
+.navbar .list-group-item.active {
+  background-color: var(--aether-active) !important;
+  color: var(--aether-orange) !important;
+  font-weight: 600;
+  border-left: 3px solid var(--aether-orange);
+}
+
+.navbar .list-group-item .icon {
+  color: inherit;
+}
+
+/* ===========================
+   Main Content Area
+   =========================== */
+
+body {
+  background-color: var(--aether-bg);
+  color: var(--aether-text);
+}
+
+#kc-content-wrapper {
+  background-color: var(--aether-surface);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  margin: 2rem;
+}
+
+.card-pf {
+  background-color: var(--aether-surface);
+  border: 1px solid var(--aether-border);
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+/* Page titles */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--aether-text);
+}
+
+h2.pf-c-title {
+  color: var(--aether-orange);
+  font-weight: 600;
+}
+
+/* ===========================
+   Buttons & Form Controls
+   =========================== */
+
+/* Primary buttons - orange */
+.btn-primary,
+.pf-c-button.pf-m-primary {
+  background-color: var(--aether-orange) !important;
+  border-color: var(--aether-orange) !important;
+  color: white !important;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.btn-primary:hover,
+.pf-c-button.pf-m-primary:hover {
+  background-color: var(--aether-orange-light) !important;
+  border-color: var(--aether-orange-light) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 107, 53, 0.3);
+}
+
+.btn-primary:active,
+.btn-primary:focus,
+.pf-c-button.pf-m-primary:active,
+.pf-c-button.pf-m-primary:focus {
+  background-color: #E55A2A !important;
+  border-color: #E55A2A !important;
+}
+
+/* Secondary buttons */
+.btn-default,
+.pf-c-button.pf-m-secondary {
+  border-color: var(--aether-border);
+  color: var(--aether-text);
+}
+
+.btn-default:hover,
+.pf-c-button.pf-m-secondary:hover {
+  border-color: var(--aether-orange);
+  color: var(--aether-orange);
+}
+
+/* Form inputs */
+.form-control,
+.pf-c-form-control {
+  border: 1px solid var(--aether-border);
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+}
+
+.form-control:focus,
+.pf-c-form-control:focus {
+  border-color: var(--aether-orange);
+  box-shadow: 0 0 0 3px rgba(255, 107, 53, 0.1);
+  outline: none;
+}
+
+/* ===========================
+   Tables & Data Display
+   =========================== */
+
+.table {
+  background-color: var(--aether-surface);
+}
+
+.table thead {
+  background-color: var(--aether-bg);
+  border-bottom: 2px solid var(--aether-orange);
+}
+
+.table th {
+  color: var(--aether-text);
+  font-weight: 600;
+}
+
+.table tbody tr:hover {
+  background-color: var(--aether-hover);
+}
+
+/* ===========================
+   Alerts & Messages
+   =========================== */
+
+.alert-success,
+.pf-c-alert.pf-m-success {
+  background-color: #E8F5E9;
+  border-left: 4px solid #4CAF50;
+  color: #2E7D32;
+}
+
+.alert-danger,
+.pf-c-alert.pf-m-danger {
+  background-color: #FFEBEE;
+  border-left: 4px solid #F44336;
+  color: #C62828;
+}
+
+.alert-warning,
+.pf-c-alert.pf-m-warning {
+  background-color: #FFF8E1;
+  border-left: 4px solid #FFC107;
+  color: #F57C00;
+}
+
+.alert-info,
+.pf-c-alert.pf-m-info {
+  background-color: #E3F2FD;
+  border-left: 4px solid #2196F3;
+  color: #1565C0;
+}
+
+/* ===========================
+   Links
+   =========================== */
+
+a {
+  color: var(--aether-orange);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--aether-orange-light);
+  text-decoration: underline;
+}
+
+/* ===========================
+   Badges & Labels
+   =========================== */
+
+.badge,
+.label {
+  background-color: var(--aether-orange);
+  color: white;
+  border-radius: 12px;
+  padding: 4px 12px;
+  font-weight: 500;
+}
+
+/* ===========================
+   PatternFly Components
+   =========================== */
+
+.pf-c-card {
+  border: 1px solid var(--aether-border);
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.pf-c-page__header {
+  background-color: var(--aether-orange);
+}
+
+.pf-c-page__main {
+  background-color: var(--aether-bg);
+}
+
+/* ===========================
+   Responsive Adjustments
+   =========================== */
+
+@media (max-width: 768px) {
+  #kc-content-wrapper {
+    margin: 1rem;
+    padding: 1rem;
+  }
+
+  #kc-logo {
+    min-width: 150px;
+  }
+}
