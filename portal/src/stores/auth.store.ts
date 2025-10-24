@@ -3,6 +3,7 @@ import { ref, computed } from 'vue';
 import { User } from 'oidc-client-ts';
 import { authService } from '@/services/auth.service';
 import { eventBus } from '@/services/event-bus.service';
+import { logService } from '@/services/log.service';
 
 export const useAuthStore = defineStore('auth', () => {
   // State
@@ -28,6 +29,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Login failed';
       console.error('Login error:', err);
+      logService.error('Login failed', 'AuthStore', err);
       throw err;
     } finally {
       isLoading.value = false;
@@ -40,10 +42,11 @@ export const useAuthStore = defineStore('auth', () => {
       error.value = null;
       const authenticatedUser = await authService.handleCallback();
       user.value = authenticatedUser;
-      console.log('[AuthStore] User authenticated:', authenticatedUser.profile);
+      logService.info('User authenticated', 'AuthStore', { profile: authenticatedUser.profile });
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Callback handling failed';
       console.error('Callback error:', err);
+      logService.error('Callback handling failed', 'AuthStore', err);
       throw err;
     } finally {
       isLoading.value = false;
@@ -62,6 +65,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Logout failed';
       console.error('Logout error:', err);
+      logService.error('Logout failed', 'AuthStore', err);
       throw err;
     } finally {
       isLoading.value = false;
@@ -76,13 +80,14 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = currentUser;
 
       if (currentUser && currentUser.access_token) {
-        console.log('[AuthStore] User loaded:', currentUser.profile);
+        logService.debug('User loaded', 'AuthStore', { profile: currentUser.profile });
       } else {
-        console.log('[AuthStore] No authenticated user');
+        logService.debug('No authenticated user', 'AuthStore');
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load user';
       console.error('Load user error:', err);
+      logService.error('Failed to load user', 'AuthStore', err);
       user.value = null;
     } finally {
       isLoading.value = false;
@@ -96,6 +101,7 @@ export const useAuthStore = defineStore('auth', () => {
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Token renewal failed';
       console.error('Token renewal error:', err);
+      logService.error('Token renewal failed', 'AuthStore', err);
       throw err;
     }
   }

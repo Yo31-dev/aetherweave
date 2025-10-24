@@ -35,5 +35,20 @@
     "errorCheckService": "The microservice is not running",
     "errorCheckConsole": "Check the browser console for more details",
     "retry": "Retry"
+  },
+  "logs": {
+    "title": "Logs",
+    "filters": "Filters",
+    "levels": "Levels",
+    "sources": "Sources",
+    "clearSources": "Clear",
+    "resetFilters": "Reset All Filters",
+    "export": "Export",
+    "clear": "Clear",
+    "noLogs": "No logs yet",
+    "noMatchingLogs": "No matching logs",
+    "confirmClearTitle": "Clear All Logs?",
+    "confirmClearMessage": "This will permanently delete all logs from storage.",
+    "storageWarning": "Log storage is nearly full"
   }
 }

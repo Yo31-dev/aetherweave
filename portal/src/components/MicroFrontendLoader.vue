@@ -74,6 +74,7 @@ import { ref, onMounted, onUnmounted, watch } from 'vue';
 import type { MicroService } from '@/config/microservices.config';
 import { useMicroFrontend } from '@/composables/useMicroFrontend';
 import { useAuthStore } from '@/stores/auth.store';
+import { logService } from '@/services/log.service';
 
 interface Props {
   microservice: MicroService;
@@ -94,7 +95,11 @@ watch(() => [authStore.accessToken, authStore.profile], ([token, profile]) => {
     // Set properties on the Web Component
     (webComponentInstance.value as any).token = token || '';
     (webComponentInstance.value as any).user = profile || null;
-    console.log(`[MicroFrontendLoader] Updated auth properties:`, token ? 'Token present' : 'No token');
+    logService.debug(
+      'Updated Web Component auth properties',
+      'MicroFrontendLoader',
+      { hasToken: !!token, componentTag: props.microservice.componentTag }
+    );
   }
 }, { immediate: true });
 
@@ -117,11 +122,15 @@ async function loadAndMount() {
 
       containerRef.value.appendChild(element);
       webComponentInstance.value = element;
-      console.log(`[MicroFrontendLoader] Mounted: ${props.microservice.componentTag}`);
-      console.log(`[MicroFrontendLoader] Auth token:`, authStore.accessToken ? 'Present' : 'Absent');
+      logService.info(
+        `Mounted Web Component: ${props.microservice.componentTag}`,
+        'MicroFrontendLoader',
+        { hasToken: !!authStore.accessToken }
+      );
     }
   } catch (error) {
     console.error('[MicroFrontendLoader] Failed to load micro-frontend:', error);
+    logService.error('Failed to load micro-frontend', 'MicroFrontendLoader', error);
     state.value.error = error instanceof Error ? error.message : 'Unknown error';
   }
 }

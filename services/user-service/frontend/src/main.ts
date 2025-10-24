@@ -1,4 +1,5 @@
 // Import user management app
 import './user-management-app';
+import { eventListener } from './services/event-listener.service';
 
-console.log('[User Management] Web Component registered');
+eventListener.emitLog('Web Component registered', 'info');

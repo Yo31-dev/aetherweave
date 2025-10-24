@@ -40,6 +40,25 @@
           </v-list>
         </v-menu>
 
+        <!-- Log Drawer Toggle -->
+        <v-btn
+          icon
+          variant="text"
+          color="white"
+          class="mr-2"
+          @click="logStore.toggleDrawer"
+        >
+          <v-badge
+            v-if="logStore.logCount > 0"
+            :content="logStore.logCount"
+            color="error"
+            overlap
+          >
+            <v-icon>mdi-console</v-icon>
+          </v-badge>
+          <v-icon v-else>mdi-console</v-icon>
+        </v-btn>
+
         <!-- User menu (authenticated) -->
         <template v-if="authStore.isAuthenticated">
           <v-menu>
@@ -159,6 +178,9 @@
         </v-btn>
       </template>
     </v-snackbar>
+
+    <!-- Log Drawer -->
+    <LogDrawer />
   </v-app>
 </template>
 
@@ -168,14 +190,18 @@ import { useRoute } from 'vue-router';
 import { useDisplay } from 'vuetify';
 import { useI18n } from 'vue-i18n';
 import { useAuthStore } from '@/stores/auth.store';
+import { useLogStore } from '@/stores/log.store';
 import { eventBus } from '@/services/event-bus.service';
+import { logService } from '@/services/log.service';
 import AppSidebar from '@/components/AppSidebar.vue';
 import AppBreadcrumbs from '@/components/AppBreadcrumbs.vue';
+import LogDrawer from '@/components/LogDrawer.vue';
 
 const route = useRoute();
 const { mobile } = useDisplay();
 const { locale } = useI18n();
 const authStore = useAuthStore();
+const logStore = useLogStore();
 
 // Drawer state
 const drawer = ref(!mobile.value);
@@ -234,16 +260,38 @@ function showNotification(message: string, type: 'success' | 'info' | 'warning' 
 // Event listeners
 let unsubscribeError: (() => void) | null = null;
 let unsubscribeNotification: (() => void) | null = null;
+let unsubscribeLog: (() => void) | null = null;
 
 onMounted(() => {
+  // Initialize log system
+  logStore.initializeListeners();
+  logService.info('Portal initialized', 'Portal');
+
   // Listen for errors from Web Components
   unsubscribeError = eventBus.onError((payload) => {
     showNotification(payload.message, 'error');
+    logService.error(payload.message, payload.source || 'WebComponent', { code: payload.code });
   });
 
   // Listen for notifications from Web Components
   unsubscribeNotification = eventBus.onNotification((payload) => {
     showNotification(payload.message, payload.type);
+  });
+
+  // Listen for log messages from Web Components
+  unsubscribeLog = eventBus.onLog((payload) => {
+    // Route WC logs to logService
+    switch (payload.level) {
+      case 'error':
+        logService.error(payload.message, payload.source, payload.meta);
+        break;
+      case 'debug':
+        logService.debug(payload.message, payload.source, payload.meta);
+        break;
+      case 'info':
+        logService.info(payload.message, payload.source, payload.meta);
+        break;
+    }
   });
 
   // Restore saved locale
@@ -257,6 +305,7 @@ onUnmounted(() => {
   // Cleanup event listeners
   if (unsubscribeError) unsubscribeError();
   if (unsubscribeNotification) unsubscribeNotification();
+  if (unsubscribeLog) unsubscribeLog();
 });
 </script>
 

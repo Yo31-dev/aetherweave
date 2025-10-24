@@ -35,5 +35,20 @@
     "errorCheckService": "Le microservice n'est pas démarré",
     "errorCheckConsole": "Consultez la console du navigateur pour plus de détails",
     "retry": "Réessayer"
+  },
+  "logs": {
+    "title": "Journaux",
+    "filters": "Filtres",
+    "levels": "Niveaux",
+    "sources": "Sources",
+    "clearSources": "Effacer",
+    "resetFilters": "Réinitialiser tous les filtres",
+    "export": "Exporter",
+    "clear": "Effacer",
+    "noLogs": "Aucun journal pour le moment",
+    "noMatchingLogs": "Aucun journal correspondant",
+    "confirmClearTitle": "Effacer tous les journaux ?",
+    "confirmClearMessage": "Cette action supprimera définitivement tous les journaux du stockage.",
+    "storageWarning": "Le stockage des journaux est presque plein"
   }
 }

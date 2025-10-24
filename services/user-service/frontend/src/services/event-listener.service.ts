@@ -22,6 +22,7 @@ export const EventType = {
   NAVIGATE: 'wc:navigate',
   ERROR: 'wc:error',
   NOTIFICATION: 'wc:notification',
+  LOG: 'wc:log',
 } as const;
 
 /**
@@ -39,11 +40,12 @@ function getSharedEventBus(): EventEmitter {
 class EventListenerService {
   private emitter: EventEmitter;
   private locale: string = 'en';
+  private source: string = 'user-management';
 
   constructor() {
     try {
       this.emitter = getSharedEventBus();
-      console.log('[WC EventListener] Connected to portal EventBus');
+      this.emitLog('Connected to portal EventBus', 'debug');
     } catch (error) {
       console.error('[WC EventListener] Failed to connect:', error);
       throw error;
@@ -59,7 +61,7 @@ class EventListenerService {
    */
   onLogout(callback: () => void): () => void {
     const handler = () => {
-      console.log('[WC EventListener] Logged out');
+      this.emitLog('Logged out', 'info');
       callback();
     };
     this.emitter.on(EventType.AUTH_LOGOUT, handler);
@@ -72,7 +74,7 @@ class EventListenerService {
   onLocaleChange(callback: (payload: LocalePayload) => void): () => void {
     const handler = (payload: LocalePayload) => {
       this.locale = payload.locale;
-      console.log('[WC EventListener] Locale changed:', this.locale);
+      this.emitLog(`Locale changed: ${this.locale}`, 'debug');
       callback(payload);
     };
 
@@ -100,7 +102,7 @@ class EventListenerService {
    */
   navigate(path: string, replace = false): void {
     this.emitter.emit(EventType.NAVIGATE, { path, replace });
-    console.log(`[WC EventListener] Navigation requested: ${path}`);
+    this.emitLog(`Navigation requested: ${path}`, 'debug');
   }
 
   /**
@@ -108,7 +110,7 @@ class EventListenerService {
    */
   emitError(message: string, code?: string, source = 'user-management'): void {
     this.emitter.emit(EventType.ERROR, { message, code, source });
-    console.error(`[WC EventListener] Error emitted:`, message);
+    this.emitLog(`Error emitted: ${message}`, 'error', { code });
   }
 
   /**
@@ -119,7 +121,14 @@ class EventListenerService {
     type: 'success' | 'info' | 'warning' | 'error' = 'info'
   ): void {
     this.emitter.emit(EventType.NOTIFICATION, { message, type });
-    console.log(`[WC EventListener] Notification (${type}): ${message}`);
+    this.emitLog(`Notification (${type}): ${message}`, 'debug');
+  }
+
+  /**
+   * Emit log message to portal (will appear in log panel)
+   */
+  emitLog(message: string, level: 'error' | 'debug' | 'info', meta?: any): void {
+    this.emitter.emit(EventType.LOG, { message, level, source: this.source, meta });
   }
 }
 

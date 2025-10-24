@@ -44,6 +44,13 @@ export interface NotificationPayload {
   type: 'success' | 'info' | 'warning' | 'error';
 }
 
+export interface LogPayload {
+  message: string;
+  level: 'error' | 'debug' | 'info';
+  source: string;
+  meta?: any;
+}
+
 /**
  * Event types - strongly typed for TypeScript
  */
@@ -56,6 +63,7 @@ export const EventType = {
   NAVIGATE: 'wc:navigate',
   ERROR: 'wc:error',
   NOTIFICATION: 'wc:notification',
+  LOG: 'wc:log',
 } as const;
 
 type EventTypeKeys = typeof EventType[keyof typeof EventType];
@@ -69,6 +77,7 @@ interface EventMap {
   [EventType.NAVIGATE]: (payload: NavigationPayload) => void;
   [EventType.ERROR]: (payload: ErrorPayload) => void;
   [EventType.NOTIFICATION]: (payload: NotificationPayload) => void;
+  [EventType.LOG]: (payload: LogPayload) => void;
 }
 
 class MicroFrontendEventBus {
@@ -76,11 +85,12 @@ class MicroFrontendEventBus {
 
   constructor() {
     this.emitter = new EventEmitter<EventMap>();
-    console.log('[EventBus] Initialized with EventEmitter3');
 
     // Expose emitter on window for Web Components to access
     (window as any).__AETHERWEAVE_EVENT_BUS__ = this.emitter;
-    console.log('[EventBus] Exposed on window for Web Components');
+
+    // Note: Can't use logService here as it would create circular dependency
+    // EventBus initialization will be logged by DefaultLayout
   }
 
   // ============================================================================
@@ -132,6 +142,14 @@ class MicroFrontendEventBus {
     return () => this.emitter.off(EventType.NOTIFICATION, callback);
   }
 
+  /**
+   * Listen for log messages from Web Components (Portal)
+   */
+  onLog(callback: (payload: LogPayload) => void): () => void {
+    this.emitter.on(EventType.LOG, callback);
+    return () => this.emitter.off(EventType.LOG, callback);
+  }
+
   // ============================================================================
   // WEB COMPONENT LISTENERS (for Portal events)
   // ============================================================================
@@ -178,6 +196,13 @@ class MicroFrontendEventBus {
   emitNotification(message: string, type: 'success' | 'info' | 'warning' | 'error' = 'info'): void {
     this.emitter.emit(EventType.NOTIFICATION, { message, type });
     console.log(`[EventBus] Notification (${type}): ${message}`);
+  }
+
+  /**
+   * Emit log message from Web Component to Portal
+   */
+  emitLog(message: string, level: 'error' | 'debug' | 'info', source: string, meta?: any): void {
+    this.emitter.emit(EventType.LOG, { message, level, source, meta });
   }
 
   // ============================================================================
