@@ -1,7 +1,43 @@
 <template>
   <div class="micro-frontend-loader fill-height">
+    <!-- Not authenticated state -->
+    <v-container v-if="!authStore.isAuthenticated" class="fill-height">
+      <v-row align="center" justify="center">
+        <v-col cols="12" sm="8" md="6">
+          <v-alert
+            type="warning"
+            prominent
+            border="start"
+            class="mb-4"
+          >
+            <v-alert-title>{{ $t('loader.notAuthenticated', 'Not Authenticated') }}</v-alert-title>
+            <div>{{ $t('loader.pleaseLogin', 'Please login to access this service.') }}</div>
+          </v-alert>
+
+          <v-card>
+            <v-card-text class="text-center">
+              <v-icon icon="mdi-lock" size="64" color="warning" class="mb-4"></v-icon>
+              <p class="text-body-1 mb-4">
+                {{ $t('loader.authRequired', 'Authentication is required to use this micro-frontend.') }}
+              </p>
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="primary"
+                @click="authStore.login()"
+              >
+                <v-icon start icon="mdi-login"></v-icon>
+                {{ $t('common.login', 'Login') }}
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-col>
+      </v-row>
+    </v-container>
+
     <!-- Loading state -->
-    <v-container v-if="state.loading" class="fill-height">
+    <v-container v-else-if="state.loading" class="fill-height">
       <v-row align="center" justify="center">
         <v-col cols="12" sm="8" md="6" class="text-center">
           <v-progress-circular
@@ -176,7 +212,40 @@ watch(() => props.microservice, async () => {
 }, { immediate: false });
 
 onMounted(async () => {
-  await loadAndMount();
+  // Only load if authenticated
+  if (authStore.isAuthenticated) {
+    await loadAndMount();
+  } else {
+    logService.debug(
+      'Skipping Web Component load - user not authenticated',
+      'MicroFrontendLoader',
+      { componentTag: props.microservice.componentTag }
+    );
+  }
+});
+
+// Watch for authentication changes - load component when user logs in
+watch(() => authStore.isAuthenticated, async (isAuthenticated, wasAuthenticated) => {
+  if (isAuthenticated && !wasAuthenticated) {
+    // User just logged in, load the component
+    logService.info(
+      'User authenticated, loading Web Component',
+      'MicroFrontendLoader',
+      { componentTag: props.microservice.componentTag }
+    );
+    await loadAndMount();
+  } else if (!isAuthenticated && wasAuthenticated) {
+    // User just logged out, unmount the component
+    logService.info(
+      'User logged out, unmounting Web Component',
+      'MicroFrontendLoader',
+      { componentTag: props.microservice.componentTag }
+    );
+    if (webComponentInstance.value && containerRef.value) {
+      containerRef.value.removeChild(webComponentInstance.value);
+      webComponentInstance.value = null;
+    }
+  }
 });
 
 onUnmounted(() => {

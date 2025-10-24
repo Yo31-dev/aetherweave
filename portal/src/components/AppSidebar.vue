@@ -82,7 +82,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue';
 import { useDisplay } from 'vuetify';
-import { getNavMicroServices } from '@/config/microservices.config';
+import { useAuthStore } from '@/stores/auth.store';
+import { getVisibleMicroServices } from '@/config/microservices.config';
 
 // Props
 interface Props {
@@ -101,6 +102,9 @@ const emit = defineEmits<{
 // Responsive behavior
 const { mobile } = useDisplay();
 
+// Auth store
+const authStore = useAuthStore();
+
 // Drawer state
 const drawer = ref(props.modelValue);
 const rail = ref(false);
@@ -108,8 +112,8 @@ const rail = ref(false);
 // Version info
 const version = ref('1.0.0');
 
-// Microservices for navigation
-const navServices = computed(() => getNavMicroServices());
+// Microservices for navigation - filtered by authentication
+const navServices = computed(() => getVisibleMicroServices(authStore.isAuthenticated, true, false));
 
 // Watch drawer state and emit
 watch(drawer, (value) => {

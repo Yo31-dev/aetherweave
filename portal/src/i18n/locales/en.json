@@ -33,6 +33,9 @@
   "loader": {
     "loading": "Loading",
     "loadingService": "Loading {name}...",
+    "notAuthenticated": "Not Authenticated",
+    "pleaseLogin": "Please login to access this service.",
+    "authRequired": "Authentication is required to use this micro-frontend.",
     "errorTitle": "Failed to Load Micro-Frontend",
     "errorDescription": "The microservice could not be loaded. This might be caused by:",
     "errorCheckNetwork": "Network connection issues",

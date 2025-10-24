@@ -30,6 +30,9 @@ export interface MicroService {
   /** Dev server port (used for Vite proxy in development) */
   devPort?: number;
 
+  /** Requires authentication to access (default: true) */
+  requiresAuth?: boolean;
+
   /** Required roles to access (empty = public) */
   requiredRoles?: string[];
 
@@ -59,6 +62,7 @@ export const microservices: MicroService[] = [
       ? 'http://localhost:3001/src/main.ts' // Dev: direct Vite dev server
       : '/microservices/user-management/user-management.js', // Prod: built file
     devPort: 3001,
+    requiresAuth: true,
     requiredRoles: [], // No roles required for now
     description: 'Manage users, roles, and permissions',
     showInNav: true,
@@ -106,6 +110,36 @@ export function getNavMicroServices(): MicroService[] {
  */
 export function getDashboardMicroServices(): MicroService[] {
   return microservices.filter((ms) => ms.showInDashboard !== false);
+}
+
+/**
+ * Get visible microservices based on authentication and display options
+ * Centralized filtering logic to avoid scattered v-if conditions
+ */
+export function getVisibleMicroServices(
+  isAuthenticated: boolean,
+  forNav: boolean = false,
+  forDashboard: boolean = false
+): MicroService[] {
+  return microservices.filter((ms) => {
+    // Filter by authentication requirement (default: true)
+    const requiresAuth = ms.requiresAuth !== false;
+    if (requiresAuth && !isAuthenticated) {
+      return false;
+    }
+
+    // Filter by navigation visibility
+    if (forNav && ms.showInNav === false) {
+      return false;
+    }
+
+    // Filter by dashboard visibility
+    if (forDashboard && ms.showInDashboard === false) {
+      return false;
+    }
+
+    return true;
+  });
 }
 
 /**

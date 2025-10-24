@@ -79,11 +79,12 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useAuthStore } from '@/stores/auth.store';
-import { getDashboardMicroServices } from '@/config/microservices.config';
+import { getVisibleMicroServices } from '@/config/microservices.config';
 
 const authStore = useAuthStore();
 
-const dashboardServices = computed(() => getDashboardMicroServices());
+// Get visible microservices filtered by authentication
+const dashboardServices = computed(() => getVisibleMicroServices(authStore.isAuthenticated, false, true));
 
 async function handleLogin() {
   try {

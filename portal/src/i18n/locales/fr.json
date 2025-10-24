@@ -33,6 +33,9 @@
   "loader": {
     "loading": "Chargement",
     "loadingService": "Chargement de {name}...",
+    "notAuthenticated": "Non authentifié",
+    "pleaseLogin": "Veuillez vous connecter pour accéder à ce service.",
+    "authRequired": "L'authentification est requise pour utiliser ce micro-frontend.",
     "errorTitle": "Échec du chargement du micro-frontend",
     "errorDescription": "Le microservice n'a pas pu être chargé. Cela peut être causé par :",
     "errorCheckNetwork": "Problèmes de connexion réseau",
