@@ -162,8 +162,9 @@ function onDrawerClick() {
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
 
+/* Remove fixed background - let Vuetify handle it based on theme */
 .sidebar-light {
-  background-color: #FFFFFF !important;
+  /* Background color now handled by Vuetify theme */
 }
 
 /* Active menu item - orange background */

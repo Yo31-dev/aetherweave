@@ -20,6 +20,15 @@
       <v-spacer></v-spacer>
 
       <div class="d-flex align-center mr-4">
+        <!-- Theme toggle button -->
+        <v-btn
+          icon
+          @click="toggleTheme"
+          class="mr-2"
+        >
+          <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+        </v-btn>
+
         <!-- User menu (authenticated) -->
         <template v-if="authStore.isAuthenticated">
           <v-menu>
@@ -144,12 +153,14 @@ import { useLogStore } from '@/stores/log.store';
 import { eventBus } from '@/services/event-bus.service';
 import { logService } from '@/services/log.service';
 import { authService } from '@/services/auth.service';
+import { useTheme } from '@/composables/useTheme';
 import AppSidebar from '@/components/AppSidebar.vue';
 
 const { mobile } = useDisplay();
 const { locale } = useI18n();
 const authStore = useAuthStore();
 const logStore = useLogStore();
+const { isDark, toggleTheme } = useTheme();
 
 // Drawer state
 const drawer = ref(!mobile.value);
