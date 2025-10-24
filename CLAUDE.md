@@ -2,6 +2,31 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 📚 Documentation Hierarchy
+
+**READ THESE FILES BASED ON YOUR TASK**:
+
+- **Working on Portal** → [portal/PORTAL.md](portal/PORTAL.md)
+  - Portal architecture, routing, auth, EventBus, logging, settings
+  - Adding pages, translations, navigation
+  - Integrating Web Components
+
+- **Creating/Working on Web Components** → [docs/WEB_COMPONENTS.md](docs/WEB_COMPONENTS.md)
+  - Step-by-step WC creation guide
+  - Lit framework, i18n, EventBus integration
+  - Properties, styling, API calls
+
+- **Working on Backend Services** → [docs/BACKEND.md](docs/BACKEND.md) *(TODO)*
+  - NestJS architecture, TypeORM, Dapr integration
+  - Creating controllers, services, entities
+
+- **Infrastructure & DevOps** → This file (CLAUDE.md)
+  - Docker, APISIX, Keycloak, Dapr setup
+  - Observability stack
+
+- **Project Vision** → [architecture/dream.md](architecture/dream.md)
+  - Long-term goals, meta-model strategy
+
 ## Language Policy
 
 **CRITICAL**: All code, comments, documentation, commit messages, file names, and project artifacts MUST be written in **ENGLISH ONLY**.
