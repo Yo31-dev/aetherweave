@@ -137,4 +137,9 @@ function onDrawerClick() {
 .v-navigation-drawer {
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
 }
+
+/* Remove indentation for admin group items */
+:deep(.v-list-group__items .v-list-item) {
+  padding-inline-start: 16px !important;
+}
 </style>
