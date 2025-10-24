@@ -3,6 +3,7 @@ import DefaultLayout from '@/layouts/DefaultLayout.vue';
 import DashboardView from '@/views/DashboardView.vue';
 import CallbackView from '@/views/CallbackView.vue';
 import SilentRenewView from '@/views/SilentRenewView.vue';
+import LogsAdminView from '@/views/admin/LogsAdminView.vue';
 import MicroFrontendLoader from '@/components/MicroFrontendLoader.vue';
 import { getMicroServiceByPath } from '@/config/microservices.config';
 
@@ -41,6 +42,11 @@ const router = createRouter({
             }
             return { microservice };
           },
+        },
+        {
+          path: '/admin/logs',
+          name: 'admin-logs',
+          component: LogsAdminView,
         },
         // Future microservices routes will be added here
       ],

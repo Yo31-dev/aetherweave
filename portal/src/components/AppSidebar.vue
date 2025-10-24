@@ -38,6 +38,26 @@
         :value="service.id"
         :to="{ path: service.path }"
       ></v-list-item>
+
+      <v-divider class="my-2"></v-divider>
+
+      <!-- Admin section -->
+      <v-list-group value="admin">
+        <template v-slot:activator="{ props }">
+          <v-list-item
+            v-bind="props"
+            prepend-icon="mdi-shield-crown"
+            :title="$t('nav.admin', 'Administration')"
+          ></v-list-item>
+        </template>
+
+        <v-list-item
+          prepend-icon="mdi-console-line"
+          :title="$t('nav.logs', 'Logs')"
+          value="admin-logs"
+          :to="{ path: '/admin/logs' }"
+        ></v-list-item>
+      </v-list-group>
     </v-list>
 
     <!-- Footer with version info (when not rail mode) -->

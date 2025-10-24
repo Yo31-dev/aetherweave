@@ -5,6 +5,7 @@
     "close": "Close",
     "save": "Save",
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "delete": "Delete",
     "edit": "Edit",
     "create": "Create",
@@ -15,7 +16,9 @@
   },
   "nav": {
     "dashboard": "Dashboard",
-    "user-management": "Users"
+    "user-management": "Users",
+    "admin": "Administration",
+    "logs": "Logs"
   },
   "dashboard": {
     "welcome": "Welcome to AetherWeave",
@@ -49,6 +52,20 @@
     "noMatchingLogs": "No matching logs",
     "confirmClearTitle": "Clear All Logs?",
     "confirmClearMessage": "This will permanently delete all logs from storage.",
-    "storageWarning": "Log storage is nearly full"
+    "storageWarning": "Log storage is nearly full",
+    "admin": {
+      "title": "Logs Administration",
+      "totalLogs": "Total Logs",
+      "storageSize": "Storage Size",
+      "errorCount": "Errors",
+      "sources": "Sources",
+      "levelDistribution": "Level Distribution",
+      "dateRange": "Date Range",
+      "oldest": "Oldest",
+      "newest": "Newest",
+      "search": "Search logs",
+      "logEntries": "Log Entries",
+      "entries": "entries"
+    }
   }
 }

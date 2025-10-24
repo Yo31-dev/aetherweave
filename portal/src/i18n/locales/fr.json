@@ -5,6 +5,7 @@
     "close": "Fermer",
     "save": "Enregistrer",
     "cancel": "Annuler",
+    "confirm": "Confirmer",
     "delete": "Supprimer",
     "edit": "Modifier",
     "create": "Créer",
@@ -15,7 +16,9 @@
   },
   "nav": {
     "dashboard": "Tableau de bord",
-    "user-management": "Utilisateurs"
+    "user-management": "Utilisateurs",
+    "admin": "Administration",
+    "logs": "Journaux"
   },
   "dashboard": {
     "welcome": "Bienvenue sur AetherWeave",
@@ -49,6 +52,20 @@
     "noMatchingLogs": "Aucun journal correspondant",
     "confirmClearTitle": "Effacer tous les journaux ?",
     "confirmClearMessage": "Cette action supprimera définitivement tous les journaux du stockage.",
-    "storageWarning": "Le stockage des journaux est presque plein"
+    "storageWarning": "Le stockage des journaux est presque plein",
+    "admin": {
+      "title": "Administration des journaux",
+      "totalLogs": "Total des journaux",
+      "storageSize": "Taille du stockage",
+      "errorCount": "Erreurs",
+      "sources": "Sources",
+      "levelDistribution": "Distribution par niveau",
+      "dateRange": "Plage de dates",
+      "oldest": "Plus ancien",
+      "newest": "Plus récent",
+      "search": "Rechercher dans les journaux",
+      "logEntries": "Entrées de journal",
+      "entries": "entrées"
+    }
   }
 }
