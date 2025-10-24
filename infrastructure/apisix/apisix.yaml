@@ -85,6 +85,24 @@ routes:
         functions:
           - 'return function(conf, ctx) ngx.say("OK"); ngx.exit(200); end'
 
+  # Route 4: Portal Frontend (public, no auth)
+  - id: 4
+    name: portal-frontend
+    uris:
+      - /
+      - /*
+    methods:
+      - GET
+      - OPTIONS
+    upstream_id: 2
+    priority: 1
+    plugins:
+      cors:
+        allow_origins: "**"
+        allow_methods: "GET,OPTIONS"
+        allow_headers: "Content-Type,X-Requested-With"
+        max_age: 86400
+
 upstreams:
   # Upstream 1: User Service via Dapr sidecar
   - id: 1
@@ -92,6 +110,17 @@ upstreams:
     type: roundrobin
     nodes:
       "user-service:3500": 1
+    timeout:
+      connect: 6
+      send: 30
+      read: 30
+
+  # Upstream 2: Portal Frontend
+  - id: 2
+    name: portal-upstream
+    type: roundrobin
+    nodes:
+      "aetherweave-portal:80": 1
     timeout:
       connect: 6
       send: 30

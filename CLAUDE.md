@@ -31,11 +31,12 @@ This repository serves dual purposes:
 ### Current Stack (v1 - TypeScript)
 
 - **Backend**: NestJS with TypeORM and PostgreSQL
-- **Frontend**: Web Components (planned - not yet implemented)
+- **Frontend Portal**: Vue.js 3 + Vuetify (shell app for micro-frontend orchestration)
+- **Frontend Components**: Web Components (Lit/Stencil - in development)
 - **Service Mesh**: Dapr runtime for service invocation, pub/sub, state management
 - **API Gateway**: Apache APISIX (CNCF project with etcd for dynamic configuration)
 - **API Documentation**: Scalar UI (beautiful, modern alternative to Swagger UI)
-- **Auth**: Keycloak (SSO/OpenID Connect)
+- **Auth**: OAuth2/OIDC via oidc-client-ts (provider-agnostic, configured for Keycloak)
 - **Observability**: Jaeger (tracing), Prometheus (metrics), Grafana (dashboards)
 
 ## Development Commands
@@ -77,10 +78,35 @@ docker-compose ps
 # 7. Display access URLs
 ```
 
+### Portal Development
+
+```bash
+cd portal
+
+# Install dependencies
+pnpm install
+
+# Development mode with hot reload
+pnpm run dev
+
+# Build for production
+pnpm run build
+
+# Preview production build
+pnpm run preview
+
+# Run with Docker
+docker-compose up -d
+
+# Access portal
+# Development: http://localhost:5173
+# Production: http://localhost:8000 (via APISIX)
+```
+
 ### Service Development (user-service example)
 
 ```bash
-cd services/user-service
+cd services/user-service/backend
 
 # Install dependencies
 pnpm install
@@ -123,18 +149,37 @@ docker-compose logs -f user-service
 
 ## Architecture
 
+### Repository Structure
+
+```
+aetherWeave/
+├── architecture/         # Vision and design documents
+├── infrastructure/       # Shared infrastructure stack (Dapr, APISIX, Keycloak, etc.)
+├── portal/              # Vue.js shell app (micro-frontend orchestrator)
+├── services/            # Microservices (mono-repo pattern: backend + frontend together)
+│   └── user-service/
+│       ├── backend/     # NestJS backend
+│       └── frontend/    # Web Component (future)
+└── generator/           # CLI code generator (future)
+```
+
 ### Service Communication Flow
 
 ```
-Client → APISIX (JWT validation) → Dapr Sidecar → Service
+Browser → Portal (Vue.js) → APISIX → Dapr Sidecar → Backend Service
+                              ↓
+                         OAuth2/OIDC (Keycloak)
 ```
 
-All external requests go through APISIX at `http://localhost:8000` which:
-1. Validates JWT tokens from Keycloak via OpenID Connect plugin (JWKS validation)
-2. Routes to appropriate Dapr sidecar
-3. Dapr invokes the target service
-4. Automatic distributed tracing to Jaeger via Zipkin plugin
-5. Prometheus metrics exposed at :9091
+**Portal to Backend**:
+1. User authenticates via OAuth2/OIDC (oidc-client-ts library)
+2. Portal obtains JWT token and stores it
+3. Portal makes API calls to APISIX gateway with JWT in Authorization header
+4. APISIX validates JWT via OpenID Connect plugin (JWKS validation)
+5. APISIX routes to appropriate Dapr sidecar
+6. Dapr invokes the target backend service
+7. Automatic distributed tracing to Jaeger via Zipkin plugin
+8. Prometheus metrics exposed at :9091
 
 ### Dapr Service Invocation
 
@@ -166,7 +211,22 @@ Dapr provides state store backed by Redis. Components are configured in `infrast
 
 ## Authentication
 
-### Getting a JWT Token
+### Portal Authentication
+
+The portal uses **oidc-client-ts** for OAuth2/OIDC authentication (provider-agnostic):
+- Configured for Keycloak by default
+- Can be switched to Auth0, Okta, or any OIDC-compliant provider
+- Configuration in `portal/.env`
+- JWT token stored in memory and passed to API calls
+
+**Login Flow**:
+1. User clicks "Login" in portal header
+2. Redirected to Keycloak login page
+3. After authentication, redirected back to `/callback`
+4. Portal stores JWT and user profile
+5. All API calls include `Authorization: Bearer <token>` header
+
+### Getting a JWT Token (for testing)
 
 ```bash
 TOKEN=$(curl -s -X POST http://localhost:8080/realms/aetherweave/protocol/openid-connect/token \
@@ -199,6 +259,15 @@ curl http://localhost:3500/v1.0/invoke/user-service/method/users
 - **fof / password** (fof@example.com) - user role
 
 Keycloak admin console: http://localhost:8080 (admin/admin)
+
+### Keycloak Client Configuration
+
+The portal requires a dedicated OAuth2 client in Keycloak:
+- **Client ID**: `aetherweave-portal`
+- **Client Type**: Public (SPA)
+- **Valid redirect URIs**: `http://localhost:5173/callback`, `http://localhost:8000/callback`
+- **Valid post logout redirect URIs**: `http://localhost:5173`, `http://localhost:8000`
+- **Web origins**: `http://localhost:5173`, `http://localhost:8000`
 
 ## Adding a New Service
 

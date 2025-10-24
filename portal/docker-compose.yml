@@ -1,0 +1,16 @@
+networks:
+  aetherweave-net:
+    external: true
+    name: aetherweave-net
+
+services:
+  portal:
+    build: .
+    container_name: aetherweave-portal
+    ports:
+      - "5173:80"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - aetherweave-net
+    restart: unless-stopped
