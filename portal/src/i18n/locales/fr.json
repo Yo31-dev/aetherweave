@@ -17,6 +17,8 @@
   "nav": {
     "dashboard": "Tableau de bord",
     "user-management": "Utilisateurs",
+    "dev": "Développement",
+    "eventBusTest": "Test EventBus",
     "admin": "Administration",
     "settings": "Paramètres",
     "logs": "Journaux"

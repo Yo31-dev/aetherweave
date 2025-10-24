@@ -18,6 +18,7 @@ The Portal is the **orchestrator shell** that:
 - Provides shared services (EventBus, Logging, Settings)
 - Handles navigation and routing
 - Manages global state (auth, locale, logs)
+- Composes multiple Web Components into single pages (see [COMPOSED_PAGES.md](../docs/COMPOSED_PAGES.md))
 
 ### Technology Stack
 
@@ -550,6 +551,7 @@ pnpm run preview
 
 ## Related Documentation
 
+- [COMPOSED_PAGES.md](../docs/COMPOSED_PAGES.md) - **Architecture for composable micro-frontend pages** (multiple WC on one page)
 - [WEB_COMPONENTS.md](../docs/WEB_COMPONENTS.md) - Guide for creating Web Components
 - [CLAUDE.md](../CLAUDE.md) - Main project documentation
 - [architecture/dream.md](../architecture/dream.md) - Vision and architecture

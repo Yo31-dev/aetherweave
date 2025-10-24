@@ -5,6 +5,7 @@ import CallbackView from '@/views/CallbackView.vue';
 import SilentRenewView from '@/views/SilentRenewView.vue';
 import LogsAdminView from '@/views/admin/LogsAdminView.vue';
 import SettingsView from '@/views/admin/SettingsView.vue';
+import StatefulEventBusTest from '@/views/StatefulEventBusTest.vue';
 import MicroFrontendLoader from '@/components/MicroFrontendLoader.vue';
 import { getMicroServiceByPath } from '@/config/microservices.config';
 
@@ -53,6 +54,11 @@ const router = createRouter({
           path: '/admin/logs',
           name: 'admin-logs',
           component: LogsAdminView,
+        },
+        {
+          path: '/test/stateful-eventbus',
+          name: 'test-stateful-eventbus',
+          component: StatefulEventBusTest,
         },
         // Future microservices routes will be added here
       ],

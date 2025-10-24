@@ -85,14 +85,25 @@ interface EventMap {
 
 class MicroFrontendEventBus {
   private emitter: EventEmitter<EventMap>;
+  private lastState: Map<string, { data: any; timestamp: number }>;
 
   constructor() {
     this.emitter = new EventEmitter<EventMap>();
+    this.lastState = new Map();
 
     // Expose emitter on window for Web Components to access
     (window as any).__AETHERWEAVE_EVENT_BUS__ = this.emitter;
 
-    logService.debugVerbose('EventBus initialized', 'EventBus');
+    // Expose stateful methods on window for Web Components
+    (window as any).__AETHERWEAVE_STATEFUL_BUS__ = {
+      emitStateful: this.emitStateful.bind(this),
+      onStateful: this.onStateful.bind(this),
+      clearState: this.clearState.bind(this),
+      getState: this.getState.bind(this),
+      hasState: this.hasState.bind(this),
+    };
+
+    logService.debugVerbose('EventBus initialized (with stateful support)', 'EventBus');
   }
 
   // ============================================================================
@@ -102,10 +113,13 @@ class MicroFrontendEventBus {
   /**
    * Publish logout event to all Web Components
    * Web Components should clear their local state
+   * Also clears all stateful event state
    */
   publishLogout(): void {
     this.emitter.emit(EventType.AUTH_LOGOUT);
-    logService.debugVerbose('Published logout event', 'EventBus');
+    // Clear all stateful event state on logout
+    this.clearState();
+    logService.debugVerbose('Published logout event and cleared stateful state', 'EventBus');
   }
 
   /**
@@ -268,6 +282,132 @@ class MicroFrontendEventBus {
   removeAllListeners(): void {
     this.emitter.removeAllListeners();
     logService.debugVerbose('All listeners removed', 'EventBus');
+  }
+
+  // ============================================================================
+  // STATEFUL EVENTS (for cross-component communication in composed pages)
+  // ============================================================================
+
+  /**
+   * Emit an event and persist its state for late joiners
+   * Use this for cross-component communication where components may load in any order
+   *
+   * @param eventName - Event identifier (e.g., 'user:selected', 'filter:changed')
+   * @param payload - Event data to persist and emit
+   *
+   * @example
+   * eventBus.emitStateful('user:selected', { userId: 123, userName: 'John' });
+   */
+  emitStateful(eventName: string, payload: any): void {
+    // Persist state with timestamp
+    this.lastState.set(eventName, {
+      data: payload,
+      timestamp: Date.now(),
+    });
+
+    // Emit to current listeners
+    this.emitter.emit(eventName as any, payload);
+
+    logService.debugVerbose(
+      `Stateful event emitted: ${eventName}`,
+      'EventBus',
+      { payload, stateCount: this.lastState.size }
+    );
+  }
+
+  /**
+   * Listen to an event and immediately receive current state if it exists
+   * Automatically delivers persisted state to late joiners
+   *
+   * @param eventName - Event identifier to listen to
+   * @param callback - Handler called with event payload
+   * @returns Unsubscribe function to clean up the listener
+   *
+   * @example
+   * const unsubscribe = eventBus.onStateful('user:selected', (data) => {
+   *   console.log('User selected:', data.userId);
+   * });
+   * // Later: unsubscribe();
+   */
+  onStateful(eventName: string, callback: (payload: any) => void): () => void {
+    // Deliver current state immediately if exists
+    const currentState = this.lastState.get(eventName);
+    if (currentState) {
+      logService.debugVerbose(
+        `Delivering persisted state for: ${eventName}`,
+        'EventBus',
+        { age: Date.now() - currentState.timestamp }
+      );
+      callback(currentState.data);
+    }
+
+    // Listen for future events
+    this.emitter.on(eventName as any, callback);
+
+    // Return unsubscribe function
+    return () => {
+      this.emitter.off(eventName as any, callback);
+      logService.debugVerbose(`Unsubscribed from: ${eventName}`, 'EventBus');
+    };
+  }
+
+  /**
+   * Clear persisted state for one or all events
+   * Use this when state is no longer valid (e.g., logout, page change)
+   *
+   * @param eventName - Optional event name to clear. If omitted, clears all state.
+   *
+   * @example
+   * eventBus.clearState('user:selected'); // Clear specific
+   * eventBus.clearState(); // Clear all
+   */
+  clearState(eventName?: string): void {
+    if (eventName) {
+      const existed = this.lastState.delete(eventName);
+      if (existed) {
+        logService.debugVerbose(`Cleared state: ${eventName}`, 'EventBus');
+      }
+    } else {
+      const count = this.lastState.size;
+      this.lastState.clear();
+      logService.debugVerbose(`Cleared all state (${count} events)`, 'EventBus');
+    }
+  }
+
+  /**
+   * Get current state without subscribing to future events
+   * Useful for one-time state checks
+   *
+   * @param eventName - Event identifier
+   * @returns Current state data or undefined if no state exists
+   *
+   * @example
+   * const currentUser = eventBus.getState('user:selected');
+   * if (currentUser) {
+   *   console.log('Current user:', currentUser.userId);
+   * }
+   */
+  getState(eventName: string): any | undefined {
+    return this.lastState.get(eventName)?.data;
+  }
+
+  /**
+   * Get all persisted state (debugging/inspection)
+   *
+   * @returns Map of all event states with timestamps
+   */
+  getAllState(): Map<string, { data: any; timestamp: number }> {
+    return new Map(this.lastState);
+  }
+
+  /**
+   * Check if state exists for an event
+   *
+   * @param eventName - Event identifier
+   * @returns True if state exists
+   */
+  hasState(eventName: string): boolean {
+    return this.lastState.has(eventName);
   }
 }
 

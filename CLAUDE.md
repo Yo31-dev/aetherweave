@@ -11,6 +11,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Adding pages, translations, navigation
   - Integrating Web Components
 
+- **Creating Composed Pages** → [docs/COMPOSED_PAGES.md](docs/COMPOSED_PAGES.md)
+  - **Architecture for composable micro-frontend pages**
+  - Multiple Web Components from different services on one page
+  - Stateful EventBus for cross-component communication
+  - Creating dashboards and complex views
+
 - **Creating/Working on Web Components** → [docs/WEB_COMPONENTS.md](docs/WEB_COMPONENTS.md)
   - Step-by-step WC creation guide
   - Lit framework, i18n, EventBus integration

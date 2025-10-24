@@ -41,6 +41,26 @@
 
       <v-divider class="my-2"></v-divider>
 
+      <!-- Development / Testing section (only show in dev mode) -->
+      <v-list-group value="dev" v-if="isDev">
+        <template v-slot:activator="{ props }">
+          <v-list-item
+            v-bind="props"
+            prepend-icon="mdi-flask"
+            :title="$t('nav.dev', 'Development')"
+          ></v-list-item>
+        </template>
+
+        <v-list-item
+          prepend-icon="mdi-bus"
+          :title="$t('nav.eventBusTest', 'EventBus Test')"
+          value="test-eventbus"
+          :to="{ path: '/test/stateful-eventbus' }"
+        ></v-list-item>
+      </v-list-group>
+
+      <v-divider class="my-2" v-if="isDev"></v-divider>
+
       <!-- Admin section -->
       <v-list-group value="admin">
         <template v-slot:activator="{ props }">
@@ -111,6 +131,9 @@ const rail = ref(false);
 
 // Version info
 const version = ref('1.0.0');
+
+// Check if in development mode
+const isDev = import.meta.env.DEV;
 
 // Microservices for navigation - filtered by authentication
 const navServices = computed(() => getVisibleMicroServices(authStore.isAuthenticated, true, false));
