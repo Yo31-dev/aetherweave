@@ -372,6 +372,135 @@ locale.value = 'fr'; // Change language
 
 **Web Components i18n**: See `WEB_COMPONENTS.md`
 
+## Theme System (Dark/Light Mode)
+
+### Overview
+
+The Portal supports **dark and light themes** via Vuetify 3's theming system. Theme changes are propagated to Web Components via the **stateful EventBus**.
+
+### Theme Configuration
+
+**File**: `portal/src/plugins/vuetify.ts`
+
+```typescript
+export default createVuetify({
+  theme: {
+    defaultTheme: localStorage.getItem('theme') || 'light',
+    themes: {
+      light: {
+        dark: false,
+        colors: {
+          primary: '#FF6B35',      // AetherWeave Orange
+          secondary: '#FFB74D',    // AetherWeave Yellow
+          accent: '#FFA726',
+          background: '#FAFAFA',
+          surface: '#FFFFFF',
+        },
+      },
+      dark: {
+        dark: true,
+        colors: {
+          primary: '#FF6B35',      // Same orange
+          secondary: '#FFB74D',    // Same yellow
+          accent: '#FFA726',
+          background: '#121212',
+          surface: '#1E1E1E',
+        },
+      },
+    },
+  },
+});
+```
+
+**Key Points**:
+- Primary/Secondary colors stay the same in both themes (brand consistency)
+- Background/Surface colors change for dark mode
+- Theme preference saved in `localStorage`
+
+### useTheme Composable
+
+**File**: `portal/src/composables/useTheme.ts`
+
+Provides theme management:
+
+```typescript
+import { useTheme } from '@/composables/useTheme';
+
+const { isDark, toggleTheme, setTheme, getCurrentTheme } = useTheme();
+
+// Toggle between light/dark
+toggleTheme();
+
+// Set specific theme
+setTheme('dark');
+
+// Get current theme
+const theme = getCurrentTheme(); // 'light' | 'dark'
+```
+
+**Features**:
+- ✅ Toggles theme via Vuetify API
+- ✅ Persists preference in localStorage
+- ✅ Emits `theme:changed` event to Web Components (stateful)
+- ✅ Returns reactive `isDark` ref for UI updates
+
+### Theme Toggle Button
+
+**Location**: `portal/src/layouts/DefaultLayout.vue` (header)
+
+```vue
+<v-btn icon @click="toggleTheme" class="mr-2">
+  <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
+</v-btn>
+```
+
+Sun icon = currently dark (click for light)
+Moon icon = currently light (click for dark)
+
+### Web Component Integration
+
+Theme changes are automatically sent to Web Components via EventBus:
+
+```typescript
+// In useTheme.ts
+eventBus.emitStateful('theme:changed', {
+  theme: newTheme,
+  isDark: isDark.value
+});
+```
+
+**Web Components** listen via `event-listener.service.ts`:
+
+```typescript
+this.unsubscribeTheme = eventListener.onThemeChange((payload) => {
+  this.classList.toggle('dark-theme', payload.isDark);
+});
+```
+
+See [WEB_COMPONENTS.md](../docs/WEB_COMPONENTS.md) for WC theme implementation.
+
+### Material Symbols Font
+
+**File**: `portal/index.html`
+
+```html
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+```
+
+**Required** for Material Web Components icons (`<md-icon>`) used in WC.
+
+### Styling Web Component Container
+
+**File**: `portal/src/components/MicroFrontendLoader.vue`
+
+```css
+.micro-frontend-container {
+  padding-top: 16px; /* Space between header and WC content */
+}
+```
+
+Provides visual separation between Portal header and WC content.
+
 ## Navigation & Routing
 
 ### Route Structure

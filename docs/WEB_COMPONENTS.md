@@ -818,8 +818,30 @@ The Portal supports **dark and light themes** that Web Components should respect
 
 ### Listening to Theme Changes
 
-Use the **stateful EventBus** to listen for theme changes:
+**Recommended Approach**: Use the `event-listener.service.ts` helper (already includes stateful EventBus):
 
+```typescript
+import { eventListener } from './services/event-listener.service';
+
+// In connectedCallback
+connectedCallback() {
+  super.connectedCallback();
+
+  // Listen to theme changes (receives current theme immediately if already set)
+  this.unsubscribeTheme = eventListener.onThemeChange((payload) => {
+    eventListener.emitLog(`Theme changed to: ${payload.theme}`, 'debug');
+    this.classList.toggle('dark-theme', payload.isDark);
+  });
+}
+
+// Cleanup
+disconnectedCallback() {
+  super.disconnectedCallback();
+  this.unsubscribeTheme?.();
+}
+```
+
+**Alternative (Direct EventBus)**:
 ```typescript
 // In connectedCallback
 connectedCallback() {
@@ -859,7 +881,70 @@ disconnectedCallback() {
 }
 ```
 
-### Recommended Approach: CSS Custom Properties
+### Recommended Approach: Material Design Tokens + CSS Class
+
+**Step 1**: Define Material Design 3 tokens in your `:host` styles:
+
+```typescript
+static styles = css`
+  :host {
+    display: block;
+    padding: 24px;
+
+    /* AetherWeave Material Design tokens (Light Theme) */
+    --md-sys-color-primary: #FF6B35;
+    --md-sys-color-on-primary: #FFFFFF;
+    --md-sys-color-secondary: #FFB74D;
+    --md-sys-color-on-secondary: #3D2200;
+    --md-sys-color-background: #FAFAFA;
+    --md-sys-color-on-background: #1C1B1F;
+    --md-sys-color-surface: #FFFFFF;
+    --md-sys-color-on-surface: #1C1B1F;
+
+    /* Material Web Component tokens */
+    --md-filled-button-container-color: #FF6B35;
+    --md-filled-button-label-text-color: #FFFFFF;
+
+    /* Apply to host */
+    background-color: var(--md-sys-color-background);
+    color: var(--md-sys-color-on-background);
+  }
+
+  /* Dark theme overrides */
+  :host(.dark-theme) {
+    --md-sys-color-background: #1E1E1E;
+    --md-sys-color-on-background: #FFFFFF;
+    --md-sys-color-surface: #2A2A2A;
+    --md-sys-color-on-surface: #FFFFFF;
+    --md-sys-color-surface-variant: #3A3A3A;
+    --md-sys-color-on-surface-variant: #B0B0B0;
+    --md-sys-color-outline-variant: #4A4A4A;
+
+    background-color: #1E1E1E;
+    color: #FFFFFF;
+  }
+`;
+```
+
+**Step 2**: Toggle `.dark-theme` class via EventBus:
+
+```typescript
+connectedCallback() {
+  super.connectedCallback();
+
+  this.unsubscribeTheme = eventListener.onThemeChange((payload) => {
+    this.classList.toggle('dark-theme', payload.isDark);
+  });
+}
+```
+
+**Benefits**:
+- ✅ Material Web Components (`<md-filled-button>`, `<md-icon>`, etc.) automatically use tokens
+- ✅ Simple CSS class toggle, no manual style updates
+- ✅ Consistent with Material Design 3 system
+- ✅ Easy to override for custom components
+
+### Alternative: CSS Custom Properties (Legacy)
 
 Define theme-aware CSS using custom properties:
 
@@ -1002,12 +1087,41 @@ export class MyServiceApp extends LitElement {
 }
 ```
 
+### Material Symbols Font (Required for Icons)
+
+If your Web Component uses Material Web Components with icons (`<md-icon>`), you **must** load the Material Symbols font in the Portal:
+
+**Add to `portal/index.html`**:
+```html
+<head>
+  <!-- Material Symbols for Web Components -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+```
+
+**Why?** Material Web Components use font-based icons that need to be loaded globally. Without this font, icons will appear as garbled text.
+
+**Example usage in WC**:
+```typescript
+render() {
+  return html`
+    <md-filled-button>
+      <md-icon slot="icon">add</md-icon>
+      Add User
+    </md-filled-button>
+  `;
+}
+```
+
+The icon name (`add`, `edit`, `delete`, etc.) comes from [Material Symbols](https://fonts.google.com/icons).
+
 ### Testing Theme Support
 
 1. **Manual testing**: Toggle theme button in Portal header (sun/moon icon)
 2. **Check immediately after load**: WC should receive current theme via stateful event
 3. **Check dynamic switching**: Theme should update when user toggles
 4. **Check persistence**: Reload page, theme should be remembered
+5. **Check icons**: Verify Material icons display correctly (not garbled text)
 
 ## Related Documentation
 
