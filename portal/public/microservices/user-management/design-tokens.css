@@ -7,17 +7,17 @@
  */
 
 :root {
-  /* Primary Colors (Vuetify primary: #1976D2) */
-  --md-sys-color-primary: #1976D2;
+  /* Primary Colors (AetherWeave Orange: #FF6B35) */
+  --md-sys-color-primary: #FF6B35;
   --md-sys-color-on-primary: #FFFFFF;
-  --md-sys-color-primary-container: #D3E4FD;
-  --md-sys-color-on-primary-container: #001C38;
+  --md-sys-color-primary-container: #FFE4DB;
+  --md-sys-color-on-primary-container: #3D1500;
 
-  /* Secondary Colors (Vuetify secondary: #424242) */
-  --md-sys-color-secondary: #424242;
-  --md-sys-color-on-secondary: #FFFFFF;
-  --md-sys-color-secondary-container: #E0E0E0;
-  --md-sys-color-on-secondary-container: #1A1C1E;
+  /* Secondary Colors (AetherWeave Yellow: #FFB74D) */
+  --md-sys-color-secondary: #FFB74D;
+  --md-sys-color-on-secondary: #3D2200;
+  --md-sys-color-secondary-container: #FFEACD;
+  --md-sys-color-on-secondary-container: #2B1700;
 
   /* Error Colors (Vuetify error: #FF5252) */
   --md-sys-color-error: #FF5252;

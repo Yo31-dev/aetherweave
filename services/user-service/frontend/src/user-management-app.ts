@@ -36,6 +36,14 @@ export class UserManagementApp extends LitElement {
       font-family: var(--font-family, 'Roboto', sans-serif);
       background-color: var(--md-sys-color-background, #fafafa);
       color: var(--md-sys-color-on-background, #1c1b1f);
+
+      /* AetherWeave Material Design tokens */
+      --md-sys-color-primary: #FF6B35;
+      --md-sys-color-on-primary: #FFFFFF;
+      --md-sys-color-secondary: #FFB74D;
+      --md-sys-color-on-secondary: #3D2200;
+      --md-filled-button-container-color: #FF6B35;
+      --md-filled-button-label-text-color: #FFFFFF;
     }
 
     /* Dark theme overrides */
@@ -107,9 +115,9 @@ export class UserManagementApp extends LitElement {
     }
 
     th {
-      background-color: var(--md-sys-color-surface-variant, #e7e0ec);
+      background-color: #FFE4DB;
       font-weight: var(--font-weight-medium, 500);
-      color: var(--md-sys-color-on-surface-variant, #49454f);
+      color: #3D1500;
     }
 
     tr:last-child td {
