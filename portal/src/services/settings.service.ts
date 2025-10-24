@@ -1,4 +1,5 @@
 import Dexie, { type Table } from 'dexie';
+import { logService } from './log.service';
 
 /**
  * Settings stored in IndexedDB
@@ -40,7 +41,7 @@ class SettingsService {
       const setting = await db.settings.where('key').equals(key).first();
       return setting ? setting.value : defaultValue;
     } catch (error) {
-      console.error(`Failed to get setting ${key}:`, error);
+      logService.error(`Failed to get setting ${key}`, 'SettingsService', error);
       return defaultValue;
     }
   }
@@ -65,7 +66,7 @@ class SettingsService {
         });
       }
     } catch (error) {
-      console.error(`Failed to set setting ${key}:`, error);
+      logService.error(`Failed to set setting ${key}`, 'SettingsService', error);
       throw error;
     }
   }
@@ -80,7 +81,7 @@ class SettingsService {
         await db.settings.delete(setting.id);
       }
     } catch (error) {
-      console.error(`Failed to delete setting ${key}:`, error);
+      logService.error(`Failed to delete setting ${key}`, 'SettingsService', error);
       throw error;
     }
   }
@@ -92,7 +93,7 @@ class SettingsService {
     try {
       return await db.settings.toArray();
     } catch (error) {
-      console.error('Failed to get all settings:', error);
+      logService.error('Failed to get all settings', 'SettingsService', error);
       return [];
     }
   }
@@ -104,7 +105,7 @@ class SettingsService {
     try {
       await db.settings.clear();
     } catch (error) {
-      console.error('Failed to clear settings:', error);
+      logService.error('Failed to clear settings', 'SettingsService', error);
       throw error;
     }
   }
@@ -120,7 +121,7 @@ class SettingsService {
         keys: settings.map(s => s.key),
       };
     } catch (error) {
-      console.error('Failed to get settings stats:', error);
+      logService.error('Failed to get settings stats', 'SettingsService', error);
       return { count: 0, keys: [] };
     }
   }
@@ -137,7 +138,7 @@ class SettingsService {
       });
       return exported;
     } catch (error) {
-      console.error('Failed to export settings:', error);
+      logService.error('Failed to export settings', 'SettingsService', error);
       return {};
     }
   }
@@ -152,7 +153,7 @@ class SettingsService {
       );
       await Promise.all(promises);
     } catch (error) {
-      console.error('Failed to import settings:', error);
+      logService.error('Failed to import settings', 'SettingsService', error);
       throw error;
     }
   }
@@ -168,4 +169,5 @@ export const SettingKeys = {
   THEME: 'theme',
   SIDEBAR_COLLAPSED: 'sidebarCollapsed',
   NOTIFICATIONS_ENABLED: 'notificationsEnabled',
+  LOG_LEVELS_ENABLED: 'logLevelsEnabled', // Array of enabled log levels
 } as const;

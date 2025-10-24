@@ -133,7 +133,7 @@ watch(() => [authStore.accessToken, authStore.profile], ([token, profile]) => {
     // Set properties on the Web Component
     (webComponentInstance.value as any).token = token || '';
     (webComponentInstance.value as any).user = profile || null;
-    logService.debug(
+    logService.debugVerbose(
       'Updated Web Component auth properties',
       'MicroFrontendLoader',
       { hasToken: !!token, componentTag: props.microservice.componentTag }
@@ -145,7 +145,7 @@ watch(() => [authStore.accessToken, authStore.profile], ([token, profile]) => {
 watch(locale, (newLocale) => {
   if (webComponentInstance.value) {
     (webComponentInstance.value as any).lang = newLocale;
-    logService.debug(
+    logService.debugVerbose(
       'Updated Web Component lang property',
       'MicroFrontendLoader',
       { locale: newLocale, componentTag: props.microservice.componentTag }
@@ -216,7 +216,7 @@ onMounted(async () => {
   if (authStore.isAuthenticated) {
     await loadAndMount();
   } else {
-    logService.debug(
+    logService.debugVerbose(
       'Skipping Web Component load - user not authenticated',
       'MicroFrontendLoader',
       { componentTag: props.microservice.componentTag }

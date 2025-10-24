@@ -52,6 +52,7 @@
     "resetFilters": "Reset All Filters",
     "export": "Export",
     "clear": "Clear",
+    "deleteAllLogs": "Delete All Logs",
     "noLogs": "No logs yet",
     "noMatchingLogs": "No matching logs",
     "confirmClearTitle": "Clear All Logs?",
@@ -69,7 +70,12 @@
       "newest": "Newest",
       "search": "Search logs",
       "logEntries": "Log Entries",
-      "entries": "entries"
+      "entries": "entries",
+      "recordingConfig": "Log Recording Configuration",
+      "enabledLevels": "Levels to Record",
+      "enabledLevelsHint": "Select which log levels should be saved to IndexedDB. Errors are always recommended.",
+      "recordingNote": "Note",
+      "recordingDescription": "Only selected levels will be saved to IndexedDB. This helps reduce storage usage and improves performance."
     }
   },
   "settings": {

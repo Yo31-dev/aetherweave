@@ -158,6 +158,7 @@ export class UserManagementApp extends LitElement {
   // Cleanup functions
   private unsubLogout?: () => void;
   private unsubLocale?: () => void;
+  private unsubTokenRefresh?: () => void;
 
   connectedCallback() {
     super.connectedCallback();
@@ -173,6 +174,15 @@ export class UserManagementApp extends LitElement {
       eventListener.emitLog('Logout received, clearing state', 'info');
       this.users = [];
       this.loading = true;
+    });
+
+    // Listen for token refresh from portal
+    this.unsubTokenRefresh = eventListener.onTokenRefresh((payload) => {
+      eventListener.emitLog('Token refreshed, updating local token', 'info');
+      // Update local token and user properties
+      this.token = payload.token;
+      this.user = payload.user;
+      // Lit will automatically trigger updated() which will reload users
     });
 
     // Listen for locale changes from portal
@@ -194,6 +204,7 @@ export class UserManagementApp extends LitElement {
     // Cleanup event listeners
     this.unsubLogout?.();
     this.unsubLocale?.();
+    this.unsubTokenRefresh?.();
   }
 
   /**
@@ -240,10 +251,10 @@ export class UserManagementApp extends LitElement {
       // We need to update userApi to accept token as parameter
       this.users = await userApi.getUsers(this.token);
 
-      console.log('[UserManagement] Loaded users:', this.users.length);
+      eventListener.emitLog(`Loaded ${this.users.length} users`, 'info');
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Failed to load users';
-      console.error('[UserManagement] Load error:', err);
+      eventListener.emitLog('Load error', 'error', err);
     } finally {
       this.loading = false;
     }

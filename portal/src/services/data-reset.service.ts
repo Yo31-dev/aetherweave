@@ -2,6 +2,9 @@
  * Data Reset Service
  * Provides functionality to clear all application data
  */
+
+import { logService } from './log.service';
+
 class DataResetService {
   /**
    * Clear all IndexedDB databases
@@ -18,7 +21,7 @@ class DataResetService {
         try {
           databases = await window.indexedDB.databases();
         } catch (e) {
-          console.warn('indexedDB.databases() not supported, using known database names');
+          logService.debugVerbose('indexedDB.databases() not supported, using known database names', 'DataResetService');
         }
       }
 
@@ -33,24 +36,24 @@ class DataResetService {
         return new Promise<void>((resolve) => {
           const request = window.indexedDB.deleteDatabase(dbName);
           request.onsuccess = () => {
-            console.log(`Database ${dbName} deleted`);
+            logService.debugVerbose(`Database ${dbName} deleted`, 'DataResetService');
             resolve();
           };
           request.onerror = () => {
-            console.error(`Failed to delete ${dbName}`);
+            logService.error(`Failed to delete ${dbName}`, 'DataResetService');
             resolve(); // Don't fail the whole operation
           };
           request.onblocked = () => {
-            console.warn(`Deletion of ${dbName} is blocked`);
+            logService.debugVerbose(`Deletion of ${dbName} is blocked`, 'DataResetService');
             resolve(); // Don't fail the whole operation
           };
         });
       });
 
       await Promise.all(deletePromises);
-      console.log('All IndexedDB databases cleared');
+      logService.debug('All IndexedDB databases cleared', 'DataResetService');
     } catch (error) {
-      console.error('Failed to clear IndexedDB:', error);
+      logService.error('Failed to clear IndexedDB', 'DataResetService', error);
       throw error;
     }
   }
@@ -61,9 +64,9 @@ class DataResetService {
   clearLocalStorage(): void {
     try {
       localStorage.clear();
-      console.log('localStorage cleared');
+      logService.debug('localStorage cleared', 'DataResetService');
     } catch (error) {
-      console.error('Failed to clear localStorage:', error);
+      logService.error('Failed to clear localStorage', 'DataResetService', error);
       throw error;
     }
   }
@@ -74,9 +77,9 @@ class DataResetService {
   clearSessionStorage(): void {
     try {
       sessionStorage.clear();
-      console.log('sessionStorage cleared');
+      logService.debug('sessionStorage cleared', 'DataResetService');
     } catch (error) {
-      console.error('Failed to clear sessionStorage:', error);
+      logService.error('Failed to clear sessionStorage', 'DataResetService', error);
       throw error;
     }
   }
@@ -92,9 +95,9 @@ class DataResetService {
           document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
         }
       });
-      console.log('Cookies cleared');
+      logService.debug('Cookies cleared', 'DataResetService');
     } catch (error) {
-      console.error('Failed to clear cookies:', error);
+      logService.error('Failed to clear cookies', 'DataResetService', error);
       throw error;
     }
   }
@@ -111,9 +114,9 @@ class DataResetService {
       this.clearSessionStorage();
       this.clearCookies();
 
-      console.log('All application data cleared successfully');
+      logService.info('All application data cleared successfully', 'DataResetService');
     } catch (error) {
-      console.error('Failed to clear all data:', error);
+      logService.error('Failed to clear all data', 'DataResetService', error);
       throw error;
     }
   }
@@ -138,7 +141,7 @@ class DataResetService {
           const databases = await window.indexedDB.databases();
           dbNames = databases.map(db => db.name || 'unknown');
         } catch (e) {
-          console.warn('indexedDB.databases() not supported, using known database names');
+          logService.debugVerbose('indexedDB.databases() not supported, using known database names', 'DataResetService');
         }
       }
 
@@ -177,7 +180,7 @@ class DataResetService {
         },
       };
     } catch (error) {
-      console.error('Failed to get storage stats:', error);
+      logService.error('Failed to get storage stats', 'DataResetService', error);
       return {
         indexedDB: { databases: [], count: 0 },
         localStorage: { keys: [], count: 0, sizeBytes: 0 },

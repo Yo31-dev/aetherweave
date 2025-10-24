@@ -20,6 +20,24 @@ export const useAuthStore = defineStore('auth', () => {
     return profile.value.preferred_username || profile.value.name || profile.value.email;
   });
 
+  // Setup token refresh listener
+  authService.onTokenRefresh((renewedUser: User) => {
+    logService.info('Token silently renewed, updating store', 'AuthStore', {
+      expiresAt: new Date(renewedUser.expires_at * 1000).toISOString()
+    });
+
+    // Update store with renewed user
+    user.value = renewedUser;
+
+    // Publish to EventBus for Web Components
+    if (renewedUser.access_token && renewedUser.profile) {
+      eventBus.publishTokenRefresh({
+        token: renewedUser.access_token,
+        user: renewedUser.profile
+      });
+    }
+  });
+
   // Actions
   async function login() {
     try {
@@ -28,7 +46,6 @@ export const useAuthStore = defineStore('auth', () => {
       await authService.login();
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Login failed';
-      console.error('Login error:', err);
       logService.error('Login failed', 'AuthStore', err);
       throw err;
     } finally {
@@ -45,7 +62,6 @@ export const useAuthStore = defineStore('auth', () => {
       logService.info('User authenticated', 'AuthStore', { profile: authenticatedUser.profile });
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Callback handling failed';
-      console.error('Callback error:', err);
       logService.error('Callback handling failed', 'AuthStore', err);
       throw err;
     } finally {
@@ -64,7 +80,6 @@ export const useAuthStore = defineStore('auth', () => {
       eventBus.publishLogout();
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Logout failed';
-      console.error('Logout error:', err);
       logService.error('Logout failed', 'AuthStore', err);
       throw err;
     } finally {
@@ -86,7 +101,6 @@ export const useAuthStore = defineStore('auth', () => {
       }
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to load user';
-      console.error('Load user error:', err);
       logService.error('Failed to load user', 'AuthStore', err);
       user.value = null;
     } finally {
@@ -100,7 +114,6 @@ export const useAuthStore = defineStore('auth', () => {
       user.value = renewedUser;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Token renewal failed';
-      console.error('Token renewal error:', err);
       logService.error('Token renewal failed', 'AuthStore', err);
       throw err;
     }

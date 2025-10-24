@@ -11,6 +11,7 @@
  */
 
 import EventEmitter from 'eventemitter3';
+import { logService } from './log.service';
 
 export interface AuthPayload {
   token: string;
@@ -57,6 +58,7 @@ export interface LogPayload {
 export const EventType = {
   // Portal → Web Components
   AUTH_LOGOUT: 'portal:auth:logout',
+  AUTH_TOKEN_REFRESHED: 'portal:auth:token-refreshed',
   LOCALE_CHANGE: 'portal:locale:change',
 
   // Web Components → Portal
@@ -73,6 +75,7 @@ type EventTypeKeys = typeof EventType[keyof typeof EventType];
  */
 interface EventMap {
   [EventType.AUTH_LOGOUT]: () => void;
+  [EventType.AUTH_TOKEN_REFRESHED]: (payload: AuthPayload) => void;
   [EventType.LOCALE_CHANGE]: (payload: LocalePayload) => void;
   [EventType.NAVIGATE]: (payload: NavigationPayload) => void;
   [EventType.ERROR]: (payload: ErrorPayload) => void;
@@ -89,8 +92,7 @@ class MicroFrontendEventBus {
     // Expose emitter on window for Web Components to access
     (window as any).__AETHERWEAVE_EVENT_BUS__ = this.emitter;
 
-    // Note: Can't use logService here as it would create circular dependency
-    // EventBus initialization will be logged by DefaultLayout
+    logService.debugVerbose('EventBus initialized', 'EventBus');
   }
 
   // ============================================================================
@@ -103,7 +105,16 @@ class MicroFrontendEventBus {
    */
   publishLogout(): void {
     this.emitter.emit(EventType.AUTH_LOGOUT);
-    console.log('[EventBus] Published logout');
+    logService.debugVerbose('Published logout event', 'EventBus');
+  }
+
+  /**
+   * Publish token refresh event to all Web Components
+   * Web Components should update their auth token
+   */
+  publishTokenRefresh(payload: AuthPayload): void {
+    this.emitter.emit(EventType.AUTH_TOKEN_REFRESHED, payload);
+    logService.debugVerbose('Published token refresh event', 'EventBus');
   }
 
   /**
@@ -111,7 +122,7 @@ class MicroFrontendEventBus {
    */
   publishLocale(payload: LocalePayload): void {
     this.emitter.emit(EventType.LOCALE_CHANGE, payload);
-    console.log(`[EventBus] Published locale change: ${payload.locale}`);
+    logService.debugVerbose(`Published locale change: ${payload.locale}`, 'EventBus');
   }
 
   // ============================================================================
@@ -163,6 +174,14 @@ class MicroFrontendEventBus {
   }
 
   /**
+   * Listen for token refresh (Web Components)
+   */
+  onTokenRefresh(callback: (payload: AuthPayload) => void): () => void {
+    this.emitter.on(EventType.AUTH_TOKEN_REFRESHED, callback);
+    return () => this.emitter.off(EventType.AUTH_TOKEN_REFRESHED, callback);
+  }
+
+  /**
    * Listen for locale changes (Web Components)
    */
   onLocaleChange(callback: (payload: LocalePayload) => void): () => void {
@@ -179,7 +198,7 @@ class MicroFrontendEventBus {
    */
   requestNavigation(payload: NavigationPayload): void {
     this.emitter.emit(EventType.NAVIGATE, payload);
-    console.log(`[EventBus] Navigation requested: ${payload.path}`);
+    logService.debugVerbose(`Navigation requested: ${payload.path}`, 'EventBus');
   }
 
   /**
@@ -187,7 +206,7 @@ class MicroFrontendEventBus {
    */
   emitError(payload: ErrorPayload): void {
     this.emitter.emit(EventType.ERROR, payload);
-    console.error(`[EventBus] Error emitted from ${payload.source}:`, payload.message);
+    logService.error(`Error from ${payload.source}: ${payload.message}`, 'EventBus', payload);
   }
 
   /**
@@ -195,7 +214,7 @@ class MicroFrontendEventBus {
    */
   emitNotification(message: string, type: 'success' | 'info' | 'warning' | 'error' = 'info'): void {
     this.emitter.emit(EventType.NOTIFICATION, { message, type });
-    console.log(`[EventBus] Notification (${type}): ${message}`);
+    logService.debugVerbose(`Notification (${type}): ${message}`, 'EventBus');
   }
 
   /**
@@ -248,7 +267,7 @@ class MicroFrontendEventBus {
    */
   removeAllListeners(): void {
     this.emitter.removeAllListeners();
-    console.log('[EventBus] All listeners removed');
+    logService.debugVerbose('All listeners removed', 'EventBus');
   }
 }
 

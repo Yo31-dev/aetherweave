@@ -66,7 +66,7 @@ class UserApiService {
       });
       return this.handleResponse<User[]>(response);
     } catch (error) {
-      console.error('[UserAPI] Failed to fetch users:', error);
+      eventListener.emitLog('Failed to fetch users', 'error', error);
       eventListener.emitError(error instanceof Error ? error.message : 'Failed to fetch users');
       throw error;
     }
@@ -83,7 +83,7 @@ class UserApiService {
       });
       return this.handleResponse<User>(response);
     } catch (error) {
-      console.error('[UserAPI] Failed to fetch user:', error);
+      eventListener.emitLog('Failed to fetch user', 'error', error);
       eventListener.emitError(error instanceof Error ? error.message : 'Failed to fetch user');
       throw error;
     }
@@ -103,7 +103,7 @@ class UserApiService {
       eventListener.emitNotification('User created successfully', 'success');
       return user;
     } catch (error) {
-      console.error('[UserAPI] Failed to create user:', error);
+      eventListener.emitLog('Failed to create user', 'error', error);
       eventListener.emitError(error instanceof Error ? error.message : 'Failed to create user');
       throw error;
     }
@@ -123,7 +123,7 @@ class UserApiService {
       eventListener.emitNotification('User updated successfully', 'success');
       return user;
     } catch (error) {
-      console.error('[UserAPI] Failed to update user:', error);
+      eventListener.emitLog('Failed to update user', 'error', error);
       eventListener.emitError(error instanceof Error ? error.message : 'Failed to update user');
       throw error;
     }
@@ -146,7 +146,7 @@ class UserApiService {
 
       eventListener.emitNotification('User deleted successfully', 'success');
     } catch (error) {
-      console.error('[UserAPI] Failed to delete user:', error);
+      eventListener.emitLog('Failed to delete user', 'error', error);
       eventListener.emitError(error instanceof Error ? error.message : 'Failed to delete user');
       throw error;
     }

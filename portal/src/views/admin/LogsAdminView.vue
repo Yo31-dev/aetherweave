@@ -10,6 +10,52 @@
       </v-col>
     </v-row>
 
+    <!-- Log Recording Configuration -->
+    <v-row>
+      <v-col cols="12">
+        <v-expansion-panels>
+          <v-expansion-panel>
+            <v-expansion-panel-title>
+              <div class="d-flex align-center">
+                <v-icon class="mr-2">mdi-cog</v-icon>
+                <span class="text-h6">{{ $t('logs.admin.recordingConfig', 'Log Recording Configuration') }}</span>
+              </div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <v-row align="center" class="mt-2">
+                <v-col cols="12" md="6">
+                  <v-select
+                    v-model="enabledLogLevels"
+                    :items="levelOptions"
+                    :label="$t('logs.admin.enabledLevels', 'Levels to Record')"
+                    multiple
+                    chips
+                    density="comfortable"
+                    variant="outlined"
+                    :hint="$t('logs.admin.enabledLevelsHint')"
+                    persistent-hint
+                    @update:model-value="updateEnabledLevels"
+                  >
+                    <template v-slot:chip="{ item }">
+                      <v-chip :color="getLevelColor(item.value as LogLevel)" size="small">
+                        {{ item.title }}
+                      </v-chip>
+                    </template>
+                  </v-select>
+                </v-col>
+                <v-col cols="12" md="6">
+                  <v-alert type="info" density="compact" variant="tonal">
+                    <strong>{{ $t('logs.admin.recordingNote', 'Note') }}:</strong>
+                    {{ $t('logs.admin.recordingDescription', 'Only selected levels will be saved. This helps reduce storage usage.') }}
+                  </v-alert>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-col>
+    </v-row>
+
     <!-- Statistics Cards -->
     <v-row>
       <v-col cols="12" sm="6" md="3">
@@ -76,17 +122,21 @@
           <v-card-title>{{ $t('logs.admin.levelDistribution') }}</v-card-title>
           <v-card-text>
             <v-row>
-              <v-col cols="4" class="text-center">
+              <v-col cols="3" class="text-center">
                 <div class="text-h4 text-error">{{ stats.errorCount }}</div>
                 <div class="text-caption">ERROR</div>
               </v-col>
-              <v-col cols="4" class="text-center">
+              <v-col cols="3" class="text-center">
                 <div class="text-h4 text-info">{{ stats.debugCount }}</div>
                 <div class="text-caption">DEBUG</div>
               </v-col>
-              <v-col cols="4" class="text-center">
+              <v-col cols="3" class="text-center">
                 <div class="text-h4 text-success">{{ stats.infoCount }}</div>
                 <div class="text-caption">INFO</div>
+              </v-col>
+              <v-col cols="3" class="text-center">
+                <div class="text-h4 text-grey">{{ stats.verboseCount }}</div>
+                <div class="text-caption">VERBOSE</div>
               </v-col>
             </v-row>
           </v-card-text>
@@ -113,113 +163,126 @@
     <!-- Filters and Actions -->
     <v-row>
       <v-col cols="12">
-        <v-card>
-          <v-card-text>
-            <v-row align="center">
-              <!-- Level Filters -->
-              <v-col cols="12" sm="6" md="3">
-                <v-select
-                  v-model="selectedLevels"
-                  :items="levelOptions"
-                  :label="$t('logs.levels')"
-                  multiple
-                  chips
-                  density="compact"
-                  variant="outlined"
-                  hide-details
-                >
-                  <template v-slot:chip="{ item }">
-                    <v-chip :color="getLevelColor(item.value as LogLevel)" size="small">
-                      {{ item.title }}
-                    </v-chip>
-                  </template>
-                </v-select>
-              </v-col>
+        <v-expansion-panels>
+          <v-expansion-panel>
+            <v-expansion-panel-title>
+              <div class="d-flex align-center">
+                <v-icon class="mr-2">mdi-filter</v-icon>
+                <span class="text-h6">{{ $t('logs.filters') }}</span>
+              </div>
+            </v-expansion-panel-title>
+            <v-expansion-panel-text>
+              <v-row align="center" class="mt-2">
+                <!-- Level Filters -->
+                <v-col cols="12" sm="6" md="3">
+                  <v-select
+                    v-model="selectedLevels"
+                    :items="levelOptions"
+                    :label="$t('logs.levels')"
+                    multiple
+                    chips
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                  >
+                    <template v-slot:chip="{ item }">
+                      <v-chip :color="getLevelColor(item.value as LogLevel)" size="small">
+                        {{ item.title }}
+                      </v-chip>
+                    </template>
+                  </v-select>
+                </v-col>
 
-              <!-- Source Filters -->
-              <v-col cols="12" sm="6" md="3">
-                <v-select
-                  v-model="selectedSources"
-                  :items="sourceOptions"
-                  :label="$t('logs.sources')"
-                  multiple
-                  chips
-                  density="compact"
-                  variant="outlined"
-                  hide-details
-                  clearable
-                ></v-select>
-              </v-col>
+                <!-- Source Filters -->
+                <v-col cols="12" sm="6" md="3">
+                  <v-select
+                    v-model="selectedSources"
+                    :items="sourceOptions"
+                    :label="$t('logs.sources')"
+                    multiple
+                    chips
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    clearable
+                  ></v-select>
+                </v-col>
 
-              <!-- Search -->
-              <v-col cols="12" sm="6" md="4">
-                <v-text-field
-                  v-model="searchQuery"
-                  :label="$t('logs.admin.search')"
-                  prepend-inner-icon="mdi-magnify"
-                  density="compact"
-                  variant="outlined"
-                  hide-details
-                  clearable
-                ></v-text-field>
-              </v-col>
+                <!-- Search -->
+                <v-col cols="12" sm="6" md="4">
+                  <v-text-field
+                    v-model="searchQuery"
+                    :label="$t('logs.admin.search')"
+                    prepend-inner-icon="mdi-magnify"
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    clearable
+                  ></v-text-field>
+                </v-col>
 
-              <!-- Actions -->
-              <v-col cols="12" sm="6" md="2">
-                <v-menu>
-                  <template v-slot:activator="{ props }">
-                    <v-btn
-                      v-bind="props"
-                      color="primary"
-                      variant="outlined"
-                      block
-                      prepend-icon="mdi-download"
-                    >
-                      {{ $t('logs.export') }}
-                    </v-btn>
-                  </template>
-                  <v-list>
-                    <v-list-item @click="exportJSON">
-                      <v-list-item-title>
-                        <v-icon start>mdi-code-json</v-icon>
-                        Export JSON
-                      </v-list-item-title>
-                    </v-list-item>
-                    <v-list-item @click="exportTXT">
-                      <v-list-item-title>
-                        <v-icon start>mdi-text</v-icon>
-                        Export TXT
-                      </v-list-item-title>
-                    </v-list-item>
-                  </v-list>
-                </v-menu>
-              </v-col>
-            </v-row>
+                <!-- Actions -->
+                <v-col cols="12" sm="6" md="2">
+                  <v-menu>
+                    <template v-slot:activator="{ props }">
+                      <v-btn
+                        v-bind="props"
+                        color="primary"
+                        variant="outlined"
+                        block
+                        prepend-icon="mdi-download"
+                      >
+                        {{ $t('logs.export') }}
+                      </v-btn>
+                    </template>
+                    <v-list>
+                      <v-list-item @click="exportJSON">
+                        <v-list-item-title>
+                          <v-icon start>mdi-code-json</v-icon>
+                          Export JSON
+                        </v-list-item-title>
+                      </v-list-item>
+                      <v-list-item @click="exportTXT">
+                        <v-list-item-title>
+                          <v-icon start>mdi-text</v-icon>
+                          Export TXT
+                        </v-list-item-title>
+                      </v-list-item>
+                    </v-list>
+                  </v-menu>
+                </v-col>
+              </v-row>
 
-            <v-row class="mt-2">
-              <v-col cols="auto">
-                <v-btn
-                  color="error"
-                  variant="outlined"
-                  size="small"
-                  prepend-icon="mdi-delete"
-                  @click="confirmClearDialog = true"
-                >
-                  {{ $t('logs.clear') }}
-                </v-btn>
-              </v-col>
-              <v-col cols="auto">
-                <v-btn
-                  variant="text"
-                  size="small"
-                  @click="resetFilters"
-                >
-                  {{ $t('logs.resetFilters') }}
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
+              <!-- Reset Filters Button -->
+              <v-row class="mt-2">
+                <v-col cols="12">
+                  <v-btn
+                    variant="text"
+                    size="small"
+                    prepend-icon="mdi-filter-off"
+                    @click="resetFilters"
+                  >
+                    {{ $t('logs.resetFilters') }}
+                  </v-btn>
+                </v-col>
+              </v-row>
+            </v-expansion-panel-text>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-col>
+    </v-row>
+
+    <!-- Actions Row -->
+    <v-row>
+      <v-col cols="12">
+        <v-btn
+          color="error"
+          variant="outlined"
+          prepend-icon="mdi-delete-forever"
+          @click="confirmClearDialog = true"
+        >
+          {{ $t('logs.deleteAllLogs') }}
+        </v-btn>
       </v-col>
     </v-row>
 
@@ -267,6 +330,7 @@
             <!-- Actions Column -->
             <template v-slot:item.actions="{ item }">
               <v-btn
+                v-if="item.meta && Object.keys(item.meta).length > 0"
                 icon
                 size="small"
                 variant="text"
@@ -328,13 +392,15 @@ const stats = ref({
   errorCount: 0,
   debugCount: 0,
   infoCount: 0,
+  verboseCount: 0,
   uniqueSources: 0,
   oldestLog: null as Date | null,
   newestLog: null as Date | null,
 });
 
 const logs = ref<LogEntry[]>([]);
-const selectedLevels = ref<LogLevel[]>(['error', 'debug', 'info']);
+const selectedLevels = ref<LogLevel[]>(['error', 'debug', 'info']); // Display filters
+const enabledLogLevels = ref<LogLevel[]>(['error']); // Recording configuration
 const selectedSources = ref<string[]>([]);
 const searchQuery = ref('');
 const confirmClearDialog = ref(false);
@@ -362,6 +428,7 @@ const levelOptions = [
   { title: 'ERROR', value: 'error' },
   { title: 'DEBUG', value: 'debug' },
   { title: 'INFO', value: 'info' },
+  { title: 'VERBOSE', value: 'verbose' },
 ];
 
 const filteredLogs = computed(() => {
@@ -388,6 +455,16 @@ const filteredLogs = computed(() => {
 });
 
 // Methods
+async function loadEnabledLevels() {
+  await logService.loadEnabledLevels();
+  enabledLogLevels.value = logService.getEnabledLevels();
+}
+
+async function updateEnabledLevels(levels: LogLevel[]) {
+  await logService.setEnabledLevels(levels);
+  logService.info('Log recording levels updated', 'LogsAdminView', { levels });
+}
+
 async function loadStats() {
   const allLogs = await logStorage.getLogs();
   logs.value = allLogs.sort((a: LogEntry, b: LogEntry) => b.timestamp.getTime() - a.timestamp.getTime());
@@ -396,12 +473,14 @@ async function loadStats() {
   let errorCount = 0;
   let debugCount = 0;
   let infoCount = 0;
+  let verboseCount = 0;
 
   allLogs.forEach((log: LogEntry) => {
     sources.add(log.source);
     if (log.level === 'error') errorCount++;
     else if (log.level === 'debug') debugCount++;
     else if (log.level === 'info') infoCount++;
+    else if (log.level === 'verbose') verboseCount++;
   });
 
   const storageStats = await logStorage.getStats();
@@ -412,6 +491,7 @@ async function loadStats() {
     errorCount,
     debugCount,
     infoCount,
+    verboseCount,
     uniqueSources: sources.size,
     oldestLog: storageStats.oldestLog || null,
     newestLog: storageStats.newestLog || null,
@@ -444,11 +524,13 @@ function formatDate(date: Date | null): string {
 }
 
 function formatTimestamp(timestamp: Date): string {
-  const time = timestamp.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-  });
+  const hours = timestamp.getHours().toString().padStart(2, '0');
+  const minutes = timestamp.getMinutes().toString().padStart(2, '0');
+  const seconds = timestamp.getSeconds().toString().padStart(2, '0');
+  const milliseconds = timestamp.getMilliseconds().toString().padStart(3, '0');
+
+  const time = `${hours}:${minutes}:${seconds}.${milliseconds}`;
+
   const date = timestamp.toLocaleDateString('en-US', {
     day: '2-digit',
     month: '2-digit',
@@ -464,6 +546,8 @@ function getLevelColor(level: LogLevel): string {
       return 'info';
     case 'info':
       return 'success';
+    case 'verbose':
+      return 'grey';
     default:
       return 'grey';
   }
@@ -477,6 +561,8 @@ function getLevelIcon(level: LogLevel): string {
       return 'mdi-bug';
     case 'info':
       return 'mdi-information';
+    case 'verbose':
+      return 'mdi-text';
     default:
       return 'mdi-circle';
   }
@@ -515,6 +601,7 @@ function resetFilters() {
 
 // Lifecycle
 onMounted(async () => {
+  await loadEnabledLevels();
   await loadStats();
 
   // Listen for new logs

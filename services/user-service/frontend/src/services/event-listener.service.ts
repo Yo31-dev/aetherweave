@@ -13,9 +13,22 @@ export interface LocalePayload {
   locale: string;
 }
 
+export interface AuthPayload {
+  token: string;
+  user: {
+    username?: string;
+    email?: string;
+    name?: string;
+    preferred_username?: string;
+    roles?: string[];
+    [key: string]: any;
+  };
+}
+
 export const EventType = {
   // Portal → Web Components
   AUTH_LOGOUT: 'portal:auth:logout',
+  AUTH_TOKEN_REFRESHED: 'portal:auth:token-refreshed',
   LOCALE_CHANGE: 'portal:locale:change',
 
   // Web Components → Portal
@@ -66,6 +79,18 @@ class EventListenerService {
     };
     this.emitter.on(EventType.AUTH_LOGOUT, handler);
     return () => this.emitter.off(EventType.AUTH_LOGOUT, handler);
+  }
+
+  /**
+   * Listen for token refresh from portal
+   */
+  onTokenRefresh(callback: (payload: AuthPayload) => void): () => void {
+    const handler = (payload: AuthPayload) => {
+      this.emitLog('Token refreshed', 'info');
+      callback(payload);
+    };
+    this.emitter.on(EventType.AUTH_TOKEN_REFRESHED, handler);
+    return () => this.emitter.off(EventType.AUTH_TOKEN_REFRESHED, handler);
   }
 
   /**

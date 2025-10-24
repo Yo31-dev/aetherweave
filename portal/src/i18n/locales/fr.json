@@ -52,6 +52,7 @@
     "resetFilters": "Réinitialiser tous les filtres",
     "export": "Exporter",
     "clear": "Effacer",
+    "deleteAllLogs": "Supprimer tous les journaux",
     "noLogs": "Aucun journal pour le moment",
     "noMatchingLogs": "Aucun journal correspondant",
     "confirmClearTitle": "Effacer tous les journaux ?",
@@ -69,7 +70,12 @@
       "newest": "Plus récent",
       "search": "Rechercher dans les journaux",
       "logEntries": "Entrées de journal",
-      "entries": "entrées"
+      "entries": "entrées",
+      "recordingConfig": "Configuration de l'enregistrement des journaux",
+      "enabledLevels": "Niveaux à enregistrer",
+      "enabledLevelsHint": "Sélectionnez les niveaux de journaux à enregistrer dans IndexedDB. Les erreurs sont toujours recommandées.",
+      "recordingNote": "Note",
+      "recordingDescription": "Seuls les niveaux sélectionnés seront enregistrés dans IndexedDB. Cela permet de réduire l'utilisation du stockage et d'améliorer les performances."
     }
   },
   "settings": {

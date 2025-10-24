@@ -12,8 +12,9 @@
 
 import { logStorage, type Log } from './log-storage.service';
 import EventEmitter from 'eventemitter3';
+import { settingsService, SettingKeys } from './settings.service';
 
-export type LogLevel = 'error' | 'debug' | 'info';
+export type LogLevel = 'error' | 'debug' | 'info' | 'verbose';
 
 export interface LogEntry extends Log {}
 
@@ -33,9 +34,34 @@ interface LogEventMap {
 class LogService {
   private emitter: EventEmitter<LogEventMap>;
   private storageWarningShown = false;
+  private enabledLevels: LogLevel[] = ['error']; // Default: only errors
 
   constructor() {
     this.emitter = new EventEmitter<LogEventMap>();
+    this.loadEnabledLevels();
+  }
+
+  /**
+   * Load enabled log levels from settings
+   */
+  async loadEnabledLevels(): Promise<void> {
+    const levels = await settingsService.get<LogLevel[]>(SettingKeys.LOG_LEVELS_ENABLED, ['error']);
+    this.enabledLevels = levels || ['error'];
+  }
+
+  /**
+   * Set which log levels should be recorded
+   */
+  async setEnabledLevels(levels: LogLevel[]): Promise<void> {
+    this.enabledLevels = levels;
+    await settingsService.set(SettingKeys.LOG_LEVELS_ENABLED, levels);
+  }
+
+  /**
+   * Get currently enabled log levels
+   */
+  getEnabledLevels(): LogLevel[] {
+    return [...this.enabledLevels];
   }
 
   // ============================================================================
@@ -59,6 +85,18 @@ class LogService {
   }
 
   /**
+   * Log a verbose debug message (low-level, system internals)
+   * Only logs to console if verbose level is enabled in settings
+   */
+  debugVerbose(message: string, source: string, meta?: any): void {
+    // Only log to console if verbose is enabled (not just in DEV mode)
+    if (this.enabledLevels.includes('verbose')) {
+      console.log(`[${source}] ${message}`, meta ?? '');
+    }
+    this.log('verbose', message, source, meta);
+  }
+
+  /**
    * Log an info message (functional: user actions, business events)
    */
   info(message: string, source: string, meta?: any): void {
@@ -69,6 +107,11 @@ class LogService {
    * Internal log method
    */
   private async log(level: LogLevel, message: string, source: string, meta?: any): Promise<void> {
+    // Check if this log level is enabled
+    if (!this.enabledLevels.includes(level)) {
+      return; // Skip logging if level is not enabled
+    }
+
     // Serialize meta to make it IndexedDB-compatible (remove non-clonable objects)
     const serializedMeta = meta ? this.serializeMeta(meta) : undefined;
 

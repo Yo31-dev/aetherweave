@@ -6,6 +6,7 @@
 
 import { ref, onUnmounted } from 'vue';
 import type { MicroService } from '@/config/microservices.config';
+import { logService } from '@/services/log.service';
 
 export interface MicroFrontendState {
   loading: boolean;
@@ -52,14 +53,14 @@ export function useMicroFrontend(microservice: MicroService) {
         state.value.loading = false;
         state.value.loaded = true;
         scriptElement.value = script;
-        console.log(`[MicroFrontend] Loaded: ${microservice.name}`);
+        logService.debugVerbose(`Loaded micro-frontend: ${microservice.name}`, 'MicroFrontend');
         resolve();
       };
 
       script.onerror = (error) => {
         state.value.loading = false;
         state.value.error = `Failed to load ${microservice.name}`;
-        console.error(`[MicroFrontend] Error loading ${microservice.name}:`, error);
+        logService.error(`Error loading ${microservice.name}`, 'MicroFrontend', error);
         reject(new Error(state.value.error));
       };
 
@@ -75,7 +76,7 @@ export function useMicroFrontend(microservice: MicroService) {
       scriptElement.value.parentNode.removeChild(scriptElement.value);
       scriptElement.value = null;
       state.value.loaded = false;
-      console.log(`[MicroFrontend] Unloaded: ${microservice.name}`);
+      logService.debugVerbose(`Unloaded micro-frontend: ${microservice.name}`, 'MicroFrontend');
     }
   }
 

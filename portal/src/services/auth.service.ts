@@ -1,4 +1,5 @@
 import { UserManager, User, type UserManagerSettings } from 'oidc-client-ts';
+import { logService } from './log.service';
 
 /**
  * Authentication service using oidc-client-ts for OAuth2/OIDC flows.
@@ -6,6 +7,8 @@ import { UserManager, User, type UserManagerSettings } from 'oidc-client-ts';
  */
 class AuthService {
   private userManager: UserManager;
+
+  private tokenRefreshCallbacks: Array<(user: User) => void> = [];
 
   constructor() {
     const settings: UserManagerSettings = {
@@ -24,16 +27,43 @@ class AuthService {
 
     // Setup event handlers
     this.userManager.events.addAccessTokenExpiring(() => {
-      console.log('Access token expiring...');
+      logService.debug('Access token expiring, silent renewal will trigger...', 'AuthService');
     });
 
     this.userManager.events.addAccessTokenExpired(() => {
-      console.log('Access token expired');
+      logService.debug('Access token expired', 'AuthService');
     });
 
     this.userManager.events.addUserSignedOut(() => {
-      console.log('User signed out');
+      logService.info('User signed out', 'AuthService');
     });
+
+    // Critical: Listen for silent token renewal
+    this.userManager.events.addUserLoaded((user: User) => {
+      logService.info('Token silently renewed', 'AuthService', {
+        expiresAt: new Date(user.expires_at * 1000).toISOString()
+      });
+      // Notify all registered callbacks
+      this.tokenRefreshCallbacks.forEach(callback => callback(user));
+    });
+
+    this.userManager.events.addSilentRenewError((error: Error) => {
+      logService.error('Silent token renewal failed', 'AuthService', error);
+    });
+  }
+
+  /**
+   * Register callback for token refresh events
+   * Returns unsubscribe function
+   */
+  onTokenRefresh(callback: (user: User) => void): () => void {
+    this.tokenRefreshCallbacks.push(callback);
+    return () => {
+      const index = this.tokenRefreshCallbacks.indexOf(callback);
+      if (index > -1) {
+        this.tokenRefreshCallbacks.splice(index, 1);
+      }
+    };
   }
 
   /**
