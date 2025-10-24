@@ -47,7 +47,7 @@ GET {{baseUrl}}/api/v1/health
 Authorization: Bearer {{token}}
 
 ### Lister tous les utilisateurs
-GET {{baseUrl}}/api/v1/users/
+GET {{baseUrl}}/api/v1/users
 Authorization: Bearer {{token}}
 
 ### Obtenir un utilisateur par ID

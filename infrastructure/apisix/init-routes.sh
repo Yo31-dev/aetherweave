@@ -34,7 +34,7 @@ curl -i -X PUT "${ADMIN_API}/routes/1" \
   -H "Content-Type: application/json" \
   -d '{
     "name": "user-service-users",
-    "uri": "/api/v1/users/*",
+    "uris": ["/api/v1/users", "/api/v1/users/*"],
     "methods": ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     "upstream": {
       "type": "roundrobin",
