@@ -214,13 +214,27 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # APISIX Route Initializer - One-time setup of routes
-  apisix-init:
-    image: curlimages/curl:8.5.0
-    container_name: apisix-init
+  # APISIX Declarative Config Sync - Syncs apisix.yaml to etcd
+  apisix-sync:
+    image: apache/apisix:3.7.0-debian
+    container_name: apisix-sync
     volumes:
-      - ./apisix/init-routes.sh:/init-routes.sh:ro
-    entrypoint: ["/bin/sh", "/init-routes.sh"]
+      - ./apisix/apisix.yaml:/usr/local/apisix/conf/apisix.yaml:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        echo "Waiting for APISIX Admin API to be ready..."
+        until curl -s -o /dev/null -w "%{http_code}" http://apisix:9180/apisix/admin/routes -H "X-API-KEY: admin-key-aetherweave" | grep -q "200"; do
+          echo "Waiting... APISIX Admin API not ready yet"
+          sleep 2
+        done
+        echo "✓ APISIX Admin API is ready!"
+        echo ""
+        echo "Synchronizing apisix.yaml to etcd..."
+        /usr/local/apisix/apisix sync -f /usr/local/apisix/conf/apisix.yaml
+        echo ""
+        echo "✓ Configuration synchronized successfully!"
+        echo "Routes are now available in APISIX and visible in Dashboard"
     networks:
       - aetherweave-net
     depends_on:
