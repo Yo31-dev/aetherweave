@@ -3,6 +3,12 @@
  */
 export default {
   title: 'Gestion des utilisateurs',
+  subtitle: {
+    listUsers: 'Liste des utilisateurs',
+    createUser: 'Créer un utilisateur',
+    listRoles: 'Liste des rôles',
+    createRole: 'Créer un rôle',
+  },
   actions: {
     add: 'Ajouter un utilisateur',
     edit: 'Modifier',

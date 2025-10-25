@@ -35,6 +35,7 @@ export const EventType = {
   AUTH_LOGOUT: 'portal:auth:logout',
   AUTH_TOKEN_REFRESHED: 'portal:auth:token-refreshed',
   LOCALE_CHANGE: 'portal:locale:change',
+  PORTAL_READY: 'portal:ready',
 
   // Web Components → Portal
   NAVIGATE: 'wc:navigate',
@@ -136,6 +137,19 @@ class EventListenerService {
       console.warn('[WC EventListener] Stateful EventBus not available, theme changes will not work');
       return () => {};
     }
+  }
+
+  /**
+   * Listen for portal:ready event
+   * Portal emits this when ready to receive metadata (handles timing race on refresh)
+   */
+  onPortalReady(callback: () => void): () => void {
+    const handler = () => {
+      this.emitLog('Portal ready signal received', 'debug');
+      callback();
+    };
+    this.emitter.on(EventType.PORTAL_READY, handler);
+    return () => this.emitter.off(EventType.PORTAL_READY, handler);
   }
 
   // ============================================================================

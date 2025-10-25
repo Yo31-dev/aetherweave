@@ -2,7 +2,12 @@
   <div class="page-title-bar">
     <div class="title-wrapper">
       <div class="title-content">
-        <h1 class="page-title">{{ title }}</h1>
+        <!-- Title section with optional subtitle -->
+        <div class="title-section">
+          <h1 class="page-title">{{ displayTitle }}</h1>
+          <span v-if="dynamicSubtitle" class="page-subtitle">{{ dynamicSubtitle }}</span>
+        </div>
+
         <div class="title-actions">
           <slot name="actions"></slot>
         </div>
@@ -12,8 +17,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { eventBus } from '@/services/event-bus.service';
 
 interface Props {
   title?: string;
@@ -22,9 +28,27 @@ interface Props {
 const props = defineProps<Props>();
 const route = useRoute();
 
-// Get title from props or route meta
-const title = computed(() => {
-  return props.title || (route.meta.title as string) || 'AetherWeave';
+// Dynamic state from EventBus
+const dynamicTitle = ref<string | null>(null);
+const dynamicSubtitle = ref<string | null>(null);
+
+// Priority: dynamic title from WC > props > route meta
+const displayTitle = computed(() => {
+  return dynamicTitle.value || props.title || (route.meta.title as string) || 'AetherWeave';
+});
+
+// Listen for WC title changes
+let unsubscribeTitle: (() => void) | null = null;
+
+onMounted(() => {
+  unsubscribeTitle = eventBus.onPageTitleChange((payload) => {
+    dynamicTitle.value = payload.title;
+    dynamicSubtitle.value = payload.subtitle || null;
+  });
+});
+
+onUnmounted(() => {
+  unsubscribeTitle?.();
 });
 </script>
 
@@ -54,6 +78,14 @@ const title = computed(() => {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 32px;
+  gap: 24px;
+}
+
+.title-section {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-shrink: 0;
 }
 
 .page-title {
@@ -63,10 +95,17 @@ const title = computed(() => {
   margin: 0;
 }
 
+.page-subtitle {
+  font-size: 0.875rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+}
+
 .title-actions {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
 }
 
 /* Dark theme */

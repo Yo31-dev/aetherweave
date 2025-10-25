@@ -52,6 +52,29 @@ export interface LogPayload {
   meta?: any;
 }
 
+export interface PageTitlePayload {
+  title: string;
+  subtitle?: string;
+}
+
+export interface NavigationSubItem {
+  label: string;
+  path: string;
+}
+
+export interface NavigationItem {
+  label: string;
+  path?: string;          // Optional: only for direct links (no dropdown)
+  icon?: string;          // Deprecated: will be removed
+  active?: boolean;
+  children?: NavigationSubItem[];  // For dropdown menus
+}
+
+export interface PageNavigationPayload {
+  items: NavigationItem[];
+  baseRoute: string;
+}
+
 /**
  * Event types - strongly typed for TypeScript
  */
@@ -60,12 +83,16 @@ export const EventType = {
   AUTH_LOGOUT: 'portal:auth:logout',
   AUTH_TOKEN_REFRESHED: 'portal:auth:token-refreshed',
   LOCALE_CHANGE: 'portal:locale:change',
+  PORTAL_READY: 'portal:ready',
 
   // Web Components → Portal
   NAVIGATE: 'wc:navigate',
   ERROR: 'wc:error',
   NOTIFICATION: 'wc:notification',
   LOG: 'wc:log',
+  PAGE_TITLE_SET: 'wc:page:setTitle',
+  PAGE_NAVIGATION_REGISTER: 'wc:page:registerNavigation',
+  PAGE_NAVIGATION_CLEAR: 'wc:page:clearNavigation',
 } as const;
 
 type EventTypeKeys = typeof EventType[keyof typeof EventType];
@@ -81,6 +108,9 @@ interface EventMap {
   [EventType.ERROR]: (payload: ErrorPayload) => void;
   [EventType.NOTIFICATION]: (payload: NotificationPayload) => void;
   [EventType.LOG]: (payload: LogPayload) => void;
+  [EventType.PAGE_TITLE_SET]: (payload: PageTitlePayload) => void;
+  [EventType.PAGE_NAVIGATION_REGISTER]: (payload: PageNavigationPayload) => void;
+  [EventType.PAGE_NAVIGATION_CLEAR]: () => void;
 }
 
 class MicroFrontendEventBus {
@@ -139,6 +169,15 @@ class MicroFrontendEventBus {
     logService.debugVerbose(`Published locale change: ${payload.locale}`, 'EventBus');
   }
 
+  /**
+   * Publish portal ready event to all Web Components
+   * Web Components should re-emit their metadata when receiving this event
+   */
+  publishPortalReady(): void {
+    this.emitter.emit(EventType.PORTAL_READY);
+    logService.debugVerbose('Published portal:ready event', 'EventBus');
+  }
+
   // ============================================================================
   // PORTAL LISTENERS (for Web Component events)
   // ============================================================================
@@ -173,6 +212,30 @@ class MicroFrontendEventBus {
   onLog(callback: (payload: LogPayload) => void): () => void {
     this.emitter.on(EventType.LOG, callback);
     return () => this.emitter.off(EventType.LOG, callback);
+  }
+
+  /**
+   * Listen for page title changes from Web Components (Portal)
+   * Uses stateful listener to receive replayed events (handles timing race)
+   */
+  onPageTitleChange(callback: (payload: PageTitlePayload) => void): () => void {
+    return this.onStateful(EventType.PAGE_TITLE_SET, callback);
+  }
+
+  /**
+   * Listen for navigation registration from Web Components (Portal)
+   * Uses stateful listener to receive replayed events (handles timing race)
+   */
+  onNavigationRegister(callback: (payload: PageNavigationPayload) => void): () => void {
+    return this.onStateful(EventType.PAGE_NAVIGATION_REGISTER, callback);
+  }
+
+  /**
+   * Listen for navigation clear from Web Components (Portal)
+   */
+  onNavigationClear(callback: () => void): () => void {
+    this.emitter.on(EventType.PAGE_NAVIGATION_CLEAR, callback);
+    return () => this.emitter.off(EventType.PAGE_NAVIGATION_CLEAR, callback);
   }
 
   // ============================================================================
@@ -236,6 +299,32 @@ class MicroFrontendEventBus {
    */
   emitLog(message: string, level: 'error' | 'debug' | 'info', source: string, meta?: any): void {
     this.emitter.emit(EventType.LOG, { message, level, source, meta });
+  }
+
+  /**
+   * Set page title from Web Component or composed page
+   * Uses stateful emit to handle timing race conditions (WC loads before Portal listens)
+   */
+  setPageTitle(payload: PageTitlePayload): void {
+    this.emitStateful(EventType.PAGE_TITLE_SET, payload);
+    logService.debugVerbose(`Page title set: ${payload.title}`, 'EventBus');
+  }
+
+  /**
+   * Register navigation items from Web Component
+   * Uses stateful emit to handle timing race conditions (WC loads before Portal listens)
+   */
+  registerNavigation(payload: PageNavigationPayload): void {
+    this.emitStateful(EventType.PAGE_NAVIGATION_REGISTER, payload);
+    logService.debugVerbose(`Navigation registered for ${payload.baseRoute}`, 'EventBus', payload);
+  }
+
+  /**
+   * Clear navigation items
+   */
+  clearNavigation(): void {
+    this.emitter.emit(EventType.PAGE_NAVIGATION_CLEAR);
+    logService.debugVerbose('Navigation cleared', 'EventBus');
   }
 
   // ============================================================================

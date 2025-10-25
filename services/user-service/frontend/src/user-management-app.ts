@@ -2,7 +2,7 @@ import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { eventListener } from './services/event-listener.service';
 import { userApi, type User } from './services/user-api.service';
-import { translate, use } from './i18n';
+import { translate, use, get } from './i18n';
 
 // Import Material Web Components
 import '@material/web/button/filled-button.js';
@@ -71,17 +71,10 @@ export class UserManagementApp extends LitElement {
 
     .header {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-end;
       align-items: center;
       margin-top: 0;
       margin-bottom: 24px;
-    }
-
-    h1 {
-      font-size: var(--font-size-3xl, 2rem);
-      font-weight: var(--font-weight-bold, 700);
-      color: var(--md-sys-color-on-background, #1c1b1f);
-      margin: 0;
     }
 
     .loading {
@@ -189,6 +182,7 @@ export class UserManagementApp extends LitElement {
   private unsubLocale?: () => void;
   private unsubTokenRefresh?: () => void;
   private unsubTheme?: () => void;
+  private unsubPortalReady?: () => void;
 
   connectedCallback() {
     super.connectedCallback();
@@ -198,6 +192,9 @@ export class UserManagementApp extends LitElement {
     use(this.lang).catch(err => {
       eventListener.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
     });
+
+    // Register page title and navigation with Portal
+    this.registerPageMetadata();
 
     // Listen for logout from portal
     this.unsubLogout = eventListener.onLogout(() => {
@@ -231,17 +228,27 @@ export class UserManagementApp extends LitElement {
       eventListener.emitLog(`Theme changed to: ${payload.theme}`, 'debug');
       this.classList.toggle('dark-theme', payload.isDark);
     });
+
+    // Listen for portal:ready to re-emit metadata (handles refresh timing race)
+    this.unsubPortalReady = eventListener.onPortalReady(async () => {
+      eventListener.emitLog('Portal ready - re-registering page metadata', 'debug');
+      await this.registerPageMetadata();
+    });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
     eventListener.emitLog('Component disconnected', 'info');
 
+    // Clear page navigation from Portal
+    this.clearPageMetadata();
+
     // Cleanup event listeners
     this.unsubLogout?.();
     this.unsubLocale?.();
     this.unsubTokenRefresh?.();
     this.unsubTheme?.();
+    this.unsubPortalReady?.();
   }
 
   /**
@@ -313,13 +320,88 @@ export class UserManagementApp extends LitElement {
     }
   }
 
+  // ============================================================================
+  // PORTAL INTEGRATION: Dynamic Page Title & Navigation
+  // ============================================================================
+
+  /**
+   * Register page title and navigation with Portal
+   * This demonstrates the new micro-frontend architecture where WCs control
+   * the Portal's title bar and navigation dynamically
+   */
+  private async registerPageMetadata() {
+    const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
+    if (!eventBus) {
+      eventListener.emitLog('EventBus not found, cannot register page metadata', 'debug');
+      return;
+    }
+
+    // Ensure translations are loaded before using get()
+    await use(this.lang);
+
+    // Set page title (Option C: hybrid approach)
+    // Title stays fixed, subtitle will be updated dynamically based on current route
+    eventBus.emit('wc:page:setTitle', {
+      title: get('title'),
+      subtitle: get('subtitle.listUsers')  // Will be updated dynamically
+    });
+
+    // Register navigation items (appear in header menu)
+    // These will replace SERVICES/CATALOG/ADMIN in the Portal's AppHeader component
+    eventBus.emit('wc:page:registerNavigation', {
+      baseRoute: '/users',
+      items: [
+        {
+          label: 'Users',
+          children: [
+            {
+              label: 'List',
+              path: '/users'
+            },
+            {
+              label: 'Create',
+              path: '/users/create'
+            }
+          ]
+        },
+        {
+          label: 'Roles',
+          children: [
+            {
+              label: 'List',
+              path: '/users/roles'
+            },
+            {
+              label: 'Create',
+              path: '/users/roles/create'
+            }
+          ]
+        }
+      ]
+    });
+
+    eventListener.emitLog('Page metadata registered with Portal', 'debug');
+  }
+
+  /**
+   * Clear page metadata when component unmounts
+   * This ensures the Portal's title bar resets when navigating away
+   */
+  private clearPageMetadata() {
+    const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
+    if (!eventBus) return;
+
+    eventBus.emit('wc:page:clearNavigation');
+    eventListener.emitLog('Page metadata cleared from Portal', 'debug');
+  }
+
   render() {
     const isAuthenticated = !!this.token;
 
     return html`
       <div class="container">
+        <!-- Note: Title now managed by Portal via EventBus -->
         <div class="header">
-          <h1>${translate('title')}</h1>
           <md-filled-button @click=${() => alert('Create user form - TODO')}>
             <md-icon slot="icon">add</md-icon>
             ${translate('actions.add')}

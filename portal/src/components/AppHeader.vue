@@ -12,59 +12,96 @@
 
       <!-- Navigation horizontale -->
       <nav class="horizontal-nav">
-        <router-link to="/" class="nav-item" exact>
+        <!-- HOME - Always visible -->
+        <router-link to="/" class="nav-item" :active-class="''" :exact-active-class="'router-link-active'">
           {{ $t('nav.home', 'HOME') }}
         </router-link>
 
-        <!-- Services dropdown -->
-        <v-menu offset-y>
-          <template v-slot:activator="{ props }">
-            <a v-bind="props" class="nav-item dropdown">
-              {{ $t('nav.services', 'SERVICES') }}
-              <v-icon size="small">mdi-chevron-down</v-icon>
-            </a>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for="service in navServices"
-              :key="service.id"
-              :to="service.path"
+        <!-- Dynamic navigation from Web Components (if present) -->
+        <template v-if="props.customNavItems && props.customNavItems.length > 0">
+          <template v-for="item in props.customNavItems" :key="item.label">
+            <!-- Dropdown menu if children exist -->
+            <v-menu v-if="item.children && item.children.length > 0" offset-y>
+              <template v-slot:activator="{ props: menuProps }">
+                <a v-bind="menuProps" class="nav-item dropdown">
+                  {{ item.label.toUpperCase() }}
+                  <v-icon size="small">mdi-chevron-down</v-icon>
+                </a>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for="child in item.children"
+                  :key="child.path"
+                  :to="child.path"
+                >
+                  <v-list-item-title>{{ child.label }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+
+            <!-- Direct link if no children -->
+            <router-link
+              v-else
+              :to="item.path || '#'"
+              class="nav-item"
             >
-              <template v-slot:prepend>
-                <v-icon :icon="service.icon"></v-icon>
-              </template>
-              <v-list-item-title>{{ $t(`nav.${service.id}`, service.title) }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-
-        <router-link to="/catalog" class="nav-item">
-          {{ $t('nav.catalog', 'CATALOG') }}
-        </router-link>
-
-        <!-- Admin dropdown -->
-        <v-menu offset-y>
-          <template v-slot:activator="{ props }">
-            <a v-bind="props" class="nav-item dropdown">
-              {{ $t('nav.admin', 'ADMIN') }}
-              <v-icon size="small">mdi-chevron-down</v-icon>
-            </a>
+              {{ item.label.toUpperCase() }}
+            </router-link>
           </template>
-          <v-list>
-            <v-list-item to="/admin/settings">
-              <template v-slot:prepend>
-                <v-icon icon="mdi-cog"></v-icon>
-              </template>
-              <v-list-item-title>{{ $t('nav.settings', 'Settings') }}</v-list-item-title>
-            </v-list-item>
-            <v-list-item to="/admin/logs">
-              <template v-slot:prepend>
-                <v-icon icon="mdi-console-line"></v-icon>
-              </template>
-              <v-list-item-title>{{ $t('nav.logs', 'Logs') }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        </template>
+
+        <!-- Static navigation (if no Web Component navigation) -->
+        <template v-else>
+          <!-- Services dropdown -->
+          <v-menu offset-y>
+            <template v-slot:activator="{ props }">
+              <a v-bind="props" class="nav-item dropdown">
+                {{ $t('nav.services', 'SERVICES') }}
+                <v-icon size="small">mdi-chevron-down</v-icon>
+              </a>
+            </template>
+            <v-list>
+              <v-list-item
+                v-for="service in navServices"
+                :key="service.id"
+                :to="service.path"
+              >
+                <template v-slot:prepend>
+                  <v-icon :icon="service.icon"></v-icon>
+                </template>
+                <v-list-item-title>{{ $t(`nav.${service.id}`, service.title) }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+
+          <router-link to="/catalog" class="nav-item">
+            {{ $t('nav.catalog', 'CATALOG') }}
+          </router-link>
+
+          <!-- Admin dropdown -->
+          <v-menu offset-y>
+            <template v-slot:activator="{ props }">
+              <a v-bind="props" class="nav-item dropdown">
+                {{ $t('nav.admin', 'ADMIN') }}
+                <v-icon size="small">mdi-chevron-down</v-icon>
+              </a>
+            </template>
+            <v-list>
+              <v-list-item to="/admin/settings">
+                <template v-slot:prepend>
+                  <v-icon icon="mdi-cog"></v-icon>
+                </template>
+                <v-list-item-title>{{ $t('nav.settings', 'Settings') }}</v-list-item-title>
+              </v-list-item>
+              <v-list-item to="/admin/logs">
+                <template v-slot:prepend>
+                  <v-icon icon="mdi-console-line"></v-icon>
+                </template>
+                <v-list-item-title>{{ $t('nav.logs', 'Logs') }}</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </template>
       </nav>
 
       <!-- Actions (user menu) -->
@@ -157,6 +194,16 @@ import { useAuthStore } from '@/stores/auth.store';
 import { getVisibleMicroServices } from '@/config/microservices.config';
 import { authService } from '@/services/auth.service';
 import { logService } from '@/services/log.service';
+import type { NavigationItem } from '@/services/event-bus.service';
+
+// Props
+interface Props {
+  customNavItems?: NavigationItem[];
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  customNavItems: undefined,
+});
 
 const authStore = useAuthStore();
 

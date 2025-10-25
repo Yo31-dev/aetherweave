@@ -1,7 +1,7 @@
 <template>
   <v-app :style="{ '--sidebar-width': sidebarWidth + 'px' }">
     <!-- New: White header with horizontal navigation -->
-    <AppHeader />
+    <AppHeader :custom-nav-items="customNavItems" />
 
     <!-- New: Dark title bar (full-width) -->
     <PageTitle :title="currentPageTitle">
@@ -15,9 +15,9 @@
 
     <!-- Main content area -->
     <v-main class="main-content">      
-        <div class="content-centered">
-          <router-view />
-        </div>
+      <div class="content-centered">
+        <router-view />      
+      </div>
     </v-main>
 
     <!-- Snackbar for notifications -->
@@ -41,13 +41,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useI18n } from 'vue-i18n';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 import { useLogStore } from '@/stores/log.store';
-import { eventBus } from '@/services/event-bus.service';
+import { eventBus, type NavigationItem } from '@/services/event-bus.service';
 import { logService } from '@/services/log.service';
 import { useTheme } from '@/composables/useTheme';
 import AppHeader from '@/components/AppHeader.vue';
@@ -57,6 +57,7 @@ import AppSidebar from '@/components/AppSidebar.vue';
 const { mobile } = useDisplay();
 const { locale } = useI18n();
 const route = useRoute();
+const router = useRouter();
 const authStore = useAuthStore();
 const logStore = useLogStore();
 const { getCurrentTheme } = useTheme();
@@ -77,10 +78,49 @@ const currentPageTitle = computed(() => {
   return (route.meta.title as string) || 'AetherWeave';
 });
 
+// Dynamic navigation from Web Components
+const customNavItems = ref<NavigationItem[]>([]);
+
+// Event listeners
+let unsubscribeNav: (() => void) | null = null;
+let unsubscribeNavClear: (() => void) | null = null;
+let unsubscribeError: (() => void) | null = null;
+let unsubscribeNotification: (() => void) | null = null;
+let unsubscribeLog: (() => void) | null = null;
+
 // Emit initial theme to Web Components on mount
 onMounted(() => {
   const currentTheme = getCurrentTheme();
   eventBus.emitStateful('theme:changed', { theme: currentTheme, isDark: currentTheme === 'dark' });
+
+  // Listen for navigation registration from WCs
+  unsubscribeNav = eventBus.onNavigationRegister((payload) => {
+    customNavItems.value = payload.items;
+    logService.debug('Navigation registered', 'DefaultLayout', payload);
+  });
+
+  // Listen for navigation clear
+  unsubscribeNavClear = eventBus.onNavigationClear(() => {
+    customNavItems.value = [];
+    logService.debug('Navigation cleared', 'DefaultLayout');
+  });
+
+  // Emit portal:ready to ask WCs to re-emit their metadata
+  // This handles the case where WC loads before Portal starts listening
+  eventBus.publishPortalReady();
+  logService.debug('Portal ready - requested WC metadata', 'DefaultLayout');
+});
+
+// Auto-cleanup navigation when changing base routes
+watch(() => route.path, (newPath, oldPath) => {
+  const newBase = newPath.split('/')[1];
+  const oldBase = oldPath?.split('/')[1];
+
+  // Clear custom nav if changing sections
+  if (oldBase && newBase !== oldBase) {
+    customNavItems.value = [];
+    logService.debug('Navigation auto-cleared due to route change', 'DefaultLayout', { from: oldPath, to: newPath });
+  }
 });
 
 // Snackbar for notifications
@@ -104,11 +144,7 @@ function showNotification(message: string, type: 'success' | 'info' | 'warning' 
   };
 }
 
-// Event listeners
-let unsubscribeError: (() => void) | null = null;
-let unsubscribeNotification: (() => void) | null = null;
-let unsubscribeLog: (() => void) | null = null;
-
+// Initialize existing event listeners in the second onMounted (merge with first one later)
 onMounted(() => {
   // Initialize log system
   logStore.initializeListeners();
@@ -150,6 +186,8 @@ onMounted(() => {
 
 onUnmounted(() => {
   // Cleanup event listeners
+  if (unsubscribeNav) unsubscribeNav();
+  if (unsubscribeNavClear) unsubscribeNavClear();
   if (unsubscribeError) unsubscribeError();
   if (unsubscribeNotification) unsubscribeNotification();
   if (unsubscribeLog) unsubscribeLog();
