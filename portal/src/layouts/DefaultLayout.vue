@@ -1,7 +1,7 @@
 <template>
   <v-app :style="{ '--sidebar-width': sidebarWidth + 'px' }">
-    <!-- New: White header with horizontal navigation -->
-    <AppHeader v-model="drawer" :custom-nav-items="customNavItems" />
+    <!-- New: White header with horizontal navigation (static) -->
+    <AppHeader v-model="drawer" />
 
     <!-- New: Dark title bar (full-width) -->
     <PageTitle :title="currentPageTitle">
@@ -10,8 +10,8 @@
       </template>
     </PageTitle>
 
-    <!-- Sidebar Navigation (fixed left, under title bar) -->
-    <AppSidebar v-model="drawer" @rail-changed="handleRailChange" />
+    <!-- Sidebar Navigation (fixed left, under title bar) - dynamic from WCs -->
+    <AppSidebar v-model="drawer" :custom-nav-items="customNavItems" />
 
     <!-- Main content area -->
     <v-main class="main-content">      
@@ -64,12 +64,10 @@ const { getCurrentTheme } = useTheme();
 
 // Drawer state
 const drawer = ref(!mobile.value);
-const isRailMode = ref(false);
 
 // Calculate sidebar width based on state
 const sidebarWidth = computed(() => {
   if (mobile.value) return 0;        // Mobile: no sidebar
-  if (isRailMode.value) return 56;   // Rail: 56px
   return 250;                        // Normal: 250px
 });
 
@@ -129,11 +127,6 @@ const snackbar = ref({
   message: '',
   color: 'info',
 });
-
-// Handle rail state changes from sidebar
-function handleRailChange(railState: boolean) {
-  isRailMode.value = railState;
-}
 
 // Show notification
 function showNotification(message: string, type: 'success' | 'info' | 'warning' | 'error' = 'info') {

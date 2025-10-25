@@ -1,7 +1,6 @@
 <template>
   <v-navigation-drawer
     v-model="drawer"
-    :rail="rail && !mobile"
     :temporary="mobile"
     :permanent="!mobile"
     color="surface"
@@ -9,83 +8,44 @@
     @click="onDrawerClick"
   >
     <v-list density="compact" nav>
-      <!-- Toggle rail button (desktop only) -->
-      <v-list-item v-if="!mobile" @click="rail = !rail">
-        <template v-slot:prepend>
-          <v-icon :icon="rail ? 'mdi-menu' : 'mdi-menu-open'"></v-icon>
-        </template>
-        <v-list-item-title>Menu</v-list-item-title>
-      </v-list-item>
+      <!-- Dynamic navigation from Web Components -->
+      <template v-if="props.customNavItems && props.customNavItems.length > 0">
+        <v-divider class="my-2"></v-divider>
 
-      <v-divider class="my-2"></v-divider>
+        <template v-for="item in props.customNavItems" :key="item.label">
+          <!-- Group with children (dropdown) -->
+          <v-list-group v-if="item.children && item.children.length > 0" :value="item.label">
+            <template v-slot:activator="{ props: groupProps }">
+              <v-list-item v-bind="groupProps" :title="item.label.toUpperCase()"></v-list-item>
+            </template>
 
-      <!-- Dashboard home -->
-      <v-list-item
-        prepend-icon="mdi-view-dashboard"
-        :title="$t('nav.dashboard')"
-        value="dashboard"
-        :to="{ path: '/' }"
-        exact
-      ></v-list-item>
+            <!-- Sub-items -->
+            <v-list-item
+              v-for="child in item.children"
+              :key="child.path"
+              :title="child.label"
+              :value="child.path"
+              :to="child.path"
+            ></v-list-item>
+          </v-list-group>
 
-      <v-divider class="my-2"></v-divider>
-
-      <!-- Microservices navigation items -->
-      <v-list-item
-        v-for="service in navServices"
-        :key="service.id"
-        :prepend-icon="service.icon"
-        :title="$t(`nav.${service.id}`, service.title)"
-        :value="service.id"
-        :to="{ path: service.path }"
-      ></v-list-item>
-
-      <v-divider class="my-2"></v-divider>
-
-      <!-- Development / Testing section (only show in dev mode) -->
-      <v-list-group value="dev" v-if="isDev">
-        <template v-slot:activator="{ props }">
+          <!-- Direct link (no children) -->
           <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-flask"
-            :title="$t('nav.dev', 'Development')"
+            v-else
+            :title="item.label.toUpperCase()"
+            :value="item.path"
+            :to="item.path || '#'"
           ></v-list-item>
         </template>
+      </template>
 
-        <v-list-item
-          prepend-icon="mdi-bus"
-          :title="$t('nav.eventBusTest', 'EventBus Test')"
-          value="test-eventbus"
-          :to="{ path: '/test/stateful-eventbus' }"
-        ></v-list-item>
-      </v-list-group>
-
-      <v-divider class="my-2" v-if="isDev"></v-divider>
-
-      <!-- Admin section -->
-      <v-list-group value="admin">
-        <template v-slot:activator="{ props }">
-          <v-list-item
-            v-bind="props"
-            prepend-icon="mdi-shield-crown"
-            :title="$t('nav.admin', 'Administration')"
-          ></v-list-item>
-        </template>
-
-        <v-list-item
-          prepend-icon="mdi-cog"
-          :title="$t('nav.settings', 'Settings')"
-          value="admin-settings"
-          :to="{ path: '/admin/settings' }"
-        ></v-list-item>
-
-        <v-list-item
-          prepend-icon="mdi-console-line"
-          :title="$t('nav.logs', 'Logs')"
-          value="admin-logs"
-          :to="{ path: '/admin/logs' }"
-        ></v-list-item>
-      </v-list-group>
+      <!-- Empty state message (when no navigation) -->
+      <template v-else>
+        <v-divider class="my-2"></v-divider>
+        <div class="pa-4 text-center text-caption text-grey">
+          {{ $t('nav.noContextualNav', 'Aucune navigation contextuelle') }}
+        </div>
+      </template>
     </v-list>
 
     <!-- Footer with theme toggle and version info -->
@@ -97,10 +57,9 @@
         <div class="theme-toggle-container" @click="toggleTheme">
           <div class="theme-toggle-content">
             <v-icon size="small" :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'"></v-icon>
-            <span v-if="!rail || mobile" class="theme-label">{{ isDark ? 'Dark' : 'Light' }}</span>
+            <span class="theme-label">{{ isDark ? 'Dark' : 'Light' }}</span>
           </div>
           <v-switch
-            v-if="!rail || mobile"
             v-model="isDark"
             hide-details
             density="compact"
@@ -110,8 +69,8 @@
           ></v-switch>
         </div>
 
-        <!-- Version info (when not rail mode) -->
-        <div v-if="!rail || mobile" class="pa-3 text-center">
+        <!-- Version info -->
+        <div class="pa-3 text-center">
           <div class="text-caption text-grey">
             AetherWeave v{{ version }}
           </div>
@@ -122,48 +81,38 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
-import { useAuthStore } from '@/stores/auth.store';
 import { useTheme } from '@/composables/useTheme';
-import { getVisibleMicroServices } from '@/config/microservices.config';
+import type { NavigationItem } from '@/services/event-bus.service';
 
 // Props
 interface Props {
   modelValue?: boolean;
+  customNavItems?: NavigationItem[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
   modelValue: true,
+  customNavItems: undefined,
 });
 
 // Emits
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
-  (e: 'rail-changed', value: boolean): void;
 }>();
 
 // Responsive behavior
 const { mobile } = useDisplay();
-
-// Auth store
-const authStore = useAuthStore();
 
 // Theme management
 const { isDark, toggleTheme } = useTheme();
 
 // Drawer state
 const drawer = ref(props.modelValue);
-const rail = ref(false);
 
 // Version info
 const version = ref('1.0.0');
-
-// Check if in development mode
-const isDev = import.meta.env.DEV;
-
-// Microservices for navigation - filtered by authentication
-const navServices = computed(() => getVisibleMicroServices(authStore.isAuthenticated, true, false));
 
 // Watch drawer state and emit
 watch(drawer, (value) => {
@@ -174,11 +123,6 @@ watch(drawer, (value) => {
 watch(() => props.modelValue, (value) => {
   drawer.value = value;
 });
-
-// Watch rail state and emit changes
-watch(rail, (value) => {
-  emit('rail-changed', value);
-}, { immediate: true });
 
 // On mobile, close drawer when clicking an item
 function onDrawerClick() {

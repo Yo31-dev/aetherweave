@@ -19,98 +19,50 @@
           </router-link>
         </div>
 
-      <!-- Navigation horizontale -->
+      <!-- Navigation horizontale (static) -->
       <nav class="horizontal-nav">
-        <!-- HOME - Always visible -->
+        <!-- HOME -->
         <router-link to="/" class="nav-item" :active-class="''" :exact-active-class="'router-link-active'">
           {{ $t('nav.home', 'HOME') }}
         </router-link>
 
-        <!-- Dynamic navigation from Web Components (if present) -->
-        <template v-if="props.customNavItems && props.customNavItems.length > 0">
-          <template v-for="item in props.customNavItems" :key="item.label">
-            <!-- Dropdown menu if children exist -->
-            <v-menu v-if="item.children && item.children.length > 0" offset-y>
-              <template v-slot:activator="{ props: menuProps }">
-                <a v-bind="menuProps" class="nav-item dropdown">
-                  {{ item.label.toUpperCase() }}
-                  <v-icon size="small">mdi-chevron-down</v-icon>
-                </a>
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for="child in item.children"
-                  :key="child.path"
-                  :to="child.path"
-                >
-                  <v-list-item-title>{{ child.label }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-            </v-menu>
+        <!-- UTILISATEURS -->
+        <router-link to="/users" class="nav-item">
+          {{ $t('nav.users', 'UTILISATEURS') }}
+        </router-link>
 
-            <!-- Direct link if no children -->
-            <router-link
-              v-else
-              :to="item.path || '#'"
-              class="nav-item"
-            >
-              {{ item.label.toUpperCase() }}
-            </router-link>
+        <!-- DÉVELOPPEMENT dropdown -->
+        <v-menu offset-y>
+          <template v-slot:activator="{ props: menuProps }">
+            <a v-bind="menuProps" class="nav-item dropdown">
+              {{ $t('nav.development', 'DÉVELOPPEMENT') }}
+              <v-icon size="small">mdi-chevron-down</v-icon>
+            </a>
           </template>
-        </template>
+          <v-list>
+            <v-list-item to="/test/stateful-eventbus">
+              <v-list-item-title>{{ $t('nav.eventBusTest', 'EventBus Test') }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
 
-        <!-- Static navigation (if no Web Component navigation) -->
-        <template v-else>
-          <!-- Services dropdown -->
-          <v-menu offset-y>
-            <template v-slot:activator="{ props }">
-              <a v-bind="props" class="nav-item dropdown">
-                {{ $t('nav.services', 'SERVICES') }}
-                <v-icon size="small">mdi-chevron-down</v-icon>
-              </a>
-            </template>
-            <v-list>
-              <v-list-item
-                v-for="service in navServices"
-                :key="service.id"
-                :to="service.path"
-              >
-                <template v-slot:prepend>
-                  <v-icon :icon="service.icon"></v-icon>
-                </template>
-                <v-list-item-title>{{ $t(`nav.${service.id}`, service.title) }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-
-          <router-link to="/catalog" class="nav-item">
-            {{ $t('nav.catalog', 'CATALOG') }}
-          </router-link>
-
-          <!-- Admin dropdown -->
-          <v-menu offset-y>
-            <template v-slot:activator="{ props }">
-              <a v-bind="props" class="nav-item dropdown">
-                {{ $t('nav.admin', 'ADMIN') }}
-                <v-icon size="small">mdi-chevron-down</v-icon>
-              </a>
-            </template>
-            <v-list>
-              <v-list-item to="/admin/settings">
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-cog"></v-icon>
-                </template>
-                <v-list-item-title>{{ $t('nav.settings', 'Settings') }}</v-list-item-title>
-              </v-list-item>
-              <v-list-item to="/admin/logs">
-                <template v-slot:prepend>
-                  <v-icon icon="mdi-console-line"></v-icon>
-                </template>
-                <v-list-item-title>{{ $t('nav.logs', 'Logs') }}</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </template>
+        <!-- ADMIN dropdown -->
+        <v-menu offset-y>
+          <template v-slot:activator="{ props: menuProps }">
+            <a v-bind="menuProps" class="nav-item dropdown">
+              {{ $t('nav.admin', 'ADMIN') }}
+              <v-icon size="small">mdi-chevron-down</v-icon>
+            </a>
+          </template>
+          <v-list>
+            <v-list-item to="/admin/settings">
+              <v-list-item-title>{{ $t('nav.settings', 'Settings') }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item to="/admin/logs">
+              <v-list-item-title>{{ $t('nav.logs', 'Logs') }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
       </nav>
 
       <!-- Actions (user menu) -->
@@ -198,22 +150,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useAuthStore } from '@/stores/auth.store';
-import { getVisibleMicroServices } from '@/config/microservices.config';
 import { authService } from '@/services/auth.service';
 import { logService } from '@/services/log.service';
-import type { NavigationItem } from '@/services/event-bus.service';
 
 // Props
 interface Props {
-  customNavItems?: NavigationItem[];
   modelValue?: boolean; // drawer state
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  customNavItems: undefined,
   modelValue: false,
 });
 
@@ -224,9 +171,6 @@ const emit = defineEmits<{
 
 const authStore = useAuthStore();
 const { mobile } = useDisplay();
-
-// Get services for dropdown
-const navServices = computed(() => getVisibleMicroServices(authStore.isAuthenticated, true, false));
 
 // Drawer toggle
 function toggleDrawer() {
