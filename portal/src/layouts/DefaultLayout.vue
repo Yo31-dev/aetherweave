@@ -1,127 +1,23 @@
 <template>
-  <v-app>
-    <!-- App Bar (already created, but need to add burger menu button) -->
-    <v-app-bar color="#1E1E1E" prominent dark>
-      <!-- Burger menu button (mobile only) -->
-      <v-app-bar-nav-icon
-        v-if="mobile"
-        @click="drawer = !drawer"
-      ></v-app-bar-nav-icon>
+  <v-app :style="{ '--sidebar-width': sidebarWidth + 'px' }">
+    <!-- New: White header with horizontal navigation -->
+    <AppHeader />
 
-      <div style="display: flex; align-items: center; gap: 10px; margin-left: 16px;">
-        <img
-          src="@/assets/logo-icon.svg"
-          alt="AetherWeave Icon"
-          style="height: 32px; width: 32px;"
-        />
-        <span style="font-size: 20px; font-weight: 500;">AetherWeave</span>
-      </div>
+    <!-- New: Dark title bar (full-width) -->
+    <PageTitle :title="currentPageTitle">
+      <template v-slot:actions>
+        <slot name="title-actions"></slot>
+      </template>
+    </PageTitle>
 
-      <v-spacer></v-spacer>
-
-      <div class="d-flex align-center mr-4">
-        <!-- Theme toggle button -->
-        <v-btn
-          icon
-          @click="toggleTheme"
-          class="mr-2"
-        >
-          <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-        </v-btn>
-
-        <!-- User menu (authenticated) -->
-        <template v-if="authStore.isAuthenticated">
-          <v-menu>
-            <template v-slot:activator="{ props }">
-              <v-chip
-                v-bind="props"
-                color="white"
-                variant="outlined"
-                clickable
-              >
-                <v-icon start icon="mdi-account-circle"></v-icon>
-                {{ authStore.username }}
-                <v-icon end icon="mdi-menu-down"></v-icon>
-              </v-chip>
-            </template>
-
-            <v-card min-width="300">
-              <v-list>
-                <v-list-item>
-                  <template v-slot:prepend>
-                    <v-avatar color="primary">
-                      <v-icon icon="mdi-account"></v-icon>
-                    </v-avatar>
-                  </template>
-                  <v-list-item-title class="font-weight-bold">
-                    {{ authStore.profile?.name || authStore.username }}
-                  </v-list-item-title>
-                  <v-list-item-subtitle v-if="authStore.profile?.email">
-                    {{ authStore.profile.email }}
-                  </v-list-item-subtitle>
-                </v-list-item>
-              </v-list>
-
-              <v-divider></v-divider>
-
-              <v-list density="compact">
-                <v-list-item @click="handleAccountSettings">
-                  <template v-slot:prepend>
-                    <v-icon icon="mdi-account-cog"></v-icon>
-                  </template>
-                  <v-list-item-title>{{ $t('userMenu.accountSettings') }}</v-list-item-title>
-                </v-list-item>
-
-                <v-list-item @click="handleChangePassword">
-                  <template v-slot:prepend>
-                    <v-icon icon="mdi-lock-reset"></v-icon>
-                  </template>
-                  <v-list-item-title>{{ $t('userMenu.changePassword') }}</v-list-item-title>
-                </v-list-item>
-              </v-list>
-
-              <v-divider></v-divider>
-
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn
-                  color="error"
-                  variant="text"
-                  @click="handleLogout"
-                  :loading="authStore.isLoading"
-                >
-                  <v-icon start icon="mdi-logout"></v-icon>
-                  Logout
-                </v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-menu>
-        </template>
-
-        <!-- Login button (not authenticated) -->
-        <template v-else>
-          <v-btn
-            @click="handleLogin"
-            variant="outlined"
-            color="white"
-            :loading="authStore.isLoading"
-          >
-            <v-icon start icon="mdi-login"></v-icon>
-            Login
-          </v-btn>
-        </template>
-      </div>
-    </v-app-bar>
-
-    <!-- Sidebar Navigation -->
-    <AppSidebar v-model="drawer" />
+    <!-- Sidebar Navigation (fixed left, under title bar) -->
+    <AppSidebar v-model="drawer" @rail-changed="handleRailChange" />
 
     <!-- Main content area -->
-    <v-main>
-      <!-- Router view (Web Components or views) -->
-      <v-container fluid class="pa-0">
-        <router-view />
-      </v-container>
+    <v-main class="main-content">      
+        <div class="content-centered">
+          <router-view />
+        </div>
     </v-main>
 
     <!-- Snackbar for notifications -->
@@ -145,25 +41,41 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useI18n } from 'vue-i18n';
+import { useRoute } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 import { useLogStore } from '@/stores/log.store';
 import { eventBus } from '@/services/event-bus.service';
 import { logService } from '@/services/log.service';
-import { authService } from '@/services/auth.service';
 import { useTheme } from '@/composables/useTheme';
+import AppHeader from '@/components/AppHeader.vue';
+import PageTitle from '@/components/PageTitle.vue';
 import AppSidebar from '@/components/AppSidebar.vue';
 
 const { mobile } = useDisplay();
 const { locale } = useI18n();
+const route = useRoute();
 const authStore = useAuthStore();
 const logStore = useLogStore();
-const { isDark, toggleTheme, getCurrentTheme } = useTheme();
+const { getCurrentTheme } = useTheme();
 
 // Drawer state
 const drawer = ref(!mobile.value);
+const isRailMode = ref(false);
+
+// Calculate sidebar width based on state
+const sidebarWidth = computed(() => {
+  if (mobile.value) return 0;        // Mobile: no sidebar
+  if (isRailMode.value) return 56;   // Rail: 56px
+  return 250;                        // Normal: 250px
+});
+
+// Page title from route meta or default
+const currentPageTitle = computed(() => {
+  return (route.meta.title as string) || 'AetherWeave';
+});
 
 // Emit initial theme to Web Components on mount
 onMounted(() => {
@@ -178,31 +90,9 @@ const snackbar = ref({
   color: 'info',
 });
 
-// Auth actions
-async function handleLogin() {
-  try {
-    await authStore.login();
-  } catch (error) {
-    console.error('Login failed:', error);
-  }
-}
-
-async function handleLogout() {
-  try {
-    await authStore.logout();
-  } catch (error) {
-    console.error('Logout failed:', error);
-  }
-}
-
-function handleAccountSettings() {
-  authService.redirectToAccountManagement();
-  logService.info('Redirecting to identity provider account management', 'DefaultLayout');
-}
-
-function handleChangePassword() {
-  authService.redirectToPasswordChange();
-  logService.info('Redirecting to identity provider password change', 'DefaultLayout');
+// Handle rail state changes from sidebar
+function handleRailChange(railState: boolean) {
+  isRailMode.value = railState;
 }
 
 // Show notification
@@ -267,7 +157,32 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.v-main {
-  background-color: rgb(var(--v-theme-background));
+.main-content {
+  margin-top: 130px; /* 70px header + 60px title bar */
+  background-color: #F8F9FA;
+  min-height: calc(100vh - 130px);
+}
+
+.content-wrapper {
+  margin-left: var(--sidebar-width);
+  transition: margin-left 0.3s ease;
+}
+
+.content-centered {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+/* Dark theme */
+.v-theme--dark .main-content {
+  background-color: #121212;
+}
+
+/* Responsive - no sidebar on mobile */
+@media (max-width: 1024px) {
+  .content-centered {
+    padding: 24px 16px;
+  }
 }
 </style>

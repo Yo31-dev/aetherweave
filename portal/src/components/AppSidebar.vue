@@ -118,6 +118,7 @@ const props = withDefaults(defineProps<Props>(), {
 // Emits
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
+  (e: 'rail-changed', value: boolean): void;
 }>();
 
 // Responsive behavior
@@ -149,6 +150,11 @@ watch(() => props.modelValue, (value) => {
   drawer.value = value;
 });
 
+// Watch rail state and emit changes
+watch(rail, (value) => {
+  emit('rail-changed', value);
+}, { immediate: true });
+
 // On mobile, close drawer when clicking an item
 function onDrawerClick() {
   if (mobile.value) {
@@ -159,12 +165,30 @@ function onDrawerClick() {
 
 <style scoped>
 .v-navigation-drawer {
+  position: fixed !important;
+  left: 0 !important;
+  top: 130px !important; /* 70px header + 60px title bar */
+  height: calc(100vh - 130px) !important;
+  z-index: 1000 !important;
   border-right: thin solid rgba(var(--v-border-color), var(--v-border-opacity));
+  background: #FFFFFF !important;
 }
 
-/* Remove fixed background - let Vuetify handle it based on theme */
+/* Dark theme sidebar */
+.v-theme--dark .v-navigation-drawer {
+  background: #1E1E1E !important;
+}
+
 .sidebar-light {
-  /* Background color now handled by Vuetify theme */
+  /* Background color handled above */
+}
+
+/* Responsive - mobile sidebar (temporary drawer) */
+@media (max-width: 1024px) {
+  .v-navigation-drawer {
+    top: 70px !important; /* Just below header on mobile */
+    height: calc(100vh - 70px) !important;
+  }
 }
 
 /* Active menu item - dark grey background with orange text */

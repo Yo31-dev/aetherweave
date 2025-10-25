@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-6">
+  <v-container fluid>
     <!-- Welcome section -->
     <v-row class="mb-4">
       <v-col cols="12">

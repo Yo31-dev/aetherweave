@@ -19,11 +19,14 @@
     "changePassword": "Change Password"
   },
   "nav": {
+    "home": "HOME",
+    "services": "SERVICES",
+    "catalog": "CATALOG",
+    "admin": "ADMIN",
     "dashboard": "Dashboard",
     "user-management": "Users",
     "dev": "Development",
     "eventBusTest": "EventBus Test",
-    "admin": "Administration",
     "settings": "Settings",
     "logs": "Logs"
   },

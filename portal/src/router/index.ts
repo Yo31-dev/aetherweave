@@ -32,11 +32,17 @@ const router = createRouter({
           path: '',
           name: 'dashboard',
           component: DashboardView,
+          meta: {
+            title: 'Dashboard',
+          },
         },
         {
           path: '/users',
           name: 'users',
           component: MicroFrontendLoader,
+          meta: {
+            title: 'User Management',
+          },
           props: () => {
             const microservice = getMicroServiceByPath('/users');
             if (!microservice) {
@@ -46,19 +52,36 @@ const router = createRouter({
           },
         },
         {
+          path: '/catalog',
+          name: 'catalog',
+          component: DashboardView,
+          meta: {
+            title: 'Catalog',
+          },
+        },
+        {
           path: '/admin/settings',
           name: 'admin-settings',
           component: SettingsView,
+          meta: {
+            title: 'Settings',
+          },
         },
         {
           path: '/admin/logs',
           name: 'admin-logs',
           component: LogsAdminView,
+          meta: {
+            title: 'System Logs',
+          },
         },
         {
           path: '/test/stateful-eventbus',
           name: 'test-stateful-eventbus',
           component: StatefulEventBusTest,
+          meta: {
+            title: 'EventBus Test',
+          },
         },
         // Future microservices routes will be added here
       ],

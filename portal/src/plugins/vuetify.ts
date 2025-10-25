@@ -20,8 +20,8 @@ export default createVuetify({
           info: '#2196F3',         // Blue
           success: '#4CAF50',      // Green
           warning: '#FFC107',      // Amber
-          background: '#FAFAFA',   // Light Gray
-          surface: '#FFFFFF',      // White
+          background: '#F8F9FA',   // Very light gray (eMart style)
+          surface: '#FFFFFF',      // Pure white
         },
       },
       dark: {
