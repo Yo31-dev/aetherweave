@@ -17,6 +17,8 @@ The Portal is the **orchestrator shell** that:
 - Loads and displays Web Components (micro-frontends)
 - Provides shared services (EventBus, Logging, Settings)
 - Handles navigation and routing
+- **Accepts dynamic navigation from Web Components** (micro-frontend controlled menus)
+- **Displays dynamic page titles and subtitles** from Web Components
 - Manages global state (auth, locale, logs)
 - Composes multiple Web Components into single pages (see [COMPOSED_PAGES.md](../docs/COMPOSED_PAGES.md))
 
@@ -36,8 +38,9 @@ The Portal is the **orchestrator shell** that:
 portal/
 ├── src/
 │   ├── components/          # Reusable Vue components
-│   │   ├── AppSidebar.vue   # Navigation sidebar
-│   │   ├── AppBreadcrumbs.vue
+│   │   ├── AppHeader.vue    # Top header (white) with navigation + burger menu
+│   │   ├── PageTitle.vue    # Dark title bar with dynamic title/subtitle
+│   │   ├── AppSidebar.vue   # Left navigation sidebar
 │   │   └── MicroFrontendLoader.vue  # WC loader (IMPORTANT)
 │   ├── views/               # Route views
 │   │   ├── DashboardView.vue
@@ -201,7 +204,13 @@ element.user = authStore.profile || null;
 
 | Event | Direction | Payload | Usage |
 |-------|-----------|---------|-------|
-| `portal:locale-change` | Portal → WC | `{ locale: string }` | Language change |
+| `portal:auth:logout` | Portal → WC | - | Logout notification |
+| `portal:auth:token-refreshed` | Portal → WC | `{ token, user }` | Token refresh |
+| `portal:locale:change` | Portal → WC | `{ locale: string }` | Language change |
+| `portal:ready` | Portal → WC | - | Portal ready to receive metadata |
+| `wc:page:setTitle` | WC → Portal | `{ title, subtitle? }` | Set page title (stateful) |
+| `wc:page:registerNavigation` | WC → Portal | `{ baseRoute, items }` | Register navigation (stateful) |
+| `wc:page:clearNavigation` | WC → Portal | - | Clear navigation |
 | `wc:error` | WC → Portal | `{ message, code?, source? }` | Error notification |
 | `wc:notification` | WC → Portal | `{ message, type }` | Success/info/warning |
 | `wc:log` | WC → Portal | `{ level, message, source, meta }` | Log messages |
@@ -231,7 +240,219 @@ eventListener.emitNotification('User created', 'success');
 eventListener.emitLog('Debug info', 'debug', 'MyComponent', { foo: 'bar' });
 ```
 
-### 5. Logging System
+### 5. Dynamic Navigation & Page Titles (Micro-Frontend Controlled UI)
+
+**NEW**: Web Components can now **control the Portal's navigation menu and page title** dynamically via EventBus.
+
+#### Architecture
+
+**Three-tier layout**:
+1. **AppHeader** (white, 70px) - Logo + horizontal navigation + user menu + burger (mobile)
+2. **PageTitle** (dark, 60px) - Page title + optional subtitle
+3. **AppSidebar** (left, collapsible) - Dashboard + microservices links
+
+#### Dynamic Page Title
+
+**File**: `components/PageTitle.vue`
+
+Web Components can set the page title and subtitle:
+
+```typescript
+// In Web Component (onMounted or connectedCallback)
+const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
+
+eventBus.emit('wc:page:setTitle', {
+  title: 'User Management',
+  subtitle: 'List Users'  // Optional
+});
+```
+
+**Features**:
+- Title priority: EventBus > props > route.meta
+- Subtitle displays current screen (e.g., "List Users", "Create User")
+- Fully translated (use `get()` from lit-translate)
+- Stateful event (handles timing race on page refresh)
+
+#### Dynamic Navigation
+
+**File**: `components/AppHeader.vue`
+
+Web Components can **replace the static navigation** (SERVICES, CATALOG, ADMIN) with their own menus:
+
+```typescript
+// In Web Component
+eventBus.emit('wc:page:registerNavigation', {
+  baseRoute: '/users',
+  items: [
+    {
+      label: 'Users',
+      children: [
+        { label: 'List', path: '/users' },
+        { label: 'Create', path: '/users/create' }
+      ]
+    },
+    {
+      label: 'Roles',
+      children: [
+        { label: 'List', path: '/users/roles' },
+        { label: 'Create', path: '/users/roles/create' }
+      ]
+    }
+  ]
+});
+```
+
+**Navigation Item Structure**:
+```typescript
+interface NavigationItem {
+  label: string;           // Display text (UPPERCASE in UI)
+  path?: string;           // Direct link (if no children)
+  children?: NavigationSubItem[];  // Dropdown menu items
+}
+
+interface NavigationSubItem {
+  label: string;          // Display text
+  path: string;           // Route path
+}
+```
+
+**Behavior**:
+- **HOME** always stays visible (left)
+- **User menu (FOF)** always stays visible (right)
+- When WC registers navigation → **replaces** SERVICES/CATALOG/ADMIN completely
+- When navigating away → Portal auto-clears navigation
+- No icons in navigation (clean, minimalist design)
+
+#### Timing Race Fix: portal:ready Event
+
+**Problem**: On page refresh, timing race between Portal mounting and WC loading
+
+**Solution**: Portal emits `portal:ready` when ready to receive metadata
+
+```typescript
+// In Web Component - listen for portal:ready
+this.unsubPortalReady = eventListener.onPortalReady(async () => {
+  await this.registerPageMetadata();  // Re-emit title + navigation
+});
+```
+
+**Flow on refresh**:
+1. Portal mounts → starts listening → emits `portal:ready`
+2. WC loads → listens for `portal:ready`
+3. WC receives `portal:ready` → waits for translations → emits metadata
+4. ✅ Title and navigation display correctly
+
+#### Stateful Events
+
+Events `wc:page:setTitle` and `wc:page:registerNavigation` use **stateful emit**:
+
+```typescript
+// In event-bus.service.ts
+setPageTitle(payload: PageTitlePayload): void {
+  this.emitStateful(EventType.PAGE_TITLE_SET, payload);  // ← Stores in lastState
+}
+```
+
+**Late joiner pattern**: If Portal listens AFTER WC emits, it still receives the event from `lastState` Map.
+
+**Benefits**:
+- Handles any timing order (Portal first OR WC first)
+- Automatic replay of missed events
+- No race conditions
+
+#### Translation Loading
+
+**IMPORTANT**: Web Components must **await translations** before sending metadata:
+
+```typescript
+private async registerPageMetadata() {
+  const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
+
+  // Wait for translations to load
+  await use(this.lang);
+
+  // Now get() will return actual translations, not keys
+  eventBus.emit('wc:page:setTitle', {
+    title: get('title'),           // "User Management" ✅
+    subtitle: get('subtitle.listUsers')  // "List Users" ✅
+  });
+}
+```
+
+Without `await use()`, `get()` returns **keys** instead of translations (e.g., `"title"` instead of `"User Management"`).
+
+#### Cleanup
+
+Web Components should clear navigation when unmounting:
+
+```typescript
+disconnectedCallback() {
+  const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
+  eventBus.emit('wc:page:clearNavigation');
+}
+```
+
+Portal also **auto-clears** when changing base routes (e.g., `/users` → `/admin`).
+
+#### Burger Menu (Mobile)
+
+**File**: `components/AppHeader.vue`
+
+On mobile (< 1024px):
+- Sidebar hidden by default
+- **Burger button** appears in header (left of logo)
+- Click burger → opens sidebar as temporary overlay
+- Click outside → closes sidebar
+
+**Implementation**:
+```vue
+<!-- AppHeader.vue -->
+<v-btn
+  v-if="mobile"
+  icon="mdi-menu"
+  variant="text"
+  @click="toggleDrawer"
+></v-btn>
+```
+
+Burger uses `v-model` binding with `DefaultLayout` drawer state.
+
+#### Example: Complete WC Integration
+
+See `services/user-service/frontend/src/user-management-app.ts` for reference implementation.
+
+**Key pattern**:
+1. `connectedCallback()` → register metadata + listen for `portal:ready`
+2. `registerPageMetadata()` → async, await translations, emit title + navigation
+3. `disconnectedCallback()` → clear navigation
+4. Update subtitle dynamically based on route changes
+
+### 6. Theme System (Dark/Light Mode)
+
+**Location**: Theme toggle in AppSidebar footer (minimalist switch + icon)
+
+**File**: `portal/src/composables/useTheme.ts`
+
+**Features**:
+- ✅ Dark/Light mode toggle
+- ✅ Persists in localStorage
+- ✅ Emits stateful `theme:changed` event to Web Components
+- ✅ Material Design color schemes (AetherWeave Orange branding)
+
+**Usage**:
+```typescript
+import { useTheme } from '@/composables/useTheme';
+
+const { isDark, toggleTheme, setTheme, getCurrentTheme } = useTheme();
+
+toggleTheme();  // Switch between light/dark
+```
+
+**Web Components**: Automatically receive theme via stateful EventBus and can toggle dark-theme class.
+
+See PORTAL.md section below for full details.
+
+### 7. Logging System
 
 **Architecture**: Centralized logging with IndexedDB persistence
 
@@ -265,7 +486,7 @@ logService.debug('Token refreshed', 'Auth', { exp: 123456 });
 
 **Admin page**: `/admin/logs`
 
-### 6. Settings System
+### 8. Settings System
 
 **Architecture**: IndexedDB storage for user preferences
 
@@ -303,7 +524,7 @@ await settingsService.import(data);
 
 **Dual storage**: Settings saved in both localStorage (fast sync) and IndexedDB (persistent, structured)
 
-### 7. Data Reset System
+### 9. Data Reset System
 
 **File**: `services/data-reset.service.ts`
 
@@ -329,7 +550,7 @@ const stats = await dataResetService.getStorageStats();
 
 **Behavior**: Clears everything and reloads page
 
-### 8. i18n (Internationalization)
+### 10. i18n (Internationalization)
 
 **Library**: vue-i18n
 
@@ -446,16 +667,28 @@ const theme = getCurrentTheme(); // 'light' | 'dark'
 
 ### Theme Toggle Button
 
-**Location**: `portal/src/layouts/DefaultLayout.vue` (header)
+**Location**: `portal/src/components/AppSidebar.vue` (footer)
 
+Minimalist design with:
+- Icon (sun/moon)
+- Label ("Light"/"Dark")
+- Toggle switch (read-only, visual indicator)
+
+**Implementation**:
 ```vue
-<v-btn icon @click="toggleTheme" class="mr-2">
-  <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-</v-btn>
+<div class="theme-toggle-container" @click="toggleTheme">
+  <div class="theme-toggle-content">
+    <v-icon size="small" :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'"></v-icon>
+    <span v-if="!rail || mobile" class="theme-label">{{ isDark ? 'Dark' : 'Light' }}</span>
+  </div>
+  <v-switch v-if="!rail || mobile" v-model="isDark" hide-details density="compact" color="primary" :readonly="true"></v-switch>
+</div>
 ```
 
-Sun icon = currently dark (click for light)
-Moon icon = currently light (click for dark)
+**Features**:
+- Click anywhere on container to toggle
+- Switch is visual indicator only (read-only)
+- Responsive: hides label/switch in rail mode
 
 ### Web Component Integration
 

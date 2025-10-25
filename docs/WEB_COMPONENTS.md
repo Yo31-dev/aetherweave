@@ -581,6 +581,148 @@ eventListener.emitNotification('User created successfully', 'success');
 eventListener.emitLog('Debug info', 'debug', 'MyComponent', { foo: 'bar' });
 ```
 
+## Dynamic Navigation & Page Titles
+
+**NEW**: Web Components can control the Portal's UI dynamically.
+
+### Set Page Title
+
+```typescript
+connectedCallback() {
+  super.connectedCallback();
+
+  // Register page metadata (title + navigation)
+  this.registerPageMetadata();
+
+  // Listen for portal:ready (handles refresh timing race)
+  this.unsubPortalReady = eventListener.onPortalReady(async () => {
+    await this.registerPageMetadata();
+  });
+}
+
+private async registerPageMetadata() {
+  const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
+
+  // IMPORTANT: Wait for translations to load first!
+  await use(this.lang);
+
+  // Set page title
+  eventBus.emit('wc:page:setTitle', {
+    title: get('title'),           // "User Management"
+    subtitle: get('subtitle.listUsers')  // "List Users"
+  });
+}
+```
+
+**Key Points**:
+- **Always await `use(this.lang)`** before calling `get()` - otherwise you get keys instead of translations!
+- Title appears in Portal's dark title bar
+- Subtitle shows current screen (e.g., "List Users", "Create User")
+- Update subtitle dynamically based on route/state changes
+
+### Register Navigation
+
+```typescript
+// Register navigation (in registerPageMetadata)
+eventBus.emit('wc:page:registerNavigation', {
+  baseRoute: '/users',
+  items: [
+    {
+      label: 'Users',
+      children: [
+        { label: 'List', path: '/users' },
+        { label: 'Create', path: '/users/create' }
+      ]
+    },
+    {
+      label: 'Roles',
+      children: [
+        { label: 'List', path: '/users/roles' },
+        { label: 'Create', path: '/users/roles/create' }
+      ]
+    }
+  ]
+});
+```
+
+**Features**:
+- Navigation appears in Portal's white header
+- **Replaces** static SERVICES/CATALOG/ADMIN menus completely
+- Dropdown menus with children (like ADMIN dropdown)
+- No icons (clean design)
+- HOME and user menu always stay visible
+
+### Cleanup
+
+```typescript
+disconnectedCallback() {
+  super.disconnectedCallback();
+
+  // Clear navigation when WC unmounts
+  const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
+  eventBus.emit('wc:page:clearNavigation');
+
+  // Cleanup listeners
+  this.unsubPortalReady?.();
+}
+```
+
+### Translation Structure
+
+Add subtitle translations to your `locales/*.ts`:
+
+```typescript
+// locales/en.ts
+export default {
+  title: 'User Management',
+  subtitle: {
+    listUsers: 'List Users',
+    createUser: 'Create User',
+    listRoles: 'List Roles',
+    createRole: 'Create Role',
+  },
+  // ... other translations
+};
+
+// locales/fr.ts
+export default {
+  title: 'Gestion des utilisateurs',
+  subtitle: {
+    listUsers: 'Liste des utilisateurs',
+    createUser: 'Créer un utilisateur',
+    listRoles: 'Liste des rôles',
+    createRole: 'Créer un rôle',
+  },
+  // ... other translations
+};
+```
+
+### portal:ready Event
+
+The Portal emits `portal:ready` when ready to receive metadata. This solves timing race on page refresh:
+
+```typescript
+// In event-listener.service.ts - already implemented
+onPortalReady(callback: () => void): () => void {
+  const handler = () => {
+    this.emitLog('Portal ready signal received', 'debug');
+    callback();
+  };
+  this.emitter.on(EventType.PORTAL_READY, handler);
+  return () => this.emitter.off(EventType.PORTAL_READY, handler);
+}
+```
+
+**Why needed?**
+- On page refresh, Portal and WC both reload
+- Timing is unpredictable (Portal might start listening AFTER WC emits)
+- `portal:ready` guarantees Portal is ready before WC sends metadata
+- Combined with stateful events for bulletproof synchronization
+
+### Example: Complete Integration
+
+See `services/user-service/frontend/src/user-management-app.ts` for full reference implementation.
+
 ## i18n System
 
 ### Configuration
