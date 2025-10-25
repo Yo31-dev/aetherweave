@@ -20,6 +20,8 @@
   },
   "nav": {
     "home": "ACCUEIL",
+    "users": "UTILISATEURS",
+    "development": "DÉVELOPPEMENT",
     "services": "SERVICES",
     "catalog": "CATALOGUE",
     "admin": "ADMIN",
@@ -28,7 +30,8 @@
     "dev": "Développement",
     "eventBusTest": "Test EventBus",
     "settings": "Paramètres",
-    "logs": "Journaux"
+    "logs": "Journaux",
+    "noContextualNav": "Aucune navigation contextuelle"
   },
   "dashboard": {
     "welcome": "Bienvenue sur AetherWeave",
