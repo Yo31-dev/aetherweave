@@ -69,33 +69,96 @@
 
       <!-- Actions (theme toggle, user menu) -->
       <div class="header-actions">
-        <v-btn icon variant="text" @click="toggleTheme" size="small">
+        <!-- Theme toggle button -->
+        <v-btn
+          icon
+          @click="toggleTheme"
+          class="mr-2"
+        >
           <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
         </v-btn>
 
-        <v-menu offset-y>
-          <template v-slot:activator="{ props }">
-            <v-btn v-bind="props" variant="text" class="user-menu-btn">
-              <v-icon start>mdi-account-circle</v-icon>
-              <span class="user-name">{{ authStore.profile?.name || 'User' }}</span>
-              <v-icon end size="small">mdi-chevron-down</v-icon>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item v-if="!authStore.isAuthenticated" @click="authStore.login()">
-              <template v-slot:prepend>
-                <v-icon icon="mdi-login"></v-icon>
-              </template>
-              <v-list-item-title>{{ $t('common.login', 'Login') }}</v-list-item-title>
-            </v-list-item>
-            <v-list-item v-if="authStore.isAuthenticated" @click="authStore.logout()">
-              <template v-slot:prepend>
-                <v-icon icon="mdi-logout"></v-icon>
-              </template>
-              <v-list-item-title>{{ $t('common.logout', 'Logout') }}</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+        <!-- User menu (authenticated) -->
+        <template v-if="authStore.isAuthenticated">
+          <v-menu offset-y>
+            <template v-slot:activator="{ props }">
+              <v-chip
+                v-bind="props"
+                color="primary"
+                variant="outlined"
+                clickable
+              >
+                <v-icon start icon="mdi-account-circle"></v-icon>
+                {{ authStore.username }}
+                <v-icon end icon="mdi-menu-down"></v-icon>
+              </v-chip>
+            </template>
+
+            <v-card min-width="300">
+              <v-list>
+                <v-list-item>
+                  <template v-slot:prepend>
+                    <v-avatar color="primary">
+                      <v-icon icon="mdi-account"></v-icon>
+                    </v-avatar>
+                  </template>
+                  <v-list-item-title class="font-weight-bold">
+                    {{ authStore.profile?.name || authStore.username }}
+                  </v-list-item-title>
+                  <v-list-item-subtitle v-if="authStore.profile?.email">
+                    {{ authStore.profile.email }}
+                  </v-list-item-subtitle>
+                </v-list-item>
+              </v-list>
+
+              <v-divider></v-divider>
+
+              <v-list density="compact">
+                <v-list-item @click="handleAccountSettings">
+                  <template v-slot:prepend>
+                    <v-icon icon="mdi-account-cog"></v-icon>
+                  </template>
+                  <v-list-item-title>{{ $t('userMenu.accountSettings', 'Account Settings') }}</v-list-item-title>
+                </v-list-item>
+
+                <v-list-item @click="handleChangePassword">
+                  <template v-slot:prepend>
+                    <v-icon icon="mdi-lock-reset"></v-icon>
+                  </template>
+                  <v-list-item-title>{{ $t('userMenu.changePassword', 'Change Password') }}</v-list-item-title>
+                </v-list-item>
+              </v-list>
+
+              <v-divider></v-divider>
+
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  color="error"
+                  variant="text"
+                  @click="handleLogout"
+                  :loading="authStore.isLoading"
+                >
+                  <v-icon start icon="mdi-logout"></v-icon>
+                  {{ $t('common.logout', 'Logout') }}
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-menu>
+        </template>
+
+        <!-- Login button (not authenticated) -->
+        <template v-else>
+          <v-btn
+            @click="handleLogin"
+            variant="outlined"
+            color="primary"
+            :loading="authStore.isLoading"
+          >
+            <v-icon start icon="mdi-login"></v-icon>
+            {{ $t('common.login', 'Login') }}
+          </v-btn>
+        </template>
       </div>
     </div>
     </div>
@@ -104,15 +167,38 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
 import { useTheme } from '@/composables/useTheme';
 import { getVisibleMicroServices } from '@/config/microservices.config';
+import { authService } from '@/services/auth.service';
+import { logService } from '@/services/log.service';
 
+const router = useRouter();
 const authStore = useAuthStore();
 const { isDark, toggleTheme } = useTheme();
 
 // Get services for dropdown
 const navServices = computed(() => getVisibleMicroServices(authStore.isAuthenticated, true, false));
+
+// User menu handlers
+function handleLogin() {
+  authStore.login();
+}
+
+function handleLogout() {
+  authStore.logout();
+}
+
+function handleAccountSettings() {
+  authService.redirectToAccountManagement();
+  logService.info('Redirecting to identity provider account management', 'AppHeader');
+}
+
+function handleChangePassword() {
+  authService.redirectToPasswordChange();
+  logService.info('Redirecting to identity provider password change', 'AppHeader');
+}
 </script>
 
 <style scoped>
@@ -215,16 +301,14 @@ const navServices = computed(() => getVisibleMicroServices(authStore.isAuthentic
   gap: 8px;
 }
 
-.user-menu-btn {
-  text-transform: none;
-  font-weight: 500;
+/* User chip styling */
+:deep(.v-chip) {
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.user-name {
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+:deep(.v-chip:hover) {
+  background-color: rgba(255, 107, 53, 0.08);
 }
 
 /* Dark theme */
