@@ -1,7 +1,7 @@
 <template>
   <v-app :style="{ '--sidebar-width': sidebarWidth + 'px' }">
     <!-- New: White header with horizontal navigation -->
-    <AppHeader :custom-nav-items="customNavItems" />
+    <AppHeader v-model="drawer" :custom-nav-items="customNavItems" />
 
     <!-- New: Dark title bar (full-width) -->
     <PageTitle :title="currentPageTitle">

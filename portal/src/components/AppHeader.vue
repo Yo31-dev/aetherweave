@@ -2,6 +2,15 @@
   <header class="app-header">
     <div class="header-wrapper">
       <div class="header-content">
+        <!-- Burger menu (mobile only) -->
+        <v-btn
+          v-if="mobile"
+          icon="mdi-menu"
+          variant="text"
+          @click="toggleDrawer"
+          class="burger-btn"
+        ></v-btn>
+
         <!-- Logo -->
         <div class="logo-section">
           <router-link to="/" class="logo-link">
@@ -190,6 +199,7 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
+import { useDisplay } from 'vuetify';
 import { useAuthStore } from '@/stores/auth.store';
 import { getVisibleMicroServices } from '@/config/microservices.config';
 import { authService } from '@/services/auth.service';
@@ -199,16 +209,29 @@ import type { NavigationItem } from '@/services/event-bus.service';
 // Props
 interface Props {
   customNavItems?: NavigationItem[];
+  modelValue?: boolean; // drawer state
 }
 
 const props = withDefaults(defineProps<Props>(), {
   customNavItems: undefined,
+  modelValue: false,
 });
 
+// Emits
+const emit = defineEmits<{
+  'update:modelValue': [value: boolean];
+}>();
+
 const authStore = useAuthStore();
+const { mobile } = useDisplay();
 
 // Get services for dropdown
 const navServices = computed(() => getVisibleMicroServices(authStore.isAuthenticated, true, false));
+
+// Drawer toggle
+function toggleDrawer() {
+  emit('update:modelValue', !props.modelValue);
+}
 
 // User menu handlers
 function handleLogin() {
