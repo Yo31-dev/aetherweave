@@ -352,27 +352,27 @@ export class UserManagementApp extends LitElement {
       baseRoute: '/users',
       items: [
         {
-          label: 'Users',
+          label: get('navigation.users'),
           children: [
             {
-              label: 'List',
+              label: get('navigation.usersList'),
               path: '/users'
             },
             {
-              label: 'Create',
+              label: get('navigation.usersCreate'),
               path: '/users/create'
             }
           ]
         },
         {
-          label: 'Roles',
+          label: get('navigation.roles'),
           children: [
             {
-              label: 'List',
+              label: get('navigation.rolesList'),
               path: '/users/roles'
             },
             {
-              label: 'Create',
+              label: get('navigation.rolesCreate'),
               path: '/users/roles/create'
             }
           ]

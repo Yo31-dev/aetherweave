@@ -9,6 +9,14 @@ export default {
     listRoles: 'Liste des rôles',
     createRole: 'Créer un rôle',
   },
+  navigation: {
+    users: 'Utilisateurs',
+    usersList: 'Liste',
+    usersCreate: 'Créer',
+    roles: 'Rôles',
+    rolesList: 'Liste',
+    rolesCreate: 'Créer',
+  },
   actions: {
     add: 'Ajouter un utilisateur',
     edit: 'Modifier',

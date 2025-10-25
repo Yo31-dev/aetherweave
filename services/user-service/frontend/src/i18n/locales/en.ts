@@ -9,6 +9,14 @@ export default {
     listRoles: 'List Roles',
     createRole: 'Create Role',
   },
+  navigation: {
+    users: 'Users',
+    usersList: 'List',
+    usersCreate: 'Create',
+    roles: 'Roles',
+    rolesList: 'List',
+    rolesCreate: 'Create',
+  },
   actions: {
     add: 'Add User',
     edit: 'Edit',
