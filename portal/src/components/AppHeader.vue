@@ -5,7 +5,7 @@
         <!-- Logo -->
         <div class="logo-section">
           <router-link to="/" class="logo-link">
-            <v-icon icon="mdi-square-rounded" color="primary" size="32"></v-icon>
+            <img src="/favicon.svg" alt="AetherWeave Logo" class="logo-icon" />
             <span class="logo-text">AetherWeave</span>
           </router-link>
         </div>
@@ -247,6 +247,12 @@ function handleChangePassword() {
 
 .logo-link:hover {
   opacity: 0.8;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  display: block;
 }
 
 .logo-text {
