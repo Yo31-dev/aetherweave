@@ -7,28 +7,38 @@
 
 import { ApiClient, EventBusClient } from '@aetherweave/wc-core';
 
-export interface User {
-  id: number;
-  username: string;
-  email: string;
-  password?: string;
-  roles?: string[];
+export interface Role {
+  id: string;
+  name: string;
+  description?: string;
   createdAt?: string;
   updatedAt?: string;
 }
 
-export interface CreateUserDto {
-  username: string;
+export interface User {
+  id: string;
   email: string;
-  password: string;
-  roles?: string[];
+  firstName: string;
+  lastName: string;
+  isActive: boolean;
+  roles: Role[];
+  createdAt?: string;
+  updatedAt?: string;
 }
 
-export interface UpdateUserDto {
-  username?: string;
-  email?: string;
-  password?: string;
-  roles?: string[];
+export interface CreateUserData {
+  email: string;
+  firstName: string;
+  lastName: string;
+  roleIds?: string[];
+  isActive?: boolean;
+}
+
+export interface UpdateUserData {
+  firstName?: string;
+  lastName?: string;
+  roleIds?: string[];
+  isActive?: boolean;
 }
 
 /**
@@ -58,7 +68,6 @@ class UserApiService {
       return await this.api.get<User[]>('/users');
     } catch (error) {
       this.eventBus.emitLog('Failed to fetch users', 'error', error);
-      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to fetch users');
       throw error;
     }
   }
@@ -66,12 +75,11 @@ class UserApiService {
   /**
    * Get user by ID
    */
-  async getUserById(id: number): Promise<User> {
+  async getUser(id: string): Promise<User> {
     try {
       return await this.api.get<User>(`/users/${id}`);
     } catch (error) {
-      this.eventBus.emitLog('Failed to fetch user', 'error', error);
-      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to fetch user');
+      this.eventBus.emitLog(`Failed to fetch user ${id}`, 'error', error);
       throw error;
     }
   }
@@ -79,14 +87,11 @@ class UserApiService {
   /**
    * Create new user
    */
-  async createUser(userData: CreateUserDto): Promise<User> {
+  async createUser(data: CreateUserData): Promise<User> {
     try {
-      const user = await this.api.post<User>('/users', userData);
-      this.eventBus.emitNotification('User created successfully', 'success');
-      return user;
+      return await this.api.post<User>('/users', data);
     } catch (error) {
       this.eventBus.emitLog('Failed to create user', 'error', error);
-      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to create user');
       throw error;
     }
   }
@@ -94,14 +99,11 @@ class UserApiService {
   /**
    * Update user
    */
-  async updateUser(id: number, userData: UpdateUserDto): Promise<User> {
+  async updateUser(id: string, data: UpdateUserData): Promise<User> {
     try {
-      const user = await this.api.put<User>(`/users/${id}`, userData);
-      this.eventBus.emitNotification('User updated successfully', 'success');
-      return user;
+      return await this.api.put<User>(`/users/${id}`, data);
     } catch (error) {
-      this.eventBus.emitLog('Failed to update user', 'error', error);
-      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to update user');
+      this.eventBus.emitLog(`Failed to update user ${id}`, 'error', error);
       throw error;
     }
   }
@@ -109,13 +111,23 @@ class UserApiService {
   /**
    * Delete user
    */
-  async deleteUser(id: number): Promise<void> {
+  async deleteUser(id: string): Promise<void> {
     try {
-      await this.api.delete<void>(`/users/${id}`);
-      this.eventBus.emitNotification('User deleted successfully', 'success');
+      await this.api.delete(`/users/${id}`);
     } catch (error) {
-      this.eventBus.emitLog('Failed to delete user', 'error', error);
-      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to delete user');
+      this.eventBus.emitLog(`Failed to delete user ${id}`, 'error', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get all roles
+   */
+  async getRoles(): Promise<Role[]> {
+    try {
+      return await this.api.get<Role[]>('/roles');
+    } catch (error) {
+      this.eventBus.emitLog('Failed to fetch roles', 'error', error);
       throw error;
     }
   }

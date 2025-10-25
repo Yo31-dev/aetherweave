@@ -25,7 +25,7 @@
               :key="child.path"
               :title="child.label"
               :value="child.path"
-              :to="child.path"
+              @click="() => navigateToPath(child.path)"
             ></v-list-item>
           </v-list-group>
 
@@ -34,7 +34,7 @@
             v-else
             :title="item.label.toUpperCase()"
             :value="item.path"
-            :to="item.path || '#'"
+            @click="() => navigateToPath(item.path || '/')"
           ></v-list-item>
         </template>
       </template>
@@ -83,6 +83,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 import { useDisplay } from 'vuetify';
+import { useRouter } from 'vue-router';
 import { useTheme } from '@/composables/useTheme';
 import type { NavigationItem } from '@/services/event-bus.service';
 
@@ -101,6 +102,9 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'update:modelValue', value: boolean): void;
 }>();
+
+// Router
+const router = useRouter();
 
 // Responsive behavior
 const { mobile } = useDisplay();
@@ -123,6 +127,16 @@ watch(drawer, (value) => {
 watch(() => props.modelValue, (value) => {
   drawer.value = value;
 });
+
+// Navigate to a path
+function navigateToPath(path: string) {
+  router.push(path);
+
+  // On mobile, close drawer after navigation
+  if (mobile.value) {
+    drawer.value = false;
+  }
+}
 
 // On mobile, close drawer when clicking an item
 function onDrawerClick() {

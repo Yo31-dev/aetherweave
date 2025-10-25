@@ -37,7 +37,7 @@ const router = createRouter({
           },
         },
         {
-          path: '/users',
+          path: '/users/:pathMatch(.*)*',
           name: 'users',
           component: MicroFrontendLoader,
           meta: {

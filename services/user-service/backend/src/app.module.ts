@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UsersModule } from './users/users.module';
+import { RolesModule } from './roles/roles.module';
 import { HealthController } from './health/health.controller';
 
 const isGeneratingOpenAPI = process.env.GENERATE_OPENAPI === 'true';
@@ -30,7 +31,7 @@ const getDatabaseConfig = () => {
 };
 
 @Module({
-  imports: [TypeOrmModule.forRoot(getDatabaseConfig()), UsersModule],
+  imports: [TypeOrmModule.forRoot(getDatabaseConfig()), UsersModule, RolesModule],
   controllers: [HealthController],
 })
 export class AppModule {}

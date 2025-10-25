@@ -1,29 +1,35 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
 import { EventBusClient, ApiClient } from '@aetherweave/wc-core';
-import { userApi, type User } from './services/user-api.service';
+import { userApi, type User, type Role, type CreateUserData, type UpdateUserData } from './services/user-api.service';
+import { roleApi, type CreateRoleData, type UpdateRoleData } from './services/role-api.service';
 import { translate, use, get } from './i18n';
 
 // Import Material Web Components
 import '@material/web/button/filled-button.js';
 import '@material/web/button/text-button.js';
+import '@material/web/button/outlined-button.js';
 import '@material/web/icon/icon.js';
 import '@material/web/progress/circular-progress.js';
+import '@material/web/textfield/filled-text-field.js';
+import '@material/web/checkbox/checkbox.js';
+import '@material/web/chips/chip-set.js';
+import '@material/web/chips/filter-chip.js';
+
+type ViewType = 'user-list' | 'user-create' | 'user-detail' | 'role-list' | 'role-create' | 'role-detail';
 
 /**
- * User Management Web Component
+ * User & Role Management Web Component
  *
- * CRUD interface for managing users
+ * CRUD interface for managing users and roles with internal routing
  *
- * Properties (passed by Portal):
- * - token: JWT auth token
- * - user: User profile object
- * - lang: Language code (optional, defaults to 'en')
- *
- * Supported languages: en, fr
- *
- * The component listens to locale change events from the portal
- * and automatically re-renders with the new translations.
+ * Routes:
+ * - /users → User list
+ * - /users/create → Create user
+ * - /users/:id → Edit user
+ * - /users/roles → Role list
+ * - /users/roles/create → Create role
+ * - /users/roles/:id → Edit role
  */
 @customElement('user-management-app')
 export class UserManagementApp extends LitElement {
@@ -37,7 +43,6 @@ export class UserManagementApp extends LitElement {
       background-color: var(--md-sys-color-background, #fafafa);
       color: var(--md-sys-color-on-background, #1c1b1f);
 
-      /* AetherWeave Material Design tokens */
       --md-sys-color-primary: #FF6B35;
       --md-sys-color-on-primary: #FFFFFF;
       --md-sys-color-secondary: #FFB74D;
@@ -46,7 +51,6 @@ export class UserManagementApp extends LitElement {
       --md-filled-button-label-text-color: #FFFFFF;
     }
 
-    /* Dark theme overrides */
     :host(.dark-theme) {
       background-color: #1E1E1E;
       color: #FFFFFF;
@@ -54,14 +58,6 @@ export class UserManagementApp extends LitElement {
       --md-sys-color-on-background: #FFFFFF;
       --md-sys-color-surface: #2A2A2A;
       --md-sys-color-on-surface: #FFFFFF;
-      --md-sys-color-surface-variant: #3A3A3A;
-      --md-sys-color-on-surface-variant: #B0B0B0;
-      --md-sys-color-outline-variant: #4A4A4A;
-    }
-
-    :host(.dark-theme) th {
-      background-color: #2D2D2D;
-      color: #FFFFFF;
     }
 
     .container {
@@ -71,9 +67,8 @@ export class UserManagementApp extends LitElement {
 
     .header {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
-      margin-top: 0;
       margin-bottom: 24px;
     }
 
@@ -87,17 +82,25 @@ export class UserManagementApp extends LitElement {
     }
 
     .error {
-      background-color: var(--md-sys-color-error-container, #ffebee);
-      color: var(--md-sys-color-on-error-container, #b71c1c);
+      background-color: #ffebee;
+      color: #b71c1c;
       padding: 16px;
-      border-radius: var(--radius-md, 8px);
+      border-radius: 8px;
       margin-bottom: 16px;
     }
 
-    .user-table {
-      background: var(--md-sys-color-surface, white);
-      border-radius: var(--radius-lg, 12px);
-      box-shadow: var(--elevation-1);
+    .success {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+    }
+
+    .user-table, .role-table {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
       overflow: hidden;
     }
 
@@ -109,67 +112,102 @@ export class UserManagementApp extends LitElement {
     th, td {
       padding: 16px;
       text-align: left;
-      border-bottom: 1px solid var(--md-sys-color-outline-variant, #cac4d0);
+      border-bottom: 1px solid #cac4d0;
     }
 
     th {
       background-color: #F5F5F5;
-      font-weight: var(--font-weight-medium, 500);
+      font-weight: 500;
       color: #212121;
       border-bottom: 2px solid #FF6B35;
     }
 
-    tr:last-child td {
-      border-bottom: none;
+    tbody tr {
+      cursor: pointer;
+      transition: background-color 0.2s;
     }
 
-    .actions {
+    tbody tr:hover {
+      background-color: rgba(255, 107, 53, 0.08);
+    }
+
+    .form-container {
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      padding: 32px;
+      max-width: 800px;
+    }
+
+    .form-field {
+      margin-bottom: 24px;
+    }
+
+    .form-field md-filled-text-field {
+      width: 100%;
+    }
+
+    .form-actions {
       display: flex;
+      gap: 16px;
+      justify-content: flex-end;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #cac4d0;
+    }
+
+    .role-chips {
+      display: flex;
+      flex-wrap: wrap;
       gap: 8px;
+      margin-top: 8px;
     }
 
-    .empty-state {
-      text-align: center;
-      padding: 48px 24px;
-      color: var(--md-sys-color-on-surface-variant, #49454f);
+    .role-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 12px;
+      background-color: rgba(255, 107, 53, 0.1);
+      color: #FF6B35;
+      font-size: 12px;
+      font-weight: 500;
+      margin-right: 4px;
     }
 
-    .empty-state md-icon {
-      font-size: 64px;
-      opacity: 0.5;
-      margin-bottom: 16px;
+    .checkbox-field {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
     }
   `;
 
-  // ============================================================================
-  // PROPERTIES (set by Portal via attributes/properties)
-  // ============================================================================
-
-  /**
-   * JWT authentication token (passed by portal)
-   */
   @property({ type: String })
   token: string = '';
 
-  /**
-   * User profile object (passed by portal)
-   */
   @property({ type: Object })
   user: any = null;
 
-  /**
-   * Language code (passed by portal, optional)
-   * Defaults to 'en'
-   */
   @property({ type: String })
   lang: string = 'en';
 
-  // ============================================================================
-  // INTERNAL STATE
-  // ============================================================================
+  @state()
+  private currentView: ViewType = 'user-list';
+
+  @state()
+  private currentItemId: string | null = null;
 
   @state()
   private users: User[] = [];
+
+  @state()
+  private currentUser: User | null = null;
+
+  @state()
+  private roles: Role[] = [];
+
+  @state()
+  private currentRole: Role | null = null;
 
   @state()
   private loading = true;
@@ -177,314 +215,836 @@ export class UserManagementApp extends LitElement {
   @state()
   private error: string | null = null;
 
-  // EventBus client instance
+  @state()
+  private successMessage: string | null = null;
+
+  @state()
+  private formData: any = {};
+
   private eventBus!: EventBusClient;
-
-  // API client instance
   private api!: ApiClient;
-
-  // Cleanup functions
   private unsubLogout?: () => void;
   private unsubLocale?: () => void;
   private unsubTokenRefresh?: () => void;
   private unsubTheme?: () => void;
   private unsubPortalReady?: () => void;
+  private popStateListener?: (e: PopStateEvent) => void;
 
   connectedCallback() {
     super.connectedCallback();
 
-    // Initialize EventBus client
     this.eventBus = new EventBusClient({
       source: 'user-management',
       locale: this.lang,
       debug: true,
     });
 
-    // Initialize API client with auto-sync
     this.api = new ApiClient({
       baseUrl: '/api/v1',
       token: this.token,
-      eventBus: this.eventBus,  // ✨ Auto token refresh & logout!
+      eventBus: this.eventBus,
       debug: true,
     });
 
-    // Configure userApi service
     userApi.setClient(this.api, this.eventBus);
-
+    roleApi.setClient(this.api, this.eventBus);
+    
     this.eventBus.emitLog('Component connected', 'info');
 
-    // Set initial locale from lang property
     use(this.lang).catch(err => {
       this.eventBus.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
     });
 
-    // Register page title and navigation with Portal
+    this.parseRoute();
+
+    this.popStateListener = () => this.parseRoute();
+    window.addEventListener('popstate', this.popStateListener);
+
     this.registerPageMetadata();
 
-    // Listen for logout from portal
     this.unsubLogout = this.eventBus.onLogout(() => {
-      this.eventBus.emitLog('Logout received, clearing state', 'info');
       this.users = [];
+      this.roles = [];
       this.loading = true;
     });
 
-    // Listen for token refresh from portal
     this.unsubTokenRefresh = this.eventBus.onTokenRefresh((payload) => {
-      this.eventBus.emitLog('Token refreshed, updating local token', 'info');
-      // Update local token and user properties
       this.token = payload.token;
       this.user = payload.user;
-      // Lit will automatically trigger updated() which will reload users
     });
 
-    // Listen for locale changes from portal
     this.unsubLocale = this.eventBus.onLocaleChange(async (payload) => {
-      this.eventBus.emitLog(`Locale changed to: ${payload.locale}`, 'debug');
       try {
         await use(payload.locale);
-        // Lit will automatically re-render when locale changes
       } catch (err) {
         this.eventBus.emitLog(`Failed to change locale: ${err}`, 'error');
       }
     });
 
-    // Listen for theme changes from portal (stateful event)
     this.unsubTheme = this.eventBus.onStateful('theme:changed', (payload: any) => {
-      this.eventBus.emitLog(`Theme changed to: ${payload.theme}`, 'debug');
       this.classList.toggle('dark-theme', payload.isDark);
     });
 
-    // Listen for portal:ready to re-emit metadata (handles refresh timing race)
     this.unsubPortalReady = this.eventBus.onPortalReady(async () => {
-      this.eventBus.emitLog('Portal ready - re-registering page metadata', 'debug');
       await this.registerPageMetadata();
     });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.eventBus.emitLog('Component disconnected', 'info');
-
-    // Clear page navigation from Portal
     this.clearPageMetadata();
-
-    // Cleanup event listeners
     this.unsubLogout?.();
     this.unsubLocale?.();
     this.unsubTokenRefresh?.();
     this.unsubTheme?.();
     this.unsubPortalReady?.();
-
-    // Cleanup API client subscriptions
+    if (this.popStateListener) {
+      window.removeEventListener('popstate', this.popStateListener);
+    }
     this.api.destroy();
   }
 
-  /**
-   * Lit lifecycle: called when properties change
-   * This is where we react to token/user/lang changes from the portal
-   */
   updated(changedProperties: Map<string, any>) {
     super.updated(changedProperties);
 
-    // If lang changed, update locale
     if (changedProperties.has('lang') && this.lang) {
-      this.eventBus.emitLog(`Lang property changed to: ${this.lang}`, 'debug');
       use(this.lang).catch(err => {
         this.eventBus.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
       });
     }
 
-    // If token changed, reload users
     if (changedProperties.has('token')) {
-      this.eventBus.emitLog(`Token changed: ${this.token ? 'Present' : 'Absent'}`, 'debug');
-
       if (this.token) {
-        this.eventBus.emitLog(`User: ${this.user?.username || this.user?.email}`, 'debug');
-        this.loadUsers();
+        this.loadDataForCurrentView();
       } else {
         this.users = [];
+        this.roles = [];
         this.loading = true;
       }
     }
   }
 
-  private async loadUsers() {
-    if (!this.token) {
-      this.error = 'No authentication token';
-      this.loading = false;
-      return;
+  private parseRoute() {
+    const path = window.location.pathname;
+
+    if (path === '/users' || path === '/users/') {
+      this.currentView = 'user-list';
+      this.currentItemId = null;
+      this.updatePageTitle();
+      if (this.token) this.loadUsers();
+    } else if (path === '/users/create') {
+      this.currentView = 'user-create';
+      this.currentItemId = null;
+      this.resetUserForm();
+      this.updatePageTitle();
+      if (this.token) this.loadRoles();
+    } else if (path === '/users/roles' || path === '/users/roles/') {
+      this.currentView = 'role-list';
+      this.currentItemId = null;
+      this.updatePageTitle();
+      if (this.token) this.loadRoles();
+    } else if (path === '/users/roles/create') {
+      this.currentView = 'role-create';
+      this.currentItemId = null;
+      this.resetRoleForm();
+      this.updatePageTitle();
+    } else if (path.startsWith('/users/roles/')) {
+      const parts = path.split('/');
+      const id = parts[3];
+      if (id && id !== 'create') {
+        this.currentView = 'role-detail';
+        this.currentItemId = id;
+        this.updatePageTitle();
+        if (this.token) this.loadRoleDetail(id);
+      }
+    } else if (path.startsWith('/users/')) {
+      const parts = path.split('/');
+      const id = parts[2];
+      if (id && id !== 'create' && id !== 'roles') {
+        this.currentView = 'user-detail';
+        this.currentItemId = id;
+        this.updatePageTitle();
+        if (this.token) this.loadUserDetail(id);
+      }
     }
+  }
+
+  private navigateTo(path: string) {
+    window.history.pushState({}, '', path);
+    this.parseRoute();
+  }
+
+  private loadDataForCurrentView() {
+    if (this.currentView === 'user-list') {
+      this.loadUsers();
+    } else if (this.currentView === 'user-create') {
+      this.loadRoles();
+    } else if (this.currentView === 'user-detail' && this.currentItemId) {
+      this.loadUserDetail(this.currentItemId);
+    } else if (this.currentView === 'role-list') {
+      this.loadRoles();
+    } else if (this.currentView === 'role-detail' && this.currentItemId) {
+      this.loadRoleDetail(this.currentItemId);
+    }
+  }
+
+  private updatePageTitle() {
+    let subtitle = '';
+    if (this.currentView === 'user-list') subtitle = get('subtitle.listUsers');
+    else if (this.currentView === 'user-create') subtitle = get('subtitle.createUser');
+    else if (this.currentView === 'user-detail') subtitle = get('subtitle.editUser');
+    else if (this.currentView === 'role-list') subtitle = get('subtitle.listRoles');
+    else if (this.currentView === 'role-create') subtitle = get('subtitle.createRole');
+    else if (this.currentView === 'role-detail') subtitle = get('subtitle.editRole');
+    this.eventBus.setPageTitle(get('title'), subtitle);
+  }
+
+  // ============================================================================
+  // USER DATA LOADING
+  // ============================================================================
+
+  private async loadUsers() {
+    if (!this.token) return;
 
     try {
       this.loading = true;
       this.error = null;
-
-      // userApi uses ApiClient internally (token managed automatically)
       this.users = await userApi.getUsers();
-
-      this.eventBus.emitLog(`Loaded ${this.users.length} users`, 'info');
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Failed to load users';
-      this.eventBus.emitLog('Load error', 'error', err);
     } finally {
       this.loading = false;
     }
   }
 
-  private async handleDelete(id: number) {
-    // Get translated confirmation message
-    const { get } = await import('./i18n');
-    if (!confirm(get('messages.deleteConfirm'))) {
-      return;
-    }
+  private async loadUserDetail(id: string) {
+    if (!this.token) return;
 
     try {
-      // Token managed automatically by ApiClient
-      await userApi.deleteUser(id);
-      await this.loadUsers(); // Reload list
-      this.eventBus.emitLog('User deleted successfully', 'info');
+      this.loading = true;
+      this.error = null;
+
+      const [user, roles] = await Promise.all([
+        userApi.getUser(id),
+        userApi.getRoles(),
+      ]);
+
+      this.currentUser = user;
+      this.roles = roles;
+
+      this.formData = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        roleIds: user.roles.map(r => r.id),
+        isActive: user.isActive,
+      };
     } catch (err) {
-      this.eventBus.emitLog(`Delete failed: ${err}`, 'error');
+      this.error = err instanceof Error ? err.message : 'Failed to load user';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private resetUserForm() {
+    this.formData = {
+      email: '',
+      firstName: '',
+      lastName: '',
+      roleIds: [],
+      isActive: true,
+    };
+    this.error = null;
+    this.successMessage = null;
+  }
+
+  private async handleCreateUser() {
+    try {
+      this.loading = true;
+      this.error = null;
+
+      const newUser = await userApi.createUser(this.formData as CreateUserData);
+      this.navigateTo(`/users/${newUser.id}`);
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to create user';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private async handleUpdateUser() {
+    if (!this.currentItemId) return;
+
+    try {
+      this.loading = true;
+      this.error = null;
+
+      await userApi.updateUser(this.currentItemId, this.formData as UpdateUserData);
+      this.successMessage = 'User updated successfully';
+
+      await this.loadUserDetail(this.currentItemId);
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to update user';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private async handleDeleteUser(id: string) {
+    const { get } = await import('./i18n');
+    if (!confirm(get('messages.deleteConfirm'))) return;
+
+    try {
+      await userApi.deleteUser(id);
+      this.navigateTo('/users');
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to delete user';
     }
   }
 
   // ============================================================================
-  // PORTAL INTEGRATION: Dynamic Page Title & Navigation
+  // ROLE DATA LOADING
   // ============================================================================
 
-  /**
-   * Register page title and navigation with Portal
-   * This demonstrates the new micro-frontend architecture where WCs control
-   * the Portal's title bar and navigation dynamically
-   */
+  private async loadRoles() {
+    try {
+      this.loading = true;
+      this.error = null;
+      this.roles = await roleApi.getRoles();
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to load roles';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private async loadRoleDetail(id: string) {
+    if (!this.token) return;
+
+    try {
+      this.loading = true;
+      this.error = null;
+
+      this.currentRole = await roleApi.getRole(id);
+
+      this.formData = {
+        name: this.currentRole.name,
+        description: this.currentRole.description || '',
+      };
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to load role';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private resetRoleForm() {
+    this.formData = {
+      name: '',
+      description: '',
+    };
+    this.error = null;
+    this.successMessage = null;
+  }
+
+  private async handleCreateRole() {
+    try {
+      this.loading = true;
+      this.error = null;
+
+      const newRole = await roleApi.createRole(this.formData as CreateRoleData);
+      this.navigateTo(`/users/roles/${newRole.id}`);
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to create role';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private async handleUpdateRole() {
+    if (!this.currentItemId) return;
+
+    try {
+      this.loading = true;
+      this.error = null;
+
+      await roleApi.updateRole(this.currentItemId, this.formData as UpdateRoleData);
+      this.successMessage = 'Role updated successfully';
+
+      await this.loadRoleDetail(this.currentItemId);
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to update role';
+    } finally {
+      this.loading = false;
+    }
+  }
+
+  private async handleDeleteRole(id: string) {
+    const { get } = await import('./i18n');
+    if (!confirm(get('messages.deleteRoleConfirm'))) return;
+
+    try {
+      await roleApi.deleteRole(id);
+      this.navigateTo('/users/roles');
+    } catch (err) {
+      this.error = err instanceof Error ? err.message : 'Failed to delete role';
+    }
+  }
+
+  // ============================================================================
+  // FORM HANDLING
+  // ============================================================================
+
+  private handleInputChange(field: string, value: any) {
+    this.formData = { ...this.formData, [field]: value };
+  }
+
+  private toggleRole(roleId: string) {
+    const roleIds = this.formData.roleIds || [];
+    const index = roleIds.indexOf(roleId);
+
+    if (index > -1) {
+      this.formData = {
+        ...this.formData,
+        roleIds: roleIds.filter((id: string) => id !== roleId),
+      };
+    } else {
+      this.formData = {
+        ...this.formData,
+        roleIds: [...roleIds, roleId],
+      };
+    }
+  }
+
+  // ============================================================================
+  // PORTAL INTEGRATION
+  // ============================================================================
+
   private async registerPageMetadata() {
-    // Ensure translations are loaded before using get()
     await use(this.lang);
 
-    // Set page title using EventBusClient
     this.eventBus.setPageTitle(get('title'), get('subtitle.listUsers'));
 
-    // Register navigation items (appear in header menu)
     this.eventBus.registerNavigation([
       {
         label: get('navigation.users'),
         children: [
-          {
-            label: get('navigation.usersList'),
-            path: '/users'
-          },
-          {
-            label: get('navigation.usersCreate'),
-            path: '/users/create'
-          }
+          { label: get('navigation.usersList'), path: '/users' },
+          { label: get('navigation.usersCreate'), path: '/users/create' }
         ]
       },
       {
         label: get('navigation.roles'),
         children: [
-          {
-            label: get('navigation.rolesList'),
-            path: '/users/roles'
-          },
-          {
-            label: get('navigation.rolesCreate'),
-            path: '/users/roles/create'
-          }
+          { label: get('navigation.rolesList'), path: '/users/roles' },
+          { label: get('navigation.rolesCreate'), path: '/users/roles/create' }
         ]
       }
     ], '/users');
-
-    this.eventBus.emitLog('Page metadata registered with Portal', 'debug');
   }
 
-  /**
-   * Clear page metadata when component unmounts
-   * This ensures the Portal's title bar resets when navigating away
-   */
   private clearPageMetadata() {
     this.eventBus.clearNavigation();
-    this.eventBus.emitLog('Page metadata cleared from Portal', 'debug');
   }
 
-  render() {
-    const isAuthenticated = !!this.token;
+  // ============================================================================
+  // RENDER METHODS
+  // ============================================================================
 
+  render() {
+    if (!this.token) {
+      return html`
+        <div class="container">
+          <div class="error">
+            <strong>${translate('messages.notAuthenticated')}</strong>
+            <p>${translate('messages.pleaseLogin')}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    if (this.currentView === 'user-list') return this.renderUserListView();
+    if (this.currentView === 'user-create') return this.renderUserCreateView();
+    if (this.currentView === 'user-detail') return this.renderUserDetailView();
+    if (this.currentView === 'role-list') return this.renderRoleListView();
+    if (this.currentView === 'role-create') return this.renderRoleCreateView();
+    if (this.currentView === 'role-detail') return this.renderRoleDetailView();
+
+    return html`<div class="container">Unknown view</div>`;
+  }
+
+  private renderUserListView() {
     return html`
       <div class="container">
-        <!-- Note: Title now managed by Portal via EventBus -->
         <div class="header">
-          <md-filled-button @click=${() => alert('Create user form - TODO')}>
+          <div></div>
+          <md-filled-button @click=${() => this.navigateTo('/users/create')}>
             <md-icon slot="icon">add</md-icon>
             ${translate('actions.add')}
           </md-filled-button>
         </div>
 
-        ${!isAuthenticated ? html`
-          <div class="error">
-            <strong>${translate('messages.notAuthenticated')}</strong>
-            <p>${translate('messages.pleaseLogin')}</p>
-          </div>
-        ` : ''}
+        ${this.error ? html`<div class="error"><strong>Error:</strong> ${this.error}</div>` : ''}
 
-        ${this.loading && isAuthenticated ? html`
+        ${this.loading ? html`
           <div class="loading">
             <md-circular-progress indeterminate></md-circular-progress>
-            <p>${translate('messages.loading')}</p>
+            <p>Loading...</p>
           </div>
-        ` : this.error ? html`
-          <div class="error">
-            <strong>${translate('messages.error')}</strong> ${this.error}
-            <br><br>
-            <md-text-button @click=${this.loadUsers}>
-              <md-icon slot="icon">refresh</md-icon>
-              ${translate('actions.retry')}
-            </md-text-button>
-          </div>
-        ` : this.users.length === 0 && isAuthenticated ? html`
+        ` : this.users.length === 0 ? html`
           <div class="user-table">
-            <div class="empty-state">
-              <md-icon>person_off</md-icon>
-              <h3>${translate('messages.noUsers')}</h3>
-              <p>${translate('messages.noUsersDescription')}</p>
+            <div style="text-align: center; padding: 48px;">
+              <p>No users found</p>
             </div>
           </div>
-        ` : isAuthenticated ? html`
+        ` : html`
           <div class="user-table">
             <table>
               <thead>
                 <tr>
-                  <th>${translate('table.id')}</th>
-                  <th>${translate('table.username')}</th>
-                  <th>${translate('table.email')}</th>
-                  <th>${translate('table.created')}</th>
-                  <th>${translate('table.actions')}</th>
+                  <th>Email</th>
+                  <th>First Name</th>
+                  <th>Last Name</th>
+                  <th>Roles</th>
+                  <th>Active</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
                 ${this.users.map(user => html`
-                  <tr>
-                    <td>${user.id}</td>
-                    <td>${user.username}</td>
+                  <tr @click=${() => this.navigateTo(`/users/${user.id}`)}>
                     <td>${user.email}</td>
-                    <td>${user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-'}</td>
+                    <td>${user.firstName}</td>
+                    <td>${user.lastName}</td>
                     <td>
-                      <div class="actions">
-                        <md-text-button @click=${() => alert(`Edit user ${user.id} - TODO`)}>
-                          <md-icon slot="icon">edit</md-icon>
-                          ${translate('actions.edit')}
-                        </md-text-button>
-                        <md-text-button @click=${() => this.handleDelete(user.id)}>
-                          <md-icon slot="icon">delete</md-icon>
-                          ${translate('actions.delete')}
-                        </md-text-button>
-                      </div>
+                      ${(user.roles || []).map(role => html`<span class="role-badge">${role.name}</span>`)}
+                    </td>
+                    <td>${user.isActive ? '✓' : '✗'}</td>
+                    <td @click=${(e: Event) => e.stopPropagation()}>
+                      <md-text-button @click=${() => this.handleDeleteUser(user.id)}>
+                        <md-icon slot="icon">delete</md-icon>
+                        Delete
+                      </md-text-button>
                     </td>
                   </tr>
                 `)}
               </tbody>
             </table>
           </div>
-        ` : ''}
+        `}
+      </div>
+    `;
+  }
+
+  private renderUserCreateView() {
+    return html`
+      <div class="container">
+        ${this.error ? html`<div class="error"><strong>Error:</strong> ${this.error}</div>` : ''}
+
+        <div class="form-container">
+          <div class="form-field">
+            <md-filled-text-field
+              label="Email"
+              type="email"
+              required
+              .value=${this.formData.email || ''}
+              @input=${(e: any) => this.handleInputChange('email', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-field">
+            <md-filled-text-field
+              label="First Name"
+              required
+              .value=${this.formData.firstName || ''}
+              @input=${(e: any) => this.handleInputChange('firstName', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-field">
+            <md-filled-text-field
+              label="Last Name"
+              required
+              .value=${this.formData.lastName || ''}
+              @input=${(e: any) => this.handleInputChange('lastName', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-field">
+            <label>Roles</label>
+            <div class="role-chips">
+              ${this.roles.map(role => html`
+                <md-filter-chip
+                  label="${role.name}"
+                  ?selected=${(this.formData.roleIds || []).includes(role.id)}
+                  @click=${() => this.toggleRole(role.id)}
+                ></md-filter-chip>
+              `)}
+            </div>
+          </div>
+
+          <div class="checkbox-field">
+            <md-checkbox
+              ?checked=${this.formData.isActive !== false}
+              @change=${(e: any) => this.handleInputChange('isActive', e.target.checked)}
+            ></md-checkbox>
+            <label>Active</label>
+          </div>
+
+          <div class="form-actions">
+            <md-outlined-button @click=${() => this.navigateTo('/users')}>
+              Cancel
+            </md-outlined-button>
+            <md-filled-button @click=${this.handleCreateUser} ?disabled=${this.loading}>
+              <md-icon slot="icon">save</md-icon>
+              Create
+            </md-filled-button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderUserDetailView() {
+    if (this.loading) {
+      return html`
+        <div class="container">
+          <div class="loading">
+            <md-circular-progress indeterminate></md-circular-progress>
+            <p>Loading...</p>
+          </div>
+        </div>
+      `;
+    }
+
+    if (!this.currentUser) {
+      return html`<div class="container"><div class="error">User not found</div></div>`;
+    }
+
+    return html`
+      <div class="container">
+        ${this.error ? html`<div class="error"><strong>Error:</strong> ${this.error}</div>` : ''}
+        ${this.successMessage ? html`<div class="success">${this.successMessage}</div>` : ''}
+
+        <div class="form-container">
+          <div class="form-field">
+            <md-filled-text-field
+              label="Email"
+              type="email"
+              disabled
+              .value=${this.currentUser.email}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-field">
+            <md-filled-text-field
+              label="First Name"
+              required
+              .value=${this.formData.firstName || ''}
+              @input=${(e: any) => this.handleInputChange('firstName', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-field">
+            <md-filled-text-field
+              label="Last Name"
+              required
+              .value=${this.formData.lastName || ''}
+              @input=${(e: any) => this.handleInputChange('lastName', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-field">
+            <label>Roles</label>
+            <div class="role-chips">
+              ${this.roles.map(role => html`
+                <md-filter-chip
+                  label="${role.name}"
+                  ?selected=${(this.formData.roleIds || []).includes(role.id)}
+                  @click=${() => this.toggleRole(role.id)}
+                ></md-filter-chip>
+              `)}
+            </div>
+          </div>
+
+          <div class="checkbox-field">
+            <md-checkbox
+              ?checked=${this.formData.isActive !== false}
+              @change=${(e: any) => this.handleInputChange('isActive', e.target.checked)}
+            ></md-checkbox>
+            <label>Active</label>
+          </div>
+
+          <div class="form-actions">
+            <md-text-button @click=${() => this.handleDeleteUser(this.currentItemId!)}>
+              <md-icon slot="icon">delete</md-icon>
+              Delete
+            </md-text-button>
+            <div style="flex: 1"></div>
+            <md-outlined-button @click=${() => this.navigateTo('/users')}>
+              Cancel
+            </md-outlined-button>
+            <md-filled-button @click=${this.handleUpdateUser} ?disabled=${this.loading}>
+              <md-icon slot="icon">save</md-icon>
+              Save
+            </md-filled-button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderRoleListView() {
+    return html`
+      <div class="container">
+        <div class="header">
+          <div></div>
+          <md-filled-button @click=${() => this.navigateTo('/users/roles/create')}>
+            <md-icon slot="icon">add</md-icon>
+            Add Role
+          </md-filled-button>
+        </div>
+
+        ${this.error ? html`<div class="error"><strong>Error:</strong> ${this.error}</div>` : ''}
+
+        ${this.loading ? html`
+          <div class="loading">
+            <md-circular-progress indeterminate></md-circular-progress>
+            <p>Loading...</p>
+          </div>
+        ` : this.roles.length === 0 ? html`
+          <div class="role-table">
+            <div style="text-align: center; padding: 48px;">
+              <p>No roles found</p>
+            </div>
+          </div>
+        ` : html`
+          <div class="role-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${this.roles.map(role => html`
+                  <tr @click=${() => this.navigateTo(`/users/roles/${role.id}`)}>
+                    <td>${role.name}</td>
+                    <td>${role.description || '-'}</td>
+                    <td>${role.createdAt ? new Date(role.createdAt).toLocaleDateString() : '-'}</td>
+                    <td @click=${(e: Event) => e.stopPropagation()}>
+                      <md-text-button @click=${() => this.handleDeleteRole(role.id)}>
+                        <md-icon slot="icon">delete</md-icon>
+                        Delete
+                      </md-text-button>
+                    </td>
+                  </tr>
+                `)}
+              </tbody>
+            </table>
+          </div>
+        `}
+      </div>
+    `;
+  }
+
+  private renderRoleCreateView() {
+    return html`
+      <div class="container">
+        ${this.error ? html`<div class="error"><strong>Error:</strong> ${this.error}</div>` : ''}
+
+        <div class="form-container">
+          <div class="form-field">
+            <md-filled-text-field
+              label="Name"
+              required
+              .value=${this.formData.name || ''}
+              @input=${(e: any) => this.handleInputChange('name', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-field">
+            <md-filled-text-field
+              label="Description"
+              type="textarea"
+              rows="3"
+              .value=${this.formData.description || ''}
+              @input=${(e: any) => this.handleInputChange('description', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-actions">
+            <md-outlined-button @click=${() => this.navigateTo('/users/roles')}>
+              Cancel
+            </md-outlined-button>
+            <md-filled-button @click=${this.handleCreateRole} ?disabled=${this.loading}>
+              <md-icon slot="icon">save</md-icon>
+              Create
+            </md-filled-button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  private renderRoleDetailView() {
+    if (this.loading) {
+      return html`
+        <div class="container">
+          <div class="loading">
+            <md-circular-progress indeterminate></md-circular-progress>
+            <p>Loading...</p>
+          </div>
+        </div>
+      `;
+    }
+
+    if (!this.currentRole) {
+      return html`<div class="container"><div class="error">Role not found</div></div>`;
+    }
+
+    return html`
+      <div class="container">
+        ${this.error ? html`<div class="error"><strong>Error:</strong> ${this.error}</div>` : ''}
+        ${this.successMessage ? html`<div class="success">${this.successMessage}</div>` : ''}
+
+        <div class="form-container">
+          <div class="form-field">
+            <md-filled-text-field
+              label="Name"
+              required
+              .value=${this.formData.name || ''}
+              @input=${(e: any) => this.handleInputChange('name', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-field">
+            <md-filled-text-field
+              label="Description"
+              type="textarea"
+              rows="3"
+              .value=${this.formData.description || ''}
+              @input=${(e: any) => this.handleInputChange('description', e.target.value)}
+            ></md-filled-text-field>
+          </div>
+
+          <div class="form-actions">
+            <md-text-button @click=${() => this.handleDeleteRole(this.currentItemId!)}>
+              <md-icon slot="icon">delete</md-icon>
+              Delete
+            </md-text-button>
+            <div style="flex: 1"></div>
+            <md-outlined-button @click=${() => this.navigateTo('/users/roles')}>
+              Cancel
+            </md-outlined-button>
+            <md-filled-button @click=${this.handleUpdateRole} ?disabled=${this.loading}>
+              <md-icon slot="icon">save</md-icon>
+              Save
+            </md-filled-button>
+          </div>
+        </div>
       </div>
     `;
   }
