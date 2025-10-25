@@ -183,6 +183,20 @@ function onDrawerClick() {
   /* Background color handled above */
 }
 
+/* List item text styling - match header navigation style */
+:deep(.v-list-item) {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  color: #616161 !important;
+  letter-spacing: 0.3px !important;
+}
+
+:deep(.v-list-item-title) {
+  font-size: 0.875rem !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.3px !important;
+}
+
 /* Responsive - mobile sidebar (temporary drawer) */
 @media (max-width: 1024px) {
   .v-navigation-drawer {
@@ -191,10 +205,20 @@ function onDrawerClick() {
   }
 }
 
-/* Active menu item - dark grey background with orange text */
+/* Active menu item - no background, only orange text */
 :deep(.v-list-item--active) {
-  background-color: #2D2D2D !important;
+  background: transparent !important;
+  background-color: transparent !important;
   color: #FF6B35 !important;
+}
+
+:deep(.v-list-item--active::before),
+:deep(.v-list-item--active::after) {
+  opacity: 0 !important;
+}
+
+:deep(.v-list-item--active .v-list-item__overlay) {
+  opacity: 0 !important;
 }
 
 :deep(.v-list-item--active .v-icon) {
@@ -207,13 +231,23 @@ function onDrawerClick() {
 }
 
 /* Hover state - light orange */
-:deep(.v-list-item:hover) {
-  background-color: rgba(255, 107, 53, 0.08) !important;
+:deep(.v-list-item:hover:not(.v-list-item--active)) {
+  background-color: rgba(255, 107, 53, 0.05) !important;
 }
 
-/* Active group title */
+/* Active group title - no background, only orange text */
 :deep(.v-list-group__header.v-list-item--active) {
-  background-color: rgba(255, 107, 53, 0.08) !important;
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+:deep(.v-list-group__header.v-list-item--active::before),
+:deep(.v-list-group__header.v-list-item--active::after) {
+  opacity: 0 !important;
+}
+
+:deep(.v-list-group__header.v-list-item--active .v-list-item__overlay) {
+  opacity: 0 !important;
 }
 
 :deep(.v-list-group__header.v-list-item--active .v-icon) {
@@ -238,5 +272,14 @@ function onDrawerClick() {
 /* Dividers - subtle gray */
 :deep(.v-divider) {
   border-color: rgba(0, 0, 0, 0.08) !important;
+}
+
+/* Dark theme text colors */
+.v-theme--dark :deep(.v-list-item) {
+  color: #B0B0B0 !important;
+}
+
+.v-theme--dark :deep(.v-list-item-title) {
+  color: #B0B0B0 !important;
 }
 </style>
