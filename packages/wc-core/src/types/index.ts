@@ -105,6 +105,15 @@ export interface PageNavigationPayload {
 }
 
 /**
+ * Route change payload
+ * Portal notifies Web Components of route changes
+ */
+export interface RouteChangedPayload {
+  path: string;
+  oldPath?: string;
+}
+
+/**
  * Event types - strongly typed event names
  * Const object to ensure consistency across Portal and Web Components
  */
@@ -114,6 +123,7 @@ export const EventType = {
   AUTH_TOKEN_REFRESHED: 'portal:auth:token-refreshed',
   LOCALE_CHANGE: 'portal:locale:change',
   PORTAL_READY: 'portal:ready',
+  ROUTE_CHANGED: 'portal:route:changed',
 
   // Web Components → Portal
   NAVIGATE: 'wc:navigate',

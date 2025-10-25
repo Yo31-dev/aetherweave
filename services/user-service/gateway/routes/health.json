@@ -1,0 +1,45 @@
+{
+  "id": "user-service-health",
+  "name": "user-service-health",
+  "uri": "/api/v1/health",
+  "methods": [
+    "GET"
+  ],
+  "upstream": {
+    "type": "roundrobin",
+    "nodes": {
+      "user-service:3500": 1
+    },
+    "timeout": {
+      "connect": 6,
+      "send": 30,
+      "read": 30
+    }
+  },
+  "plugins": {
+    "openid-connect": {
+      "client_id": "aetherweave-api",
+      "client_secret": "CHANGE_ME_IN_PRODUCTION",
+      "discovery": "http://keycloak:8080/realms/aetherweave/.well-known/openid-configuration",
+      "scope": "openid profile email",
+      "bearer_only": true,
+      "realm": "aetherweave",
+      "use_jwks": true,
+      "token_signing_alg_values_expected": "RS256"
+    },
+    "proxy-rewrite": {
+      "uri": "/v1.0/invoke/user-service/method/health"
+    },
+    "cors": {
+      "allow_origins": "**",
+      "allow_methods": "GET,OPTIONS",
+      "allow_headers": "Authorization,Content-Type",
+      "max_age": 86400
+    },
+    "zipkin": {
+      "endpoint": "http://jaeger:9411/api/v2/spans",
+      "sample_ratio": 1,
+      "service_name": "apisix-gateway"
+    }
+  }
+}

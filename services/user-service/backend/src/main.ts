@@ -20,26 +20,27 @@ async function bootstrap() {
   app.enableCors();
 
   // Generate OpenAPI spec file if GENERATE_OPENAPI env var is set
-  if (process.env.GENERATE_OPENAPI === 'true') {
-    // OpenAPI/Swagger configuration
-    const config = new DocumentBuilder()
-      .setTitle('User Service API')
-      .setDescription('User management service for AetherWeave')
-      .setVersion('1.0')
-      .addBearerAuth()
-      .addServer('http://localhost:9080/api/v1', 'APISIX Gateway (local)')
-      .addServer('http://localhost:3000', 'Direct (dev only)')
-      .addTag('users', 'User management endpoints')
-      .addTag('health', 'Health check endpoints')
-      .build();
+  // if (process.env.GENERATE_OPENAPI === 'true') {
+  // OpenAPI/Swagger configuration
+  const config = new DocumentBuilder()
+    .setTitle('User Service API')
+    .setDescription('User management service for AetherWeave')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .addServer('http://localhost:9080/api/v1', 'APISIX Gateway (local)')
+    .addServer('http://localhost:3000', 'Direct (dev only)')
+    .addTag('users', 'User management endpoints')
+    .addTag('health', 'Health check endpoints')
+    .build();
 
-    const document = SwaggerModule.createDocument(app, config);
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
 
-    const outputPath = path.resolve(process.cwd(), 'openapi.json');
-    fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
-    console.log(`OpenAPI spec generated at ${outputPath}`);
-    process.exit(0);
-  }
+  // const outputPath = path.resolve(process.cwd(), 'openapi.json');
+  // fs.writeFileSync(outputPath, JSON.stringify(document, null, 2));
+  // console.log(`OpenAPI spec generated at ${outputPath}`);
+  // process.exit(0);
+  // }
 
   const port = process.env.PORT || 3000;
   await app.listen(port);

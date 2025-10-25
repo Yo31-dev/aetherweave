@@ -228,6 +228,7 @@ export class UserManagementApp extends LitElement {
   private unsubTokenRefresh?: () => void;
   private unsubTheme?: () => void;
   private unsubPortalReady?: () => void;
+  private unsubRouteChange?: () => void;
   private popStateListener?: (e: PopStateEvent) => void;
 
   connectedCallback() {
@@ -288,6 +289,11 @@ export class UserManagementApp extends LitElement {
     this.unsubPortalReady = this.eventBus.onPortalReady(async () => {
       await this.registerPageMetadata();
     });
+
+    this.unsubRouteChange = this.eventBus.onRouteChange((payload) => {
+      this.eventBus.emitLog(`Route changed to: ${payload.path}`, 'debug');
+      this.parseRoute();
+    });
   }
 
   disconnectedCallback() {
@@ -298,6 +304,7 @@ export class UserManagementApp extends LitElement {
     this.unsubTokenRefresh?.();
     this.unsubTheme?.();
     this.unsubPortalReady?.();
+    this.unsubRouteChange?.();
     if (this.popStateListener) {
       window.removeEventListener('popstate', this.popStateListener);
     }
@@ -338,19 +345,19 @@ export class UserManagementApp extends LitElement {
       this.resetUserForm();
       this.updatePageTitle();
       if (this.token) this.loadRoles();
-    } else if (path === '/users/roles' || path === '/users/roles/') {
+    } else if (path === '/roles' || path === '/roles/') {
       this.currentView = 'role-list';
       this.currentItemId = null;
       this.updatePageTitle();
       if (this.token) this.loadRoles();
-    } else if (path === '/users/roles/create') {
+    } else if (path === '/roles/create') {
       this.currentView = 'role-create';
       this.currentItemId = null;
       this.resetRoleForm();
       this.updatePageTitle();
-    } else if (path.startsWith('/users/roles/')) {
+    } else if (path.startsWith('/roles/')) {
       const parts = path.split('/');
-      const id = parts[3];
+      const id = parts[2];
       if (id && id !== 'create') {
         this.currentView = 'role-detail';
         this.currentItemId = id;
@@ -360,7 +367,7 @@ export class UserManagementApp extends LitElement {
     } else if (path.startsWith('/users/')) {
       const parts = path.split('/');
       const id = parts[2];
-      if (id && id !== 'create' && id !== 'roles') {
+      if (id && id !== 'create') {
         this.currentView = 'user-detail';
         this.currentItemId = id;
         this.updatePageTitle();
@@ -552,7 +559,7 @@ export class UserManagementApp extends LitElement {
       this.error = null;
 
       const newRole = await roleApi.createRole(this.formData as CreateRoleData);
-      this.navigateTo(`/users/roles/${newRole.id}`);
+      this.navigateTo(`/roles/${newRole.id}`);
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Failed to create role';
     } finally {
@@ -584,7 +591,7 @@ export class UserManagementApp extends LitElement {
 
     try {
       await roleApi.deleteRole(id);
-      this.navigateTo('/users/roles');
+      this.navigateTo('/roles');
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Failed to delete role';
     }
@@ -898,7 +905,7 @@ export class UserManagementApp extends LitElement {
       <div class="container">
         <div class="header">
           <div></div>
-          <md-filled-button @click=${() => this.navigateTo('/users/roles/create')}>
+          <md-filled-button @click=${() => this.navigateTo('/roles/create')}>
             <md-icon slot="icon">add</md-icon>
             Add Role
           </md-filled-button>
@@ -930,7 +937,7 @@ export class UserManagementApp extends LitElement {
               </thead>
               <tbody>
                 ${this.roles.map(role => html`
-                  <tr @click=${() => this.navigateTo(`/users/roles/${role.id}`)}>
+                  <tr @click=${() => this.navigateTo(`/roles/${role.id}`)}>
                     <td>${role.name}</td>
                     <td>${role.description || '-'}</td>
                     <td>${role.createdAt ? new Date(role.createdAt).toLocaleDateString() : '-'}</td>
@@ -976,7 +983,7 @@ export class UserManagementApp extends LitElement {
           </div>
 
           <div class="form-actions">
-            <md-outlined-button @click=${() => this.navigateTo('/users/roles')}>
+            <md-outlined-button @click=${() => this.navigateTo('/roles')}>
               Cancel
             </md-outlined-button>
             <md-filled-button @click=${this.handleCreateRole} ?disabled=${this.loading}>
@@ -1036,7 +1043,7 @@ export class UserManagementApp extends LitElement {
               Delete
             </md-text-button>
             <div style="flex: 1"></div>
-            <md-outlined-button @click=${() => this.navigateTo('/users/roles')}>
+            <md-outlined-button @click=${() => this.navigateTo('/roles')}>
               Cancel
             </md-outlined-button>
             <md-filled-button @click=${this.handleUpdateRole} ?disabled=${this.loading}>

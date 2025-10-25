@@ -75,6 +75,11 @@ export interface PageNavigationPayload {
   baseRoute: string;
 }
 
+export interface RouteChangedPayload {
+  path: string;
+  oldPath?: string;
+}
+
 /**
  * Event types - strongly typed for TypeScript
  */
@@ -84,6 +89,7 @@ export const EventType = {
   AUTH_TOKEN_REFRESHED: 'portal:auth:token-refreshed',
   LOCALE_CHANGE: 'portal:locale:change',
   PORTAL_READY: 'portal:ready',
+  ROUTE_CHANGED: 'portal:route:changed',
 
   // Web Components → Portal
   NAVIGATE: 'wc:navigate',
@@ -176,6 +182,15 @@ class MicroFrontendEventBus {
   publishPortalReady(): void {
     this.emitter.emit(EventType.PORTAL_READY);
     logService.debugVerbose('Published portal:ready event', 'EventBus');
+  }
+
+  /**
+   * Publish route change event to all Web Components
+   * Web Components can update their internal views based on URL changes
+   */
+  publishRouteChanged(path: string, oldPath?: string): void {
+    this.emitter.emit(EventType.ROUTE_CHANGED, { path, oldPath });
+    logService.debugVerbose(`Published route change: ${oldPath} → ${path}`, 'EventBus');
   }
 
   // ============================================================================

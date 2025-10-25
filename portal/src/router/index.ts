@@ -52,6 +52,21 @@ const router = createRouter({
           },
         },
         {
+          path: '/roles/:pathMatch(.*)*',
+          name: 'roles',
+          component: MicroFrontendLoader,
+          meta: {
+            title: 'Role Management',
+          },
+          props: () => {
+            const microservice = getMicroServiceByPath('/users');
+            if (!microservice) {
+              throw new Error('Microservice not found');
+            }
+            return { microservice };
+          },
+        },
+        {
           path: '/catalog',
           name: 'catalog',
           component: DashboardView,

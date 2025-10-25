@@ -23,7 +23,7 @@ mkdir -p "$DATA_DIR/prometheus"
 mkdir -p "$DATA_DIR/grafana"
 mkdir -p "$DATA_DIR/keycloak"
 mkdir -p "$DATA_DIR/dapr"
-mkdir -p "$DATA_DIR/envoy"
+mkdir -p "$DATA_DIR/apisix"
 
 # Set permissions recursively
 chmod -R 777 "$DATA_DIR"

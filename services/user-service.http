@@ -39,10 +39,10 @@ client_id={{clientId}}
 # Token: {{token}}
 
 ### ===========================================
-### 2. TESTS VIA ENVOY (API GATEWAY) - Avec JWT
+### 2. USER CRUD - Via APISIX Gateway (avec JWT)
 ### ===========================================
 
-### Health Check du User Service (via Envoy + Auth)
+### Health Check du User Service (via APISIX + Auth)
 GET {{baseUrl}}/api/v1/health
 Authorization: Bearer {{token}}
 
@@ -65,18 +65,22 @@ Content-Type: application/json
   "email": "jane.smith@example.com",
   "password": "securePassword123",
   "firstName": "Jane",
-  "lastName": "Smith"
+  "lastName": "Smith",
+  "roleIds": []
 }
 
 ### Mettre à jour un utilisateur
 @userId = {{createUser.response.body.id}}
-PATCH {{baseUrl}}/api/v1/users/{{userId}}
+PUT {{baseUrl}}/api/v1/users/{{userId}}
 Authorization: Bearer {{token}}
 Content-Type: application/json
 
 {
+  "email": "jane.smith@example.com",
   "firstName": "Janet",
-  "isActive": true
+  "lastName": "Smith",
+  "isActive": true,
+  "roleIds": []
 }
 
 ### Supprimer un utilisateur
@@ -84,7 +88,46 @@ DELETE {{baseUrl}}/api/v1/users/{{userId}}
 Authorization: Bearer {{token}}
 
 ### ===========================================
-### 3. TESTS DIRECTS VIA DAPR - Sans authentification (DEV only)
+### 3. ROLE CRUD - Via APISIX Gateway (avec JWT)
+### ===========================================
+
+### Lister tous les rôles
+GET {{baseUrl}}/api/v1/roles
+Authorization: Bearer {{token}}
+
+### Obtenir un rôle par ID
+# @name getRole
+GET {{baseUrl}}/api/v1/roles/b141fde9-1127-4561-9fd2-cd17992bc9cf
+Authorization: Bearer {{token}}
+
+### Créer un nouveau rôle
+# @name createRole
+POST {{baseUrl}}/api/v1/roles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "moderator",
+  "description": "Moderator role with limited admin permissions"
+}
+
+### Mettre à jour un rôle
+@roleId = {{createRole.response.body.id}}
+PUT {{baseUrl}}/api/v1/roles/{{roleId}}
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "moderator",
+  "description": "Updated moderator role description"
+}
+
+### Supprimer un rôle
+DELETE {{baseUrl}}/api/v1/roles/{{roleId}}
+Authorization: Bearer {{token}}
+
+### ===========================================
+### 4. TESTS DIRECTS VIA DAPR - Sans authentification (DEV only)
 ### ===========================================
 
 ### Health Check (direct Dapr)
@@ -108,7 +151,7 @@ Content-Type: application/json
 }
 
 ### ===========================================
-### 4. TESTS D'ERREURS
+### 5. TESTS D'ERREURS
 ### ===========================================
 
 ### Requête sans token (doit retourner 401)
@@ -134,11 +177,25 @@ Content-Type: application/json
   "lastName": "Duplicate"
 }
 
+### Rôle inexistant (doit retourner 404)
+GET {{baseUrl}}/api/v1/roles/00000000-0000-0000-0000-000000000000
+Authorization: Bearer {{token}}
+
+### Nom de rôle déjà existant (doit retourner 409)
+POST {{baseUrl}}/api/v1/roles
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "name": "admin",
+  "description": "Duplicate admin role"
+}
+
 ### ===========================================
-### 5. HEALTH CHECKS INFRASTRUCTURE
+### 6. HEALTH CHECKS INFRASTRUCTURE
 ### ===========================================
 
-### Health Check Envoy (public)
+### Health Check APISIX (public)
 GET {{baseUrl}}/health
 
 ### Health Check Dapr
@@ -148,7 +205,7 @@ GET {{daprUrl}}/v1.0/healthz
 GET {{daprUrl}}/v1.0/metadata
 
 ### ===========================================
-### 6. DAPR STATE MANAGEMENT (si besoin)
+### 7. DAPR STATE MANAGEMENT (si besoin)
 ### ===========================================
 
 ### Sauvegarder un état

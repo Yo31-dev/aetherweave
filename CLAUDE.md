@@ -27,6 +27,12 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - NestJS architecture, TypeORM, Dapr integration
   - Creating controllers, services, entities
 
+- **Gateway & API Routing** → [docs/GATEWAY.md](docs/GATEWAY.md)
+  - APISIX strategies: Standalone (dev) vs Admin API (production)
+  - Multi-repo deployment with Admin API
+  - Per-service route management
+  - Example: [services/user-service/gateway/](services/user-service/gateway/)
+
 - **Infrastructure & DevOps** → This file (CLAUDE.md)
   - Docker, APISIX, Keycloak, Dapr setup
   - Observability stack

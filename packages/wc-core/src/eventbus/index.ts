@@ -16,6 +16,7 @@ import type {
   LogPayload,
   PageTitlePayload,
   PageNavigationPayload,
+  RouteChangedPayload,
 } from '../types';
 import { EventType } from '../types';
 
@@ -171,6 +172,23 @@ export class EventBusClient {
     };
     this.emitter.on(EventType.PORTAL_READY, handler);
     return () => this.emitter.off(EventType.PORTAL_READY, handler);
+  }
+
+  /**
+   * Listen for route changes from portal
+   * Portal emits this when Vue Router navigation occurs
+   * Web Components can update their internal views based on URL changes
+   *
+   * @param callback - Handler called with route change payload
+   * @returns Unsubscribe function
+   */
+  onRouteChange(callback: (payload: RouteChangedPayload) => void): () => void {
+    const handler = (payload: RouteChangedPayload) => {
+      this.log(`Route changed: ${payload.oldPath} → ${payload.path}`, 'debug');
+      callback(payload);
+    };
+    this.emitter.on(EventType.ROUTE_CHANGED, handler);
+    return () => this.emitter.off(EventType.ROUTE_CHANGED, handler);
   }
 
   // ============================================================================

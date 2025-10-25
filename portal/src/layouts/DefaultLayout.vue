@@ -114,6 +114,9 @@ watch(() => route.path, (newPath, oldPath) => {
   const newBase = newPath.split('/')[1];
   const oldBase = oldPath?.split('/')[1];
 
+  // Emit route change to Web Components
+  eventBus.publishRouteChanged(newPath, oldPath);
+
   // Clear custom nav if changing sections
   if (oldBase && newBase !== oldBase) {
     customNavItems.value = [];
