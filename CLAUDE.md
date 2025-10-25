@@ -21,6 +21,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
   - Step-by-step WC creation guide
   - Lit framework, i18n, EventBus integration
   - Properties, styling, API calls
+  - Using **@aetherweave/wc-core** package (framework-agnostic)
 
 - **Working on Backend Services** → [docs/BACKEND.md](docs/BACKEND.md) *(TODO)*
   - NestJS architecture, TypeORM, Dapr integration

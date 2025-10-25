@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@aetherweave/wc-core": "workspace:*",
     "@material/web": "^2.4.0",
-    "eventemitter3": "^5.0.1",
     "lit": "^3.3.1",
     "lit-translate": "^2.0.1"
   },

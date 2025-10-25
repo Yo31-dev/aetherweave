@@ -1,0 +1,33 @@
+{
+  "name": "@aetherweave/wc-core",
+  "version": "0.1.0",
+  "description": "Framework-agnostic core library for AetherWeave Web Components",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "aetherweave",
+    "web-components",
+    "micro-frontend",
+    "framework-agnostic"
+  ],
+  "author": "AetherWeave",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  },
+  "dependencies": {
+    "eventemitter3": "^5.0.1"
+  }
+}

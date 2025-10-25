@@ -1,6 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { customElement, property, state } from 'lit/decorators.js';
-import { eventListener } from './services/event-listener.service';
+import { EventBusClient, ApiClient } from '@aetherweave/wc-core';
 import { userApi, type User } from './services/user-api.service';
 import { translate, use, get } from './i18n';
 
@@ -177,6 +177,12 @@ export class UserManagementApp extends LitElement {
   @state()
   private error: string | null = null;
 
+  // EventBus client instance
+  private eventBus!: EventBusClient;
+
+  // API client instance
+  private api!: ApiClient;
+
   // Cleanup functions
   private unsubLogout?: () => void;
   private unsubLocale?: () => void;
@@ -186,26 +192,45 @@ export class UserManagementApp extends LitElement {
 
   connectedCallback() {
     super.connectedCallback();
-    eventListener.emitLog('Component connected', 'info');
+
+    // Initialize EventBus client
+    this.eventBus = new EventBusClient({
+      source: 'user-management',
+      locale: this.lang,
+      debug: true,
+    });
+
+    // Initialize API client with auto-sync
+    this.api = new ApiClient({
+      baseUrl: '/api/v1',
+      token: this.token,
+      eventBus: this.eventBus,  // ✨ Auto token refresh & logout!
+      debug: true,
+    });
+
+    // Configure userApi service
+    userApi.setClient(this.api, this.eventBus);
+
+    this.eventBus.emitLog('Component connected', 'info');
 
     // Set initial locale from lang property
     use(this.lang).catch(err => {
-      eventListener.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
+      this.eventBus.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
     });
 
     // Register page title and navigation with Portal
     this.registerPageMetadata();
 
     // Listen for logout from portal
-    this.unsubLogout = eventListener.onLogout(() => {
-      eventListener.emitLog('Logout received, clearing state', 'info');
+    this.unsubLogout = this.eventBus.onLogout(() => {
+      this.eventBus.emitLog('Logout received, clearing state', 'info');
       this.users = [];
       this.loading = true;
     });
 
     // Listen for token refresh from portal
-    this.unsubTokenRefresh = eventListener.onTokenRefresh((payload) => {
-      eventListener.emitLog('Token refreshed, updating local token', 'info');
+    this.unsubTokenRefresh = this.eventBus.onTokenRefresh((payload) => {
+      this.eventBus.emitLog('Token refreshed, updating local token', 'info');
       // Update local token and user properties
       this.token = payload.token;
       this.user = payload.user;
@@ -213,32 +238,32 @@ export class UserManagementApp extends LitElement {
     });
 
     // Listen for locale changes from portal
-    this.unsubLocale = eventListener.onLocaleChange(async (payload) => {
-      eventListener.emitLog(`Locale changed to: ${payload.locale}`, 'debug');
+    this.unsubLocale = this.eventBus.onLocaleChange(async (payload) => {
+      this.eventBus.emitLog(`Locale changed to: ${payload.locale}`, 'debug');
       try {
         await use(payload.locale);
         // Lit will automatically re-render when locale changes
       } catch (err) {
-        eventListener.emitLog(`Failed to change locale: ${err}`, 'error');
+        this.eventBus.emitLog(`Failed to change locale: ${err}`, 'error');
       }
     });
 
     // Listen for theme changes from portal (stateful event)
-    this.unsubTheme = eventListener.onThemeChange((payload) => {
-      eventListener.emitLog(`Theme changed to: ${payload.theme}`, 'debug');
+    this.unsubTheme = this.eventBus.onStateful('theme:changed', (payload: any) => {
+      this.eventBus.emitLog(`Theme changed to: ${payload.theme}`, 'debug');
       this.classList.toggle('dark-theme', payload.isDark);
     });
 
     // Listen for portal:ready to re-emit metadata (handles refresh timing race)
-    this.unsubPortalReady = eventListener.onPortalReady(async () => {
-      eventListener.emitLog('Portal ready - re-registering page metadata', 'debug');
+    this.unsubPortalReady = this.eventBus.onPortalReady(async () => {
+      this.eventBus.emitLog('Portal ready - re-registering page metadata', 'debug');
       await this.registerPageMetadata();
     });
   }
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    eventListener.emitLog('Component disconnected', 'info');
+    this.eventBus.emitLog('Component disconnected', 'info');
 
     // Clear page navigation from Portal
     this.clearPageMetadata();
@@ -249,6 +274,9 @@ export class UserManagementApp extends LitElement {
     this.unsubTokenRefresh?.();
     this.unsubTheme?.();
     this.unsubPortalReady?.();
+
+    // Cleanup API client subscriptions
+    this.api.destroy();
   }
 
   /**
@@ -260,18 +288,18 @@ export class UserManagementApp extends LitElement {
 
     // If lang changed, update locale
     if (changedProperties.has('lang') && this.lang) {
-      eventListener.emitLog(`Lang property changed to: ${this.lang}`, 'debug');
+      this.eventBus.emitLog(`Lang property changed to: ${this.lang}`, 'debug');
       use(this.lang).catch(err => {
-        eventListener.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
+        this.eventBus.emitLog(`Failed to load locale ${this.lang}: ${err}`, 'error');
       });
     }
 
     // If token changed, reload users
     if (changedProperties.has('token')) {
-      eventListener.emitLog(`Token changed: ${this.token ? 'Present' : 'Absent'}`, 'debug');
+      this.eventBus.emitLog(`Token changed: ${this.token ? 'Present' : 'Absent'}`, 'debug');
 
       if (this.token) {
-        eventListener.emitLog(`User: ${this.user?.username || this.user?.email}`, 'debug');
+        this.eventBus.emitLog(`User: ${this.user?.username || this.user?.email}`, 'debug');
         this.loadUsers();
       } else {
         this.users = [];
@@ -291,14 +319,13 @@ export class UserManagementApp extends LitElement {
       this.loading = true;
       this.error = null;
 
-      // userApi will use the token from its internal getToken() method
-      // We need to update userApi to accept token as parameter
-      this.users = await userApi.getUsers(this.token);
+      // userApi uses ApiClient internally (token managed automatically)
+      this.users = await userApi.getUsers();
 
-      eventListener.emitLog(`Loaded ${this.users.length} users`, 'info');
+      this.eventBus.emitLog(`Loaded ${this.users.length} users`, 'info');
     } catch (err) {
       this.error = err instanceof Error ? err.message : 'Failed to load users';
-      eventListener.emitLog('Load error', 'error', err);
+      this.eventBus.emitLog('Load error', 'error', err);
     } finally {
       this.loading = false;
     }
@@ -312,11 +339,12 @@ export class UserManagementApp extends LitElement {
     }
 
     try {
-      await userApi.deleteUser(id, this.token);
+      // Token managed automatically by ApiClient
+      await userApi.deleteUser(id);
       await this.loadUsers(); // Reload list
-      eventListener.emitLog('User deleted successfully', 'info');
+      this.eventBus.emitLog('User deleted successfully', 'info');
     } catch (err) {
-      eventListener.emitLog(`Delete failed: ${err}`, 'error');
+      this.eventBus.emitLog(`Delete failed: ${err}`, 'error');
     }
   }
 
@@ -330,57 +358,43 @@ export class UserManagementApp extends LitElement {
    * the Portal's title bar and navigation dynamically
    */
   private async registerPageMetadata() {
-    const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
-    if (!eventBus) {
-      eventListener.emitLog('EventBus not found, cannot register page metadata', 'debug');
-      return;
-    }
-
     // Ensure translations are loaded before using get()
     await use(this.lang);
 
-    // Set page title (Option C: hybrid approach)
-    // Title stays fixed, subtitle will be updated dynamically based on current route
-    eventBus.emit('wc:page:setTitle', {
-      title: get('title'),
-      subtitle: get('subtitle.listUsers')  // Will be updated dynamically
-    });
+    // Set page title using EventBusClient
+    this.eventBus.setPageTitle(get('title'), get('subtitle.listUsers'));
 
     // Register navigation items (appear in header menu)
-    // These will replace SERVICES/CATALOG/ADMIN in the Portal's AppHeader component
-    eventBus.emit('wc:page:registerNavigation', {
-      baseRoute: '/users',
-      items: [
-        {
-          label: get('navigation.users'),
-          children: [
-            {
-              label: get('navigation.usersList'),
-              path: '/users'
-            },
-            {
-              label: get('navigation.usersCreate'),
-              path: '/users/create'
-            }
-          ]
-        },
-        {
-          label: get('navigation.roles'),
-          children: [
-            {
-              label: get('navigation.rolesList'),
-              path: '/users/roles'
-            },
-            {
-              label: get('navigation.rolesCreate'),
-              path: '/users/roles/create'
-            }
-          ]
-        }
-      ]
-    });
+    this.eventBus.registerNavigation([
+      {
+        label: get('navigation.users'),
+        children: [
+          {
+            label: get('navigation.usersList'),
+            path: '/users'
+          },
+          {
+            label: get('navigation.usersCreate'),
+            path: '/users/create'
+          }
+        ]
+      },
+      {
+        label: get('navigation.roles'),
+        children: [
+          {
+            label: get('navigation.rolesList'),
+            path: '/users/roles'
+          },
+          {
+            label: get('navigation.rolesCreate'),
+            path: '/users/roles/create'
+          }
+        ]
+      }
+    ], '/users');
 
-    eventListener.emitLog('Page metadata registered with Portal', 'debug');
+    this.eventBus.emitLog('Page metadata registered with Portal', 'debug');
   }
 
   /**
@@ -388,11 +402,8 @@ export class UserManagementApp extends LitElement {
    * This ensures the Portal's title bar resets when navigating away
    */
   private clearPageMetadata() {
-    const eventBus = (window as any).__AETHERWEAVE_EVENT_BUS__;
-    if (!eventBus) return;
-
-    eventBus.emit('wc:page:clearNavigation');
-    eventListener.emitLog('Page metadata cleared from Portal', 'debug');
+    this.eventBus.clearNavigation();
+    this.eventBus.emitLog('Page metadata cleared from Portal', 'debug');
   }
 
   render() {

@@ -2,10 +2,10 @@
  * User API Service
  *
  * CRUD operations for users via APISIX Gateway
- * Token is passed as parameter (not stored internally)
+ * Uses ApiClient from @aetherweave/wc-core
  */
 
-import { eventListener } from './event-listener.service';
+import { ApiClient, EventBusClient } from '@aetherweave/wc-core';
 
 export interface User {
   id: number;
@@ -31,43 +31,34 @@ export interface UpdateUserDto {
   roles?: string[];
 }
 
+/**
+ * User API Service
+ * Provides CRUD operations for users
+ *
+ * Must be initialized with setClient() before use
+ */
 class UserApiService {
-  private baseUrl = '/api/v1/users';
+  private api!: ApiClient;
+  private eventBus!: EventBusClient;
 
   /**
-   * Get authorization headers with JWT
+   * Initialize the service with ApiClient and EventBusClient
+   * Call this once in the WC's connectedCallback
    */
-  private getHeaders(token: string): HeadersInit {
-    return {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${token}`,
-    };
-  }
-
-  /**
-   * Handle API errors
-   */
-  private async handleResponse<T>(response: Response): Promise<T> {
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: response.statusText }));
-      throw new Error(error.message || `HTTP ${response.status}: ${response.statusText}`);
-    }
-    return response.json();
+  setClient(api: ApiClient, eventBus: EventBusClient): void {
+    this.api = api;
+    this.eventBus = eventBus;
   }
 
   /**
    * Get all users
    */
-  async getUsers(token: string): Promise<User[]> {
+  async getUsers(): Promise<User[]> {
     try {
-      const response = await fetch(this.baseUrl, {
-        method: 'GET',
-        headers: this.getHeaders(token),
-      });
-      return this.handleResponse<User[]>(response);
+      return await this.api.get<User[]>('/users');
     } catch (error) {
-      eventListener.emitLog('Failed to fetch users', 'error', error);
-      eventListener.emitError(error instanceof Error ? error.message : 'Failed to fetch users');
+      this.eventBus.emitLog('Failed to fetch users', 'error', error);
+      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to fetch users');
       throw error;
     }
   }
@@ -75,16 +66,12 @@ class UserApiService {
   /**
    * Get user by ID
    */
-  async getUserById(id: number, token: string): Promise<User> {
+  async getUserById(id: number): Promise<User> {
     try {
-      const response = await fetch(`${this.baseUrl}/${id}`, {
-        method: 'GET',
-        headers: this.getHeaders(token),
-      });
-      return this.handleResponse<User>(response);
+      return await this.api.get<User>(`/users/${id}`);
     } catch (error) {
-      eventListener.emitLog('Failed to fetch user', 'error', error);
-      eventListener.emitError(error instanceof Error ? error.message : 'Failed to fetch user');
+      this.eventBus.emitLog('Failed to fetch user', 'error', error);
+      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to fetch user');
       throw error;
     }
   }
@@ -92,19 +79,14 @@ class UserApiService {
   /**
    * Create new user
    */
-  async createUser(userData: CreateUserDto, token: string): Promise<User> {
+  async createUser(userData: CreateUserDto): Promise<User> {
     try {
-      const response = await fetch(this.baseUrl, {
-        method: 'POST',
-        headers: this.getHeaders(token),
-        body: JSON.stringify(userData),
-      });
-      const user = await this.handleResponse<User>(response);
-      eventListener.emitNotification('User created successfully', 'success');
+      const user = await this.api.post<User>('/users', userData);
+      this.eventBus.emitNotification('User created successfully', 'success');
       return user;
     } catch (error) {
-      eventListener.emitLog('Failed to create user', 'error', error);
-      eventListener.emitError(error instanceof Error ? error.message : 'Failed to create user');
+      this.eventBus.emitLog('Failed to create user', 'error', error);
+      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to create user');
       throw error;
     }
   }
@@ -112,19 +94,14 @@ class UserApiService {
   /**
    * Update user
    */
-  async updateUser(id: number, userData: UpdateUserDto, token: string): Promise<User> {
+  async updateUser(id: number, userData: UpdateUserDto): Promise<User> {
     try {
-      const response = await fetch(`${this.baseUrl}/${id}`, {
-        method: 'PUT',
-        headers: this.getHeaders(token),
-        body: JSON.stringify(userData),
-      });
-      const user = await this.handleResponse<User>(response);
-      eventListener.emitNotification('User updated successfully', 'success');
+      const user = await this.api.put<User>(`/users/${id}`, userData);
+      this.eventBus.emitNotification('User updated successfully', 'success');
       return user;
     } catch (error) {
-      eventListener.emitLog('Failed to update user', 'error', error);
-      eventListener.emitError(error instanceof Error ? error.message : 'Failed to update user');
+      this.eventBus.emitLog('Failed to update user', 'error', error);
+      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to update user');
       throw error;
     }
   }
@@ -132,22 +109,13 @@ class UserApiService {
   /**
    * Delete user
    */
-  async deleteUser(id: number, token: string): Promise<void> {
+  async deleteUser(id: number): Promise<void> {
     try {
-      const response = await fetch(`${this.baseUrl}/${id}`, {
-        method: 'DELETE',
-        headers: this.getHeaders(token),
-      });
-
-      if (!response.ok) {
-        const error = await response.json().catch(() => ({ message: response.statusText }));
-        throw new Error(error.message || `HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      eventListener.emitNotification('User deleted successfully', 'success');
+      await this.api.delete<void>(`/users/${id}`);
+      this.eventBus.emitNotification('User deleted successfully', 'success');
     } catch (error) {
-      eventListener.emitLog('Failed to delete user', 'error', error);
-      eventListener.emitError(error instanceof Error ? error.message : 'Failed to delete user');
+      this.eventBus.emitLog('Failed to delete user', 'error', error);
+      this.eventBus.emitError(error instanceof Error ? error.message : 'Failed to delete user');
       throw error;
     }
   }
