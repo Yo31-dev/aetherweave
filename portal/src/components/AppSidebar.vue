@@ -88,12 +88,33 @@
       </v-list-group>
     </v-list>
 
-    <!-- Footer with version info (when not rail mode) -->
-    <template v-slot:append v-if="!rail || mobile">
-      <div class="pa-4 text-center">
-        <v-divider class="mb-2"></v-divider>
-        <div class="text-caption text-grey">
-          AetherWeave v{{ version }}
+    <!-- Footer with theme toggle and version info -->
+    <template v-slot:append>
+      <div class="sidebar-footer">
+        <v-divider></v-divider>
+
+        <!-- Theme toggle (always visible) -->
+        <div class="theme-toggle-container" @click="toggleTheme">
+          <div class="theme-toggle-content">
+            <v-icon size="small" :icon="isDark ? 'mdi-weather-night' : 'mdi-weather-sunny'"></v-icon>
+            <span v-if="!rail || mobile" class="theme-label">{{ isDark ? 'Dark' : 'Light' }}</span>
+          </div>
+          <v-switch
+            v-if="!rail || mobile"
+            v-model="isDark"
+            hide-details
+            density="compact"
+            color="primary"
+            :readonly="true"
+            class="theme-switch"
+          ></v-switch>
+        </div>
+
+        <!-- Version info (when not rail mode) -->
+        <div v-if="!rail || mobile" class="pa-3 text-center">
+          <div class="text-caption text-grey">
+            AetherWeave v{{ version }}
+          </div>
         </div>
       </div>
     </template>
@@ -104,6 +125,7 @@
 import { ref, computed, watch } from 'vue';
 import { useDisplay } from 'vuetify';
 import { useAuthStore } from '@/stores/auth.store';
+import { useTheme } from '@/composables/useTheme';
 import { getVisibleMicroServices } from '@/config/microservices.config';
 
 // Props
@@ -126,6 +148,9 @@ const { mobile } = useDisplay();
 
 // Auth store
 const authStore = useAuthStore();
+
+// Theme management
+const { isDark, toggleTheme } = useTheme();
 
 // Drawer state
 const drawer = ref(props.modelValue);
@@ -281,5 +306,59 @@ function onDrawerClick() {
 
 .v-theme--dark :deep(.v-list-item-title) {
   color: #B0B0B0 !important;
+}
+
+/* Sidebar footer with theme toggle */
+.sidebar-footer {
+  width: 100%;
+}
+
+.theme-toggle-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  user-select: none;
+}
+
+.theme-toggle-container:hover {
+  background-color: rgba(255, 107, 53, 0.05);
+}
+
+.theme-toggle-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #616161;
+  letter-spacing: 0.3px;
+}
+
+.theme-label {
+  transition: color 0.2s;
+}
+
+.theme-toggle-container:hover .theme-label {
+  color: #FF6B35;
+}
+
+.theme-switch {
+  pointer-events: none;
+}
+
+:deep(.theme-switch .v-selection-control) {
+  min-height: auto;
+}
+
+/* Dark theme for toggle */
+.v-theme--dark .theme-toggle-content {
+  color: #B0B0B0;
+}
+
+.v-theme--dark .theme-toggle-container:hover .theme-label {
+  color: #FF6B35;
 }
 </style>

@@ -67,31 +67,17 @@
         </v-menu>
       </nav>
 
-      <!-- Actions (theme toggle, user menu) -->
+      <!-- Actions (user menu) -->
       <div class="header-actions">
-        <!-- Theme toggle button -->
-        <v-btn
-          icon
-          @click="toggleTheme"
-          class="mr-2"
-        >
-          <v-icon>{{ isDark ? 'mdi-weather-sunny' : 'mdi-weather-night' }}</v-icon>
-        </v-btn>
-
         <!-- User menu (authenticated) -->
         <template v-if="authStore.isAuthenticated">
           <v-menu offset-y>
             <template v-slot:activator="{ props }">
-              <v-chip
-                v-bind="props"
-                color="primary"
-                variant="outlined"
-                clickable
-              >
-                <v-icon start icon="mdi-account-circle"></v-icon>
+              <a v-bind="props" class="nav-item dropdown user-dropdown">
+                <v-icon size="small">mdi-account-circle</v-icon>
                 {{ authStore.username }}
-                <v-icon end icon="mdi-menu-down"></v-icon>
-              </v-chip>
+                <v-icon size="small">mdi-chevron-down</v-icon>
+              </a>
             </template>
 
             <v-card min-width="300">
@@ -167,16 +153,12 @@
 
 <script setup lang="ts">
 import { computed } from 'vue';
-import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth.store';
-import { useTheme } from '@/composables/useTheme';
 import { getVisibleMicroServices } from '@/config/microservices.config';
 import { authService } from '@/services/auth.service';
 import { logService } from '@/services/log.service';
 
-const router = useRouter();
 const authStore = useAuthStore();
-const { isDark, toggleTheme } = useTheme();
 
 // Get services for dropdown
 const navServices = computed(() => getVisibleMicroServices(authStore.isAuthenticated, true, false));
@@ -304,17 +286,12 @@ function handleChangePassword() {
 .header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
 }
 
-/* User chip styling */
-:deep(.v-chip) {
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-:deep(.v-chip:hover) {
-  background-color: rgba(255, 107, 53, 0.08);
+/* User dropdown styling - same as nav items */
+.user-dropdown {
+  font-weight: 500 !important;
 }
 
 /* Dark theme */
